@@ -1,7 +1,7 @@
   import React, { useState } from 'react';
   import axios from '../axiosConfig';
 
-const LogIn = ({onLogin}) => {
+const LogIn = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -12,8 +12,8 @@ const LogIn = ({onLogin}) => {
 
     try {
       const response = await axios.post('/login/employee', { email, password });
+
       console.log("Login successful", response.data);
-       onLogin(response.data.token)
       // Proceed with the login success (e.g., saving the token, redirecting the user, etc.)
     } catch (error) {
       if (error.response) {
