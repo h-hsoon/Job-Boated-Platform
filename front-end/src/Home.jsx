@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+
 function Home() {
       
     const [formData, setFormData] = useState({
@@ -10,9 +11,13 @@ function Home() {
         confirmPassword:''
       });
 
+
+
       const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
       };
+
+
 
     function clickFunction() {
         console.log('call for the api');
@@ -21,7 +26,6 @@ function Home() {
    
         
         fetch('http://localhost:5000/', {
-            mode: "no-cors",
             method: "POST",
             body: JSON.stringify(formData)
         })
@@ -44,11 +48,15 @@ function Home() {
             <form className="SignUpForm">
 
                 <input type="text" name="firstName"  onChange={handleChange}  placeholder="First Name" />
+                <br />
                 <input type="text" name="lastName"   onChange={handleChange} placeholder="Last Name" />
+                <br />
                 <input type="text" name="email"   onChange={handleChange} placeholder="Email" />
+                <br />
                 <input type="password" name="password"    onChange={handleChange} placeholder="Password" />
+                <br />
                 <input type="password" name="confirmPassword"   onChange={handleChange} placeholder="Confirm Password" />
-                <button onClick={clickFunction}>SignUp</button>
+               <br /> <button onClick={clickFunction}>SignUp</button>
 
             </form>
 
