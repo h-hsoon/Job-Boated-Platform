@@ -1,6 +1,28 @@
+const jobSeekerModel = require("../models/jobSeekerModel");
+const employee = require("../models/Schema");
+const employerModel = require("../models/employerModel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const jobSeekerModel = require("../models/jobSeekerModel");
+
+
+const registerEmployer = (req, res) => {
+  const { companyName, email, aboutCompany, password, phone } = req.body;
+  const hashedPassword = bcrypt.hashSync(password, 10);
+  if (!hashedPassword) {
+    res.status(400).send({ error: "Password is not valid" });
+  } else {
+    const employer = new employerModel({
+      companyName,
+      email,
+      password: hashedPassword,
+      aboutCompany,
+      phone,
+    });
+    employer
+      .save()
+      .then(() => {
+        res.send({ massge: "now you can log in" });
+      })
 
 
 const SignUp = async (req, res) => {
@@ -63,9 +85,11 @@ const SignUp = async (req, res) => {
     }
 }
 
-
-
-
+      .catch((error) => {
+        res.send(error);
+      });
+  }
+};
 
 //Log in :
 
@@ -108,12 +132,40 @@ const loginUser = async (req, res) => {
     }
 }
 
+    let correctPassword = bcrypt.compareSync(
+      req.body.password,
+      existUser.password
+    );
+    if (!correctPassword) {
+      return res.status(400).json({
+        loginError: "Password is not correct",
+      });
+    }
 
+    // Create user token
+    let userDataForToken = {
+      id: existUser._id,
+      firstName: existUser.firstName,
+      lastName: existUser.lastName,
+      email: existUser.email,
+    };
 
+    let userToken = jwt.sign({ user: userDataForToken }, "special");
 
-
+    res.cookie("userToken", userToken);
+    res.status(200).json({
+      message: "Login successful",
+      token: userToken,
+    });
+  } catch (error) {
+    res.status(500).json({
+      loginError: "Internal server error",
+    });
+  }
+};
 
 module.exports = {
-    SignUp,
-    loginUser
-}
+  SignUp,
+  loginUser,
+  registerEmployer,
+};
