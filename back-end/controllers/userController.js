@@ -72,7 +72,7 @@ const loginUser = async (req, res) => {
 
     let userToken = jwt.sign({ user: userDataForToken }, "special");
 
-    res.cookie("userToken", userToken);
+   
     res.status(200).json({
       message: "Login successful",
       token: userToken,
