@@ -4,7 +4,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const registerEmployer = (req, res) => {
-  const { companyName, email, aboutCompany, password } = req.body;
+  const { companyName, email, aboutCompany, password, phone } = req.body;
   const hashedPassword = bcrypt.hashSync(password, 10);
   if (!hashedPassword) {
     res.status(400).send({ error: "Password is not valid" });
@@ -14,6 +14,7 @@ const registerEmployer = (req, res) => {
       email,
       password: hashedPassword,
       aboutCompany,
+      phone,
     });
     employer
       .save()
