@@ -1,4 +1,5 @@
 import { useState } from "react";
+import axios from 'axios';
 
 function Home() {
       
@@ -18,15 +19,10 @@ function Home() {
         console.log('call for the api');
         
         console.log(formData);
-   
         
-        fetch('http://localhost:5000/', {
-            mode: "no-cors",
-            method: "POST",
-            body: JSON.stringify(formData)
-        })
-
+        axios.post('http://localhost:5000/', formData)
             .then((data) => {
+                //if sign up succeed then redirect to component saying sign up succefull
                 console.log(data);
                
             }).catch((err)=>{
