@@ -1,19 +1,20 @@
-const employee = require("../models/Schema")
+const jobSeekerModel = require("../models/jobSeekerModel");
 
 
 
 const  SignUp = (req, res) => {
     console.log('receive  call  of the api');
     console.log(req.body);
-    //create an employee
-    var  employeeObj = {
-        firstName: "Abd",
-        lastName: "sohail",
-        email: "abd@gmail.com",
+
+    const emp = {
+        firstName: 'aicha',
+        lastName: 'metioui',
+        email: 'aicha',
+        password: '123'
     }
-    const data =employee (employeeObj)
-    //data.save();
-    res.send(employeeObj)
+    const data =jobSeekerModel (emp)
+    data.save();
+    res.send(req.body)
 }
 
 

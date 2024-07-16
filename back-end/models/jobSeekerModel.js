@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const jobSeekerSchama = new mongoose.Schema(
+const jobSeekerSchema = new mongoose.Schema(
   {
     firstName: {
       type: String,
@@ -34,4 +34,4 @@ const jobSeekerSchama = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("JobSeeker", jobSeekerSchama);
+module.exports = mongoose.model("JobSeeker", jobSeekerSchema);
