@@ -36,7 +36,7 @@ const loginUser = async (req, res) => {
         });
       }
   
-      // Create user token
+     // Create user token
       let userDataForToken = {
         id: existUser._id,
         firstName: existUser.firstName,
