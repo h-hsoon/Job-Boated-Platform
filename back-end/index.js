@@ -7,7 +7,7 @@ const cookieParser = require('cookie-parser')
 dotenv.config();
 require("./config/mongoDB");
 
-const port = process.env.PORT ||5000;
+const port = process.env.PORT || 5000;
 const app = express();
 app.use(cookieParser())
 app.use(cors());
