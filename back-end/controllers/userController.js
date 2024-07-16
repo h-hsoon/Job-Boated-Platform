@@ -1,4 +1,4 @@
-const employee = require("../models/Schema")
+const employee = require("../models/jobSeekerModel")
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken")
 
@@ -36,7 +36,7 @@ const loginUser = async (req, res) => {
         });
       }
   
-      // Create user token
+     // Create user token
       let userDataForToken = {
         id: existUser._id,
         firstName: existUser.firstName,
