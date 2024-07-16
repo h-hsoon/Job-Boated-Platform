@@ -6,6 +6,6 @@ const registerValidator = require("../middleware/registerValidator");
 
 
 router.post ("/",registerValidator,usercontroller.SignUp)
-router.post ("/login/:type",usercontroller.SignUp)
+router.post ("/login/employee",usercontroller.loginUser)
 
 module.exports=router

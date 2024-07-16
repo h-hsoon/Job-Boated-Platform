@@ -1,20 +1,13 @@
 const employee = require("../models/Schema")
-const company= require('../models/')
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken")
-const { validationResult } = require("express-validator");
+
 
 const  SignUp = (req, res) => {
     console.log('receive  call  of the api');
     console.log(req.body);
-    const errors = validationResult(req);
-    const errorMessages = errors.array();
-    if (!errors.isEmpty()) {
-        console.log(errorMessages);
-        return res.status(400).json({
-           SignUpError: errorMessages ,
-          });
-        }else{
+   
+   
     //create an employee
     var  employeeObj = {
         firstName: "Abd",
@@ -24,20 +17,12 @@ const  SignUp = (req, res) => {
     const data =employee (employeeObj)
     //data.save();
     res.send(employeeObj)
-}}
+}
 
 const loginUser = async (req, res) => {
     try {
-      const type = req.params.type;
-      let typeClient;
-  
-      if (type === "employee") {
-        typeClient = employee;
-      } else {
-        typeClient = company;
-      }
-  
-      let existUser = await typeClient.findOne({ email: req.body.email });
+    
+      let existUser = await employee.findOne({ email: req.body.email });
       if (!existUser) {
         return res.status(400).json({
           loginError: "Email does not exist, please register first.",
@@ -73,7 +58,7 @@ const loginUser = async (req, res) => {
     }
   };
   
-  module.exports = loginUser;
+
 
 
 

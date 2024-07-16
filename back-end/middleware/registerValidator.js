@@ -1,5 +1,5 @@
 const { body } = require('express-validator');
-const employee = require("../model/user.js");
+const employee = require("../models/Schema")
 const registerValidator = [
     body('firstName').notEmpty().withMessage('First name is required'),
     body('lastName').notEmpty().withMessage('Last name is required'),
