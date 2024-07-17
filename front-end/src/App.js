@@ -1,33 +1,70 @@
-import React, { useState } from 'react';
-import "./App.css";
-import "bootstrap/dist/css/bootstrap.min.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "./Home";
-import LoginForm from "./components/LogIn";
-import Register from "./components/Register";
+
+import React, { useState, useEffect } from 'react';
+import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import Home from './Home';
+import LoginForm from './components/LogIn';
+import Register from './components/Register';
 import Cookies from 'js-cookie';
+import {jwtDecode} from 'jwt-decode';
 
 function App() {
   const [loggedInEmployee, setLoggedInEmployee] = useState(!!Cookies.get('token'));
-  const onLogin=(token)=>{
-    Cookies.set('token',token)
+  const [userType, setUserType] = useState(()=>{
+    const storedUserType = Cookies.get('userType');
+     return (storedUserType)? storedUserType:null
+  });
+
+  useEffect(() => {
+    const tokenType = getTokenType();
+    setUserType(tokenType);
+  }, [loggedInEmployee]);
+
+
+
+  const onLogin = (token) => {
+    Cookies.set('token', token);
+    const tokenType = getTokenType();
     setLoggedInEmployee(true);
-  }
+    setUserType(tokenType);
+    Cookies.set('userType', tokenType);
+  };
 
   const handleLogout = () => {
-    Cookies.remove('token'); // Remove token from cookies
+    Cookies.remove('token'); 
     setLoggedInEmployee(false);
+    setUserType(null); 
+    Cookies.remove('userType'); 
   };
+
+  const getTokenType = () => {
+    const token = Cookies.get('token');
+    if (!token) {
+      console.log('No token');
+      return null;
+    }
+
+    try {
+      const decodedToken = jwtDecode(token);
+      console.log(decodedToken.user.userType, 'userType');
+      return decodedToken.user.userType;
+    } catch (error) {
+      console.error('Invalid token:', error);
+      return null;
+    }
+  };
+
   return (
     <BrowserRouter>
       <div className="App">
-      <button onClick={handleLogout}>logOut</button>
+        {loggedInEmployee && <button onClick={handleLogout}>Logout</button>}
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/login" element={<LoginForm  onLogin={onLogin}/>} />
+          <Route path="/login" element={<LoginForm onLogin={onLogin} />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/new" element={loggedInEmployee?<p>you are log in</p>:<p>you are not log in</p>} />
-
+          <Route path="/employee" element={userType === 'employee' ? <p>you are employee</p> : <Navigate to="/login" />} />
+          <Route path="/employer" element={userType === 'employer' ? <p>you are employer</p> : <Navigate to="/login" />} />
         </Routes>
       </div>
     </BrowserRouter>
