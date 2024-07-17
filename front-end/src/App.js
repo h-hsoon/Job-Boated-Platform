@@ -7,7 +7,7 @@ import Home from './Home';
 import LoginForm from './components/LogIn';
 import Register from './components/Register';
 import Cookies from 'js-cookie';
-import {jwtDecode} from 'jwt-decode';
+import  getTokenType  from './auth/auth';
 
 function App() {
   const [loggedInEmployee, setLoggedInEmployee] = useState(!!Cookies.get('token'));
@@ -15,13 +15,6 @@ function App() {
     const storedUserType = Cookies.get('userType');
      return (storedUserType)? storedUserType:null
   });
-
-  useEffect(() => {
-    const tokenType = getTokenType();
-    setUserType(tokenType);
-  }, [loggedInEmployee]);
-
-
 
   const onLogin = (token) => {
     Cookies.set('token', token);
@@ -36,23 +29,6 @@ function App() {
     setLoggedInEmployee(false);
     setUserType(null); 
     Cookies.remove('userType'); 
-  };
-
-  const getTokenType = () => {
-    const token = Cookies.get('token');
-    if (!token) {
-      console.log('No token');
-      return null;
-    }
-
-    try {
-      const decodedToken = jwtDecode(token);
-      console.log(decodedToken.user.userType, 'userType');
-      return decodedToken.user.userType;
-    } catch (error) {
-      console.error('Invalid token:', error);
-      return null;
-    }
   };
 
   return (
