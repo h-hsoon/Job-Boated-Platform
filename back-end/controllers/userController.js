@@ -67,7 +67,7 @@ const SignUp = async (req, res) => {
       password: hash,
     };
 
-    let newuser = new jobSeekerSchama(userobj);
+    let newuser = new jobSeekerModel(userobj);
     newuser
       .save()
       .then(() => {
