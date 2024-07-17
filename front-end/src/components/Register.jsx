@@ -19,7 +19,7 @@ export default function Rejestier() {
 
   const addUser = (companyName, email, password, aboutCompany, phone) => {
     axios
-      .post("http://localhost:8000/register/employer", {
+      .post("http://localhost:5000/register/employer", {
         companyName,
         email,
         password,
