@@ -36,7 +36,7 @@ export default function RegisterEmployee() {
     e.preventDefault();
     console.log(formData);
     axios
-      .post("http://localhost:5000/", formData)
+      .post("http://localhost:5000/register/employer", formData)
       .then(() => {
         //if sign up succeed then redirect to component saying sign up succefull
         setFormData({
