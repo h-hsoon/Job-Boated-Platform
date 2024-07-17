@@ -26,7 +26,7 @@
           return;
         }
       try {
-        const response = await axios.post(`http://localhost:5000/login/`, { email, password ,userType });
+        const response = await axios.post(`login/`, { email, password ,userType });
         console.log("Login successful", response.data);
         console.log(response.data.token);
         onLogin(response.data.token)
