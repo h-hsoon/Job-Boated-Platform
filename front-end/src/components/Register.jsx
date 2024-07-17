@@ -1,7 +1,7 @@
 import axios from "axios";
 import React from "react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 export default function Rejestier() {
   const [companyName, setCompanyName] = useState("");
@@ -10,6 +10,8 @@ export default function Rejestier() {
   const [aboutCompany, setAboutCompany] = useState("");
   const [phone, setPhone] = useState("");
   const [error, setError] = useState("");
+  const [eicessterror, setEicesstError] = useState("");
+
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
@@ -37,7 +39,8 @@ export default function Rejestier() {
       })
       .catch((err) => {
         if (err.response.status === 401) {
-          navigate("/login");
+          setEicesstError(err.response.data.error);
+          setError(err.response.data.error);
         } else {
           setError(err.response.data.error);
         }
@@ -46,6 +49,7 @@ export default function Rejestier() {
 
   return (
     <div className="container">
+      {eicessterror && <Link to="/login">Go to Log In</Link>}
       <form
         onSubmit={handleSubmit}
         className="w-50 h-100 mt-3 mb-5 p-5 border border-primary border-5 rounded-2 d-flex flex-column"
