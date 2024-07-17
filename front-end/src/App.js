@@ -16,13 +16,6 @@ function App() {
      return (storedUserType)? storedUserType:null
   });
 
-  useEffect(() => {
-    const tokenType = getTokenType();
-    setUserType(tokenType);
-  }, [loggedInEmployee]);
-
-
-
   const onLogin = (token) => {
     Cookies.set('token', token);
     const tokenType = getTokenType();
