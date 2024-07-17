@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
@@ -40,8 +40,8 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<LoginForm onLogin={onLogin} />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/employee" element={<RegisterEmployee />} />
+          <Route path="/registerEmployer" element={<Register />} />
+          <Route path="/registerEmployee" element={<RegisterEmployee />} />
           <Route
             path="/employee"
             element={
