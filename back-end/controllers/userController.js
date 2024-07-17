@@ -88,48 +88,54 @@ const SignUp = async (req, res) => {
 //Log in :
 
 const loginUser = async (req, res) => {
-  try {
-    let existUser = await jobSeekerModel.findOne({ email: req.body.email });
-    if (!existUser) {
-      return res.status(400).json({
-        loginError: "Email does not exist, please register first.",
-      });
-    }
+  const { email, password, userType } = req.body;
 
-    let correctPassword = bcrypt.compareSync(
-      req.body.password,
-      existUser.password
-    );
-    if (!correctPassword) {
-      return res.status(400).json({
-        loginError: "Password is not correct",
-      });
-    }
+  let existUser;
 
-    // Create user token
-    let userDataForToken = {
-      id: existUser._id,
-      firstName: existUser.firstName,
-      lastName: existUser.lastName,
-      email: existUser.email,
-    };
 
-    let userToken = jwt.sign({ user: userDataForToken }, "special");
+  if (userType === 'employer') {
+    existUser = await employerModel.findOne({ email });
+  } else {
+    existUser = await jobSeekerModel.findOne({ email });
+  }
 
-    res.cookie("userToken", userToken);
-    res.status(200).json({
-      message: "Login successful",
-      token: userToken,
-    });
-  } catch (error) {
-    res.status(500).json({
-      loginError: "Internal server error",
+  if (!existUser) {
+    return res.status(400).json({
+      loginError: "Email does not exist. Please register first.",
     });
   }
+
+  const correctPassword = bcrypt.compareSync(password, existUser.password);
+
+  if (!correctPassword) {
+    return res.status(400).json({
+      loginError: "Password is not correct.",
+    });
+  }
+
+  
+  const userDataForToken = {
+    id: existUser._id,
+    firstName: existUser.firstName,
+    lastName: existUser.lastName,
+    email: existUser.email,
+    userType: userType
+  };
+
+  let token;
+  if (userType === 'employer') {
+    token = jwt.sign({ user: userDataForToken }, "employer");
+  } else {
+    token = jwt.sign({ user: userDataForToken }, "employee");
+  }
+
+  return res.json({ success: true, token });
 };
+
 
 module.exports = {
   SignUp,
   loginUser,
   registerEmployer,
+  
 };
