@@ -13,7 +13,6 @@ import {
   Card,
   CardContent,
   Grid,
-  IconButton,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
@@ -33,13 +32,20 @@ const EmployeeProfile = ({ user }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    if (name === 'phone' && value.trim() !== '') {
+      if (!/^\d{10,15}$/.test(value)) {
+        setError('Phone number must contain only digits and be 10 to 15 characters long.');
+      } else {
+        setError(''); // Clear error message if valid
+      }
+    } else {
+      setError(''); // Clear error message if valid
+    }
     setFormData({
       ...formData,
       [name]: value,
     });
-    if (value.trim() !== '') {
-      setError('');
-    }
+   
   };
 
   const handleSubmit = async (e) => {
@@ -139,6 +145,16 @@ const EmployeeProfile = ({ user }) => {
                     disabled
                     sx={{ mb: 2 }}
                   />
+                    <TextField
+                    margin="normal"
+                    fullWidth
+                    id="phone"
+                    label=" Phone Number"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    sx={{ mb: 2 }}
+                  />
                   {error && (
                     <Typography color="error" align="center" sx={{ mb: 2 }}>
                       {error}
@@ -176,6 +192,11 @@ const EmployeeProfile = ({ user }) => {
                   <Typography variant="body1" gutterBottom align="center">
                     <strong>Email:</strong> {user.email}
                   </Typography>
+                  {user.phone && (
+                    <Typography variant="body1" gutterBottom align="center">
+                      <strong> Phone:</strong> {user.phone}
+                    </Typography>
+                  )}
                   <Box
                     sx={{
                       display: "flex",

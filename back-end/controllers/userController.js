@@ -125,12 +125,12 @@ const loginUser = async (req, res) => {
     firstName: existUser.firstName,
     lastName: existUser.lastName,
     email: existUser.email,
-    userType: userType
+    userType: userType,
+    phone:existUser.phone
   };
   if (userType === 'employer') {
     userDataForToken.companyName = existUser.companyName;
     userDataForToken.aboutCompany = existUser.aboutCompany;
-    userDataForToken.phone = existUser.phone;
   }
   let token;
   if (userType === 'employer') {
