@@ -45,6 +45,12 @@ const SignUp = async (req, res) => {
       });
     }
 
+    if(req.body.password!==req.body.confirmPassword){
+      return res.status(400).json({
+        error: "Password and confirmation password do not match!!",
+      });
+    }
+
     let existuser = await jobSeekerModel.findOne({
       email: req.body.email,
     });
