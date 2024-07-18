@@ -9,7 +9,6 @@ import {
   Typography,
   Container,
   CssBaseline,
-  Link,
   Radio,
   RadioGroup,
   FormControl,
@@ -18,6 +17,7 @@ import {
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import axios from "../axiosConfig";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { Link } from "react-router-dom";
 
 const theme = createTheme();
 
@@ -146,11 +146,11 @@ const LoginForm = ({ onLogin }) => {
             <Grid container>
               <Grid item>
                 {userType === "employee" ? (
-                  <Link href="/registerEmployee" variant="body2">
+                  <Link to="/registerEmployee" variant="body2">
                     {"Don't have an account? Sign Up"}
                   </Link>
                 ) : (
-                  <Link href="/registerEmployer" variant="body2">
+                  <Link to="/registerEmployer" variant="body2">
                     {"Don't have an account? Sign Up"}
                   </Link>
                 )}

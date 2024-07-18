@@ -7,12 +7,11 @@ import {
   Typography,
   Container,
   CssBaseline,
-  Link,
 } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 
 const theme = createTheme();
@@ -143,7 +142,7 @@ export default function RegisterEmployee() {
             </Button>
             <Grid container>
               <Grid item>
-                <Link href="/login" variant="body2">
+                <Link to="/login" variant="body2">
                   {"I have an account? Log In"}
                 </Link>
               </Grid>
