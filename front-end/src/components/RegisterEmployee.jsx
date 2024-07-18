@@ -7,12 +7,11 @@ import {
   Typography,
   Container,
   CssBaseline,
-  Link,
 } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 
 const theme = createTheme();
@@ -126,21 +125,6 @@ export default function RegisterEmployee() {
               autoComplete="current-password"
               onChange={handleChange}
             />
-            {/* <FormControl component="fieldset" sx={{ mt: 2 }}>
-              <FormLabel component="legend">User Type</FormLabel>
-              <RadioGroup row aria-label="userType" name="userType">
-                <FormControlLabel
-                  value="employee"
-                  control={<Radio />}
-                  label="employee"
-                />
-                <FormControlLabel
-                  value="employer"
-                  control={<Radio />}
-                  label="employer"
-                />
-              </RadioGroup>
-            </FormControl> */}
             {error && (
               <Typography color="error" align="center">
                 {error}
@@ -158,7 +142,7 @@ export default function RegisterEmployee() {
             </Button>
             <Grid container>
               <Grid item>
-                <Link href="/login" variant="body2">
+                <Link to="/login" variant="body2">
                   {"I have an account? Log In"}
                 </Link>
               </Grid>
