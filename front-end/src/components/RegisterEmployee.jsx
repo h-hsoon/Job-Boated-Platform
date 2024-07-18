@@ -126,21 +126,6 @@ export default function RegisterEmployee() {
               autoComplete="current-password"
               onChange={handleChange}
             />
-            {/* <FormControl component="fieldset" sx={{ mt: 2 }}>
-              <FormLabel component="legend">User Type</FormLabel>
-              <RadioGroup row aria-label="userType" name="userType">
-                <FormControlLabel
-                  value="employee"
-                  control={<Radio />}
-                  label="employee"
-                />
-                <FormControlLabel
-                  value="employer"
-                  control={<Radio />}
-                  label="employer"
-                />
-              </RadioGroup>
-            </FormControl> */}
             {error && (
               <Typography color="error" align="center">
                 {error}
