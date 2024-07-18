@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import axios from '../axiosConfig';
 import Cookies from 'js-cookie';
 
 const EmployeeProfile = ({ user }) => {
@@ -28,26 +28,30 @@ const EmployeeProfile = ({ user }) => {
       setError('First Name and Last Name cannot be empty.');
       return;
     }
-    
-    // const token = Cookies.get('token');
+    if (error){
+      alert('fix the error');
+  
+      return
+    }
+    const token = Cookies.get('token');
 
-    // try {
-    //   const response = await axios.put('/api/updateEmployeeProfile', formData, {
-    //     headers: {
-    //       Authorization: `Bearer ${token}`,
-    //     },
-    //   });
+    try {
+      const response = await axios.put('/updateEmployeeProfile', formData, {
+        headers: {
+          Authorization: token,
+        },
+      });
 
-    //   if (response.data.success) {
-    //     alert('Profile updated successfully!');
-    //     setIsEditing(false); // Exit edit mode on success
-    //   } else {
-    //     alert('Failed to update profile.');
-    //   }
-    // } catch (error) {
-    //   console.error('Error updating profile:', error);
-    //   alert('An error occurred. Please try again.');
-    // }
+      if (response.data.success) {
+        alert('Profile updated successfully!');
+        setIsEditing(false); // Exit edit mode on success
+      } else {
+        alert('Failed to update profile.');
+      }
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      alert('An error occurred. Please try again.');
+    }
   };
 
   return (

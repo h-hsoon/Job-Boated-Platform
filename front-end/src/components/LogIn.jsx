@@ -48,7 +48,6 @@ const LoginForm = ({ onLogin }) => {
       console.log("Login successful", response.data);
       console.log(response.data.token);
       onLogin(response.data.token);
-      // Handle login success (e.g., store token in cookies, redirect user, etc.)
     } catch (error) {
       if (error.response) {
         setError(error.response.data.loginError);

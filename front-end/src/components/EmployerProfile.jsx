@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import axios from '../axiosConfig';
 import Cookies from 'js-cookie';
 //import '.'; 
 
@@ -48,25 +48,25 @@ const EmployerProfile = ({ user }) => {
 
     return
   }
-    ///const token = Cookies.get('token');
+    const token = Cookies.get('token');
 
-    // try {
-    //   const response = await axios.put('/api/updateProfile', formData, {
-    //     headers: {
-    //       Authorization: `Bearer ${token}`,
-    //     },
-    //   });
+    try {
+      const response = await axios.put('/updateProfile', formData, {
+        headers: {
+          Authorization: token,
+        },
+      });
 
-    //   if (response.data.success) {
-    //     alert('Profile updated successfully!');
-    //     setIsEditing(false); // Exit edit mode on success
-    //   } else {
-    //     alert('Failed to update profile.');
-    //   }
-    // } catch (error) {
-    //   console.error('Error updating profile:', error);
-    //   alert('An error occurred. Please try again.');
-    // }
+      if (response.data.success) {
+        alert('Profile updated successfully!');
+        setIsEditing(false); // Exit edit mode on success
+      } else {
+        alert('Failed to update profile.');
+      }
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      alert('An error occurred. Please try again.');
+    }
   };
 
   return (
