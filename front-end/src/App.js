@@ -8,60 +8,45 @@ import Register from "./components/Register";
 import Cookies from "js-cookie";
 import getTokenType from "./auth/auth";
 import RegisterEmployee from "./components/RegisterEmployee";
+import EmployerProfile from './components/EmployerProfile';
+import EmployeeProfile from './components/EmployeeProfile';
 
 function App() {
-  const [loggedInEmployee, setLoggedInEmployee] = useState(
-    !!Cookies.get("token")
-  );
-  const [userType, setUserType] = useState(() => {
-    const storedUserType = Cookies.get("userType");
-    return storedUserType ? storedUserType : null;
-  });
+  const [loggedIn, setLoggedIn] = useState(!!Cookies.get('token'));
 
+  const [user, setUser] = useState(() => {
+    const storedUser = Cookies.get('userData');
+      return storedUser ? JSON.parse(storedUser) : null;
+  });
+ 
   const onLogin = (token) => {
-    Cookies.set("token", token);
-    const tokenType = getTokenType();
-    setLoggedInEmployee(true);
-    setUserType(tokenType);
-    Cookies.set("userType", tokenType);
+    Cookies.set('token', token);
+    const tokenData = getTokenType();
+    setLoggedIn(true);
+    setUser(tokenData);
+    Cookies.set('userData', JSON.stringify(tokenData));
   };
 
   const handleLogout = () => {
-    Cookies.remove("token");
-    setLoggedInEmployee(false);
-    setUserType(null);
-    Cookies.remove("userType");
+    Cookies.remove('token');
+    setLoggedIn(false);
+    setUser(null);
+    Cookies.remove('userData');
   };
 
   return (
     <BrowserRouter>
       <div className="App">
-        {loggedInEmployee && <button onClick={handleLogout}>Logout</button>}
+        {loggedIn && <button onClick={handleLogout}>Logout</button>}
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/login" element={<LoginForm onLogin={onLogin} />} />
+          <Route path="/login" element={loggedIn ? (user?.userType === 'employee' ? <Navigate to="/employee" /> : <Navigate to="/employer" />) : <LoginForm onLogin={onLogin} />} />
+
+
           <Route path="/registerEmployer" element={<Register />} />
           <Route path="/registerEmployee" element={<RegisterEmployee />} />
-          <Route
-            path="/employee"
-            element={
-              userType === "employee" ? (
-                <p>you are employee</p>
-              ) : (
-                <Navigate to="/login" />
-              )
-            }
-          />
-          <Route
-            path="/employer"
-            element={
-              userType === "employer" ? (
-                <p>you are employer</p>
-              ) : (
-                <Navigate to="/login" />
-              )
-            }
-          />
+          <Route path="/employee" element={user?.userType === 'employee' ? <EmployeeProfile user={user} /> : <Navigate to="/login" />} />
+          <Route path="/employer" element={user?.userType === 'employer' ? <EmployerProfile user={user} /> : <Navigate to="/login" />} />
         </Routes>
       </div>
     </BrowserRouter>
