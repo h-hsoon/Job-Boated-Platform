@@ -13,6 +13,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
+import validator from "validator";
 
 const theme = createTheme();
 
@@ -28,12 +29,16 @@ export default function RegisterEmployee() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+
+
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
   function clickFunction(e) {
     e.preventDefault();
     console.log(formData);
+    
     axios
       .post("http://localhost:5000/register/employer", formData)
       .then(() => {
@@ -50,6 +55,18 @@ export default function RegisterEmployee() {
       .catch((err) => {
         setError(err.response.data.error);
       });
+  }
+  // validate email function :
+  function handleEmail(event) {
+
+    let new_Email = event.target.value;
+    setFormData({ ...formData, [event.target.name]: event.target.value });
+
+    if (!validator.isEmail(new_Email)) {
+      setError("Please, enter a valid email!");
+    } else {
+      setError("");
+    }
   }
   return (
     <ThemeProvider theme={theme}>
@@ -101,7 +118,8 @@ export default function RegisterEmployee() {
               name="email"
               autoComplete="email"
               autoFocus
-              onChange={handleChange}
+              onChange={handleEmail}
+
             />
             <TextField
               margin="normal"
@@ -151,5 +169,10 @@ export default function RegisterEmployee() {
         </Box>
       </Container>
     </ThemeProvider>
+
   );
 }
+
+
+
+
