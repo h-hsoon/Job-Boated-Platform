@@ -10,5 +10,6 @@ router.post(
   employerValidator,
   usercontroller.registerEmployer
 );
+router.put("/update", usercontroller.updateUserProfaile);
 
 module.exports = router;

@@ -45,7 +45,7 @@ const SignUp = async (req, res) => {
       });
     }
 
-    if(req.body.password!==req.body.confirmPassword){
+    if (req.body.password !== req.body.confirmPassword) {
       return res.status(400).json({
         error: "Password and confirmation password do not match!!",
       });
@@ -98,8 +98,7 @@ const loginUser = async (req, res) => {
 
   let existUser;
 
-
-  if (userType === 'employer') {
+  if (userType === "employer") {
     existUser = await employerModel.findOne({ email });
   } else {
     existUser = await jobSeekerModel.findOne({ email });
@@ -119,17 +118,16 @@ const loginUser = async (req, res) => {
     });
   }
 
-  
   const userDataForToken = {
     id: existUser._id,
     firstName: existUser.firstName,
     lastName: existUser.lastName,
     email: existUser.email,
-    userType: userType
+    userType: userType,
   };
 
   let token;
-  if (userType === 'employer') {
+  if (userType === "employer") {
     token = jwt.sign({ user: userDataForToken }, "employer");
   } else {
     token = jwt.sign({ user: userDataForToken }, "employee");
@@ -138,10 +136,21 @@ const loginUser = async (req, res) => {
   return res.json({ success: true, token });
 };
 
+// Update user
+const updateUserProfaile = async (req, res) => {
+  const { userType } = req.body;
+  if (userType === "employee") {
+    await jobSeekerModel.findOneAndUpdate({ email }, { ...req.body });
+  } else {
+    await employerModel.findOneAndUpdate({ email }, { ...req.body });
+  }
+
+  res.status(202).send({ massege: "update profile" });
+};
 
 module.exports = {
   SignUp,
   loginUser,
   registerEmployer,
-  
+  updateUserProfaile,
 };
