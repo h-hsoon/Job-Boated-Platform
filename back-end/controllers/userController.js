@@ -142,14 +142,24 @@ const loginUser = async (req, res) => {
 
 // Update user
 const updateUserProfaile = async (req, res) => {
-  const { userType } = req.body;
+  const token = req.headers.authorization;
+  var decoded = jwt.verify(token, "employer");
+  const { userType, email } = decoded.user;
+  console.log(userType);
+  console.log(req.body);
   if (userType === "employee") {
-    await jobSeekerModel.findOneAndUpdate({ email }, { ...req.body });
+    // await jobSeekerModel.findOneAndUpdate({ email }, { ...req.body });
+    res.status(401).send({ error: "not unauthenticated" });
   } else {
-    await employerModel.findOneAndUpdate({ email }, { ...req.body });
+    await employerModel
+      .findOneAndUpdate({ email }, { ...req.body })
+      .then((result) => {
+        res.status(200).send({ success: true, result });
+      })
+      .catch((err) => {
+        res.status(400).send({ error: err.message });
+      });
   }
-
-  res.status(202).send({ massege: "update profile" });
 };
 
 module.exports = {
