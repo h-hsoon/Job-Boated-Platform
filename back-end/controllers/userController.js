@@ -170,28 +170,46 @@ const loginUser = async (req, res) => {
       loginError: "Password is not correct.",
     });
   }
+  let userDataForToken;
+  
+  userDataForToken = {
+   id: existUser._id,
+   userType: userType,
+ }
 
-  const userDataForToken = {
-    id: existUser._id,
-    firstName: existUser.firstName,
-    lastName: existUser.lastName,
-    email: existUser.email,
-    userType: userType,
-    phone: existUser.phone,
-  };
-  if (userType === "employer") {
-    userDataForToken.companyName = existUser.companyName;
-    userDataForToken.aboutCompany = existUser.aboutCompany;
-  }
-  let token;
-  if (userType === "employer") {
-    token = jwt.sign({ user: userDataForToken }, "employer");
-  } else {
-    token = jwt.sign({ user: userDataForToken }, "employee");
-  }
+ let token;
+ if (userType === 'employer') {
+   token = jwt.sign({ user: userDataForToken }, "employer");
+ } else {
+   token = jwt.sign({ user: userDataForToken }, "employee");
+ }
 
-  return res.json({ success: true, token });
+ return res.json({ success: true, token });
 };
+
+const sendUserdata= async (req, res) =>{
+  try {
+    const { userId,userType } = req.body;
+    if (!userId) {
+      return res.status(400).json({ loginError: 'User ID is required' });
+    }
+    let userData;
+
+    if (userType === 'employer') {
+      userData = await employerModel.findById(userId).select('-password');
+    } else {
+      userData = await jobSeekerModel.findById(userId).select('-password');
+    }
+    if (!userData) {
+      return res.status(404).json({ loginError: 'User not found' });
+    }
+
+    res.status(200).json(userData);
+  } catch (error) {
+    console.error('Error during login:', error);
+    res.status(500).json({ loginError: 'Internal Server Error' });
+  }
+}
 
 // Update user
 const updateUserProfaile = async (req, res) => {
@@ -218,6 +236,7 @@ const updateUserProfaile = async (req, res) => {
 module.exports = {
   SignUp,
   loginUser,
+  sendUserdata,
   registerEmployer,
   UpdateEmployee,
   updateUserProfaile,

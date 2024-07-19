@@ -13,7 +13,6 @@ import {
   Card,
   CardContent,
   Grid,
-  IconButton,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
@@ -30,6 +29,7 @@ const EmployerProfile = ({ user }) => {
     phone: user.phone,
   });
   const [error, setError] = useState('');
+  const [noChanges, setNoChanges] = useState(true); // Track if there are no changes
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -49,10 +49,24 @@ const EmployerProfile = ({ user }) => {
       ...formData,
       [name]: value,
     });
+      // Check if there are no changes
+      if (
+        formData.companyName === user.companyName &&
+        formData.aboutCompany === user.aboutCompany &&
+        formData.phone === user.phone
+      ) {
+        setNoChanges(true);
+      } else {
+        setNoChanges(false);
+      }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (noChanges) {
+      setError('No changes detected.');
+      return;
+    }
     if (!formData.companyName.trim()) {
       setError('Company Name cannot be empty.');
       return;
@@ -68,7 +82,7 @@ const EmployerProfile = ({ user }) => {
     const token = Cookies.get('token');
 
     try {
-      const response = await axios.put('/updateProfile', formData, {
+      const response = await axios.put('/updateEmployerProfile', formData, {
         headers: {
           Authorization: token,
         },
@@ -88,7 +102,7 @@ const EmployerProfile = ({ user }) => {
 
   return (
     <ThemeProvider theme={theme}>
-      <Container component="main" maxWidth="sm">
+      <Container component="main" maxWidth="md">
         <CssBaseline />
         <Box
           sx={{
@@ -98,24 +112,24 @@ const EmployerProfile = ({ user }) => {
             alignItems: "center",
           }}
         >
-          <Card sx={{ minWidth: 275, padding: 3 }}>
+          <Card sx={{ width: '100%', maxWidth: 800, padding: 4, borderRadius: 2, boxShadow: 3 }}>
             <CardContent>
               <Box
                 sx={{
                   display: "flex",
                   justifyContent: "center",
-                  marginBottom: 2,
+                  marginBottom: 4,
                 }}
               >
-                <Avatar sx={{ width: 120, height: 120, bgcolor: "secondary.main" }}>
+                <Avatar sx={{ width: 150, height: 150, bgcolor: "secondary.main", fontSize: '3rem' }}>
                   {user.companyName.charAt(0)}
                 </Avatar>
               </Box>
-              <Typography component="h1" variant="h5" align="center" gutterBottom>
+              <Typography component="h1" variant="h4" align="center" gutterBottom>
                 Employer Profile
               </Typography>
               {isEditing ? (
-                <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+                <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 2 }}>
                   <TextField
                     margin="normal"
                     required
@@ -126,7 +140,7 @@ const EmployerProfile = ({ user }) => {
                     autoFocus
                     value={formData.companyName}
                     onChange={handleChange}
-                    sx={{ mb: 2 }}
+                    sx={{ mb: 3 }}
                   />
                   <TextField
                     margin="normal"
@@ -136,10 +150,10 @@ const EmployerProfile = ({ user }) => {
                     label="About Company"
                     name="aboutCompany"
                     multiline
-                    rows={4}
+                    rows={6}
                     value={formData.aboutCompany}
                     onChange={handleChange}
-                    sx={{ mb: 2 }}
+                    sx={{ mb: 3 }}
                   />
                   <TextField
                     margin="normal"
@@ -149,20 +163,20 @@ const EmployerProfile = ({ user }) => {
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
-                    sx={{ mb: 2 }}
+                    sx={{ mb: 3 }}
                   />
                   {error && (
-                    <Typography color="error" align="center" sx={{ mb: 2 }}>
+                    <Typography color="error" align="center" sx={{ mb: 3 }}>
                       {error}
                     </Typography>
                   )}
-                  <Grid container spacing={2} justifyContent="center">
+                  <Grid container spacing={3} justifyContent="center">
                     <Grid item>
                       <Button
                         type="submit"
                         variant="contained"
                         startIcon={<SaveIcon />}
-                        sx={{ mb: 2 }}
+                        sx={{ mb: 3 }}
                       >
                         Save Changes
                       </Button>
@@ -172,7 +186,7 @@ const EmployerProfile = ({ user }) => {
                         variant="contained"
                         color="secondary"
                         startIcon={<CancelIcon />}
-                        sx={{ mb: 2 }}
+                        sx={{ mb: 3 }}
                         onClick={() => setIsEditing(false)}
                       >
                         Cancel
@@ -181,18 +195,42 @@ const EmployerProfile = ({ user }) => {
                   </Grid>
                 </Box>
               ) : (
-                <Box className="profile-details" sx={{ mt: 1 }}>
-                  <Typography variant="h6" gutterBottom align="center">
+                <Box className="profile-details" sx={{ mt: 2 }}>
+                  <Typography variant="h5" gutterBottom align="center" fontWeight="bold">
                     {user.companyName}
                   </Typography>
-                  <Typography variant="body1" gutterBottom align="center">
+                  <Typography variant="h6" gutterBottom align="center" color="textSecondary">
                     <strong>Email:</strong> {user.email}
                   </Typography>
-                  <Typography variant="body1" gutterBottom align="center">
-                    <strong>About Company:</strong> {user.aboutCompany}
-                  </Typography>
+                  <Box
+                    sx={{
+                      mt: 2,
+                      padding: 2,
+                      borderRadius: 1,
+                      border: '1px solid',
+                      borderColor: 'grey.300',
+                      backgroundColor: 'grey.100',
+                    }}
+                  >
+                    <Typography
+                      variant="body1"
+                      align="center"
+                      color="textPrimary"
+                      sx={{ fontWeight: 'medium' }}
+                    >
+                      <strong>About Company:</strong>
+                    </Typography>
+                    <Typography
+                      variant="body1"
+                      align="center"
+                      color="textPrimary"
+                      sx={{ mt: 1, fontSize: '1rem' }}
+                    >
+                      {user.aboutCompany}
+                    </Typography>
+                  </Box>
                   {user.phone && (
-                    <Typography variant="body1" gutterBottom align="center">
+                    <Typography variant="body1" gutterBottom align="center" color="textSecondary">
                       <strong>Company Phone:</strong> {user.phone}
                     </Typography>
                   )}
@@ -200,7 +238,7 @@ const EmployerProfile = ({ user }) => {
                     sx={{
                       display: "flex",
                       justifyContent: "center",
-                      marginTop: 2,
+                      marginTop: 3,
                     }}
                   >
                     <Button
