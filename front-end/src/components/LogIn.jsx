@@ -48,7 +48,6 @@ const LoginForm = ({ onLogin }) => {
       console.log("Login successful", response.data);
       console.log(response.data.token);
       onLogin(response.data.token);
-      // Handle login success (e.g., store token in cookies, redirect user, etc.)
     } catch (error) {
       if (error.response) {
         setError(error.response.data.loginError);
@@ -146,11 +145,11 @@ const LoginForm = ({ onLogin }) => {
             <Grid container>
               <Grid item>
                 {userType === "employee" ? (
-                  <Link to="/registerEmployee" variant="body2">
+                  <Link href="/employee" variant="body2">
                     {"Don't have an account? Sign Up"}
                   </Link>
                 ) : (
-                  <Link to="/registerEmployer" variant="body2">
+                  <Link href="/register" variant="body2">
                     {"Don't have an account? Sign Up"}
                   </Link>
                 )}
