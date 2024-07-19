@@ -145,11 +145,11 @@ const LoginForm = ({ onLogin }) => {
             <Grid container>
               <Grid item>
                 {userType === "employee" ? (
-                  <Link href="/employee" variant="body2">
+                  <Link to="/registerEmployee" variant="body2">
                     {"Don't have an account? Sign Up"}
                   </Link>
                 ) : (
-                  <Link href="/register" variant="body2">
+                  <Link to="/registerEmployer" variant="body2">
                     {"Don't have an account? Sign Up"}
                   </Link>
                 )}

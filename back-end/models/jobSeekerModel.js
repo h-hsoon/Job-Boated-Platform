@@ -19,11 +19,9 @@ const jobSeekerSchama = new mongoose.Schema(
       type: String,
       required: true,
     },
-    profile: {
-      resume: { type: String },
-      coverLetter: { type: String },
-      profilePic: { type: String },
-    },
+    resume: { type: String, required: false },
+    coverLetter: { type: String, required: false },
+    profilePic: { type: String, required: false },
     phone: {
       type: String,
       required: false,
