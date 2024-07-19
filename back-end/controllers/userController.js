@@ -92,6 +92,7 @@ const SignUp = async (req, res) => {
   }
 };
 
+// update employee:
 const UpdateEmployee = async (req, res) => {
   console.log("Received call to update employee API");
   console.log(req.body);

@@ -4,7 +4,7 @@ const usercontroller = require("../controllers/userController");
 const employerValidator = require("../middleware/employerValidator");
 
 router.post("/register/employee", usercontroller.SignUp);
-router.put("/register/employee", usercontroller.UpdateEmployee);
+router.put("/register/employee/:id", usercontroller.UpdateEmployee);
 
 router.post("/login/", usercontroller.loginUser);
 router.post(
