@@ -124,8 +124,12 @@ const loginUser = async (req, res) => {
     lastName: existUser.lastName,
     email: existUser.email,
     userType: userType,
+    phone: existUser.phone,
   };
-
+  if (userType === "employer") {
+    userDataForToken.companyName = existUser.companyName;
+    userDataForToken.aboutCompany = existUser.aboutCompany;
+  }
   let token;
   if (userType === "employer") {
     token = jwt.sign({ user: userDataForToken }, "employer");
