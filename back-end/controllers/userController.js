@@ -21,6 +21,7 @@ const registerEmployer = (req, res) => {
     });
   }
 };
+
 const SignUp = async (req, res) => {
   console.log("receive  call  of the api");
   console.log(req.body);
@@ -91,6 +92,57 @@ const SignUp = async (req, res) => {
   }
 };
 
+const UpdateEmployee = async (req, res) => {
+  console.log("Received call to update employee API");
+  console.log(req.body);
+
+  // Check if required fields are empty
+  if (
+    req.body.firstname === "" ||
+    req.body.lastname === "" ||
+    req.body.email === "" ||
+    req.body.profile === "" ||
+    req.body.phone === ""
+  ) {
+    console.log("Some fields are empty");
+    return res.status(400).json({
+      error: "Some fields are empty!!",
+    });
+  }
+
+  try {
+    // Find the employee by ID
+    let employee = await jobSeekerModel.findById(req.params.id);
+
+    if (!employee) {
+      console.log("Employee not found");
+      return res.status(404).json({
+        error: "Employee not found",
+      });
+    }
+
+    // Update employee fields
+    employee.firstname = req.body.firstname;
+    employee.lastname = req.body.lastname;
+    employee.email = req.body.email;
+    employee.profile = req.body.profile;
+    employee.phone = req.body.phone;
+
+    // Save the updated employee
+    await employee.save();
+
+    console.log("Employee updated successfully");
+    return res.status(200).json({
+      success: "Employee updated successfully",
+    });
+  } catch (error) {
+    console.error("Error updating employee:", error.message);
+    return res.status(500).json({
+      error: "Error updating employee",
+    });
+  }
+};
+
 //Log in :
 
 const loginUser = async (req, res) => {
@@ -147,5 +199,6 @@ module.exports = {
   SignUp,
   loginUser,
   registerEmployer,
+  UpdateEmployee,
   
 };
