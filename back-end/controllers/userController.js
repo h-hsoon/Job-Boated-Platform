@@ -45,7 +45,7 @@ const SignUp = async (req, res) => {
       });
     }
 
-    if(req.body.password!==req.body.confirmPassword){
+    if (req.body.password !== req.body.confirmPassword) {
       return res.status(400).json({
         error: "Password and confirmation password do not match!!",
       });
@@ -98,8 +98,7 @@ const loginUser = async (req, res) => {
 
   let existUser;
 
-
-  if (userType === 'employer') {
+  if (userType === "employer") {
     existUser = await employerModel.findOne({ email });
   } else {
     existUser = await jobSeekerModel.findOne({ email });
@@ -119,21 +118,20 @@ const loginUser = async (req, res) => {
     });
   }
 
-  
   const userDataForToken = {
     id: existUser._id,
     firstName: existUser.firstName,
     lastName: existUser.lastName,
     email: existUser.email,
     userType: userType,
-    phone:existUser.phone
+    phone: existUser.phone,
   };
-  if (userType === 'employer') {
+  if (userType === "employer") {
     userDataForToken.companyName = existUser.companyName;
     userDataForToken.aboutCompany = existUser.aboutCompany;
   }
   let token;
-  if (userType === 'employer') {
+  if (userType === "employer") {
     token = jwt.sign({ user: userDataForToken }, "employer");
   } else {
     token = jwt.sign({ user: userDataForToken }, "employee");
@@ -142,10 +140,31 @@ const loginUser = async (req, res) => {
   return res.json({ success: true, token });
 };
 
+// Update user
+const updateUserProfaile = async (req, res) => {
+  const token = req.headers.authorization;
+  var decoded = jwt.verify(token, "employer");
+  const { userType, email } = decoded.user;
+  console.log(userType);
+  console.log(req.body);
+  if (userType === "employee") {
+    // await jobSeekerModel.findOneAndUpdate({ email }, { ...req.body });
+    res.status(401).send({ error: "not unauthenticated" });
+  } else {
+    await employerModel
+      .findOneAndUpdate({ email }, { ...req.body })
+      .then((result) => {
+        res.status(200).send({ success: true, result });
+      })
+      .catch((err) => {
+        res.status(400).send({ error: err.message });
+      });
+  }
+};
 
 module.exports = {
   SignUp,
   loginUser,
   registerEmployer,
-  
+  updateUserProfaile,
 };
