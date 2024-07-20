@@ -1,7 +1,7 @@
 import {jwtDecode} from 'jwt-decode';
 import Cookies from 'js-cookie';
 
-const getTokenType = () => {
+const getTokenData = () => {
   const token = Cookies.get('token');
   if (!token) {
     console.log('No token');
@@ -10,7 +10,7 @@ const getTokenType = () => {
 
   try {
     const decodedToken = jwtDecode(token);
-    console.log(decodedToken.user, 'userData');
+    console.log(decodedToken.user, 'tokenData');
     return decodedToken.user;
   } catch (error) {
     console.error('Invalid token:', error);
@@ -18,4 +18,4 @@ const getTokenType = () => {
   }
 };
 
-  export default getTokenType
+  export default getTokenData
