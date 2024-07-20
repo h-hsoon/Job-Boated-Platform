@@ -17,6 +17,7 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
+import LoadingSpinner from '../shared/LoadingSpinner';
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 const theme = createTheme();
@@ -132,7 +133,9 @@ const EmployerProfile = ({ tokenId }) => {
   };
 
   if (userProfile === null) {
-    return <p>Loading...</p>; // Better to use a loading indicator
+    return (
+     <LoadingSpinner/>
+    );
   }
   return (
     <ThemeProvider theme={theme}>

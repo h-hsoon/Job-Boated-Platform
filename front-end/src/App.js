@@ -10,6 +10,7 @@ import getTokenData from "./auth/auth";
 import RegisterEmployee from "./components/RegisterEmployee";
 import EmployerProfile from './components/EmployerProfile';
 import EmployeeProfile from './components/EmployeeProfile';
+import Header from "./shared/Header";
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(!!Cookies.get('token'));
@@ -29,7 +30,6 @@ function App() {
   const handleLogout = () => {
     Cookies.remove('token');
     Cookies.remove('Datatoken');
-   
     setLoggedIn(false);
     setDatatoken(null);
   };
@@ -39,7 +39,7 @@ function App() {
   return (
     <BrowserRouter>
       <div className="App">
-        {loggedIn && <button onClick={handleLogout}>Logout</button>}
+        {<Header handleLogout={handleLogout} loggedIn={loggedIn} />}
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={loggedIn ? <Navigate to={Datatoken?.userType === 'employee' ? `/employee/${Datatoken.id}` : `/employer/${Datatoken.id}`} /> : <LoginForm onLogin={onLogin} />} />
