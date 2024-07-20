@@ -1,6 +1,6 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from '../axiosConfig';
+import { useParams } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import {
   Avatar,
@@ -21,54 +21,74 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 const theme = createTheme();
 
-const EmployerProfile = ({ user }) => {
+const EmployerProfile = ({ tokenId }) => {
+  const { id } = useParams()
+  const [userProfile, setUserProfile] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [isOwner, setIsOwner] = useState(false);
   const [formData, setFormData] = useState({
-    companyName: user.companyName,
-    aboutCompany: user.aboutCompany,
-    phone: user.phone,
+    companyName: '',
+    aboutCompany:'',
+    phone: '',
   });
   const [error, setError] = useState('');
-  const [noChanges, setNoChanges] = useState(true); // Track if there are no changes
 
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await axios.post('/dataUser', {
+          userId: id,
+          userType: "employer"
+        });
+        const currentUser = tokenId;
+        setUserProfile(response.data);
+        setFormData({
+          companyName: response.data.companyName,
+          aboutCompany: response.data.aboutCompany,
+          email: response.data.email,
+          phone: response.data.phone || '',
+        });
+        setIsOwner(response.data._id === currentUser);
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
+      }
+    };
+
+    fetchProfile();
+  }, [id, tokenId]);
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // Validate phone number format only if value is not empty
-    if (name === 'phone' && value.trim() !== '') {
-      if (!/^\d{10,15}$/.test(value)) {
-        setError('Phone number must contain only digits and be 10 to 15 characters long.');
-      } else {
-        setError(''); // Clear error message if valid
-      }
+    if (name === 'phone' && value.trim() !== '' && !/^\d{10,15}$/.test(value)) {
+      setError('Phone number must contain only digits and be 10 to 15 characters long.');
     } else {
-      setError(''); // Clear error message if valid
+      setError('');
     }
 
     setFormData({
       ...formData,
       [name]: value,
     });
-      // Check if there are no changes
-      if (
-        formData.companyName === user.companyName &&
-        formData.aboutCompany === user.aboutCompany &&
-        formData.phone === user.phone
-      ) {
-        setNoChanges(true);
-      } else {
-        setNoChanges(false);
-      }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (noChanges) {
+
+    if (
+      formData.companyName === userProfile.companyName &&
+      formData.aboutCompany === userProfile.aboutCompany &&
+      formData.phone ===  (userProfile.phone || '')
+    ) {
       setError('No changes detected.');
       return;
     }
+
     if (!formData.companyName.trim()) {
       setError('Company Name cannot be empty.');
+      return;
+    }
+    if (formData.companyName.length > 20) {
+      setError('Company name is too long.');
       return;
     }
     if (formData.aboutCompany.length < 50) {
@@ -79,6 +99,7 @@ const EmployerProfile = ({ user }) => {
       alert('Please fix the error before saving.');
       return;
     }
+
     const token = Cookies.get('token');
 
     try {
@@ -90,7 +111,7 @@ const EmployerProfile = ({ user }) => {
 
       if (response.data.success) {
         alert('Profile updated successfully!');
-        setIsEditing(false); // Exit edit mode on success
+        setIsEditing(false);
       } else {
         alert('Failed to update profile.');
       }
@@ -100,6 +121,19 @@ const EmployerProfile = ({ user }) => {
     }
   };
 
+  const handleCancel = () => {
+    setFormData({
+      companyName: userProfile.companyName,
+      aboutCompany: userProfile.aboutCompany,
+      phone: userProfile.phone || "" ,
+    });
+    setIsEditing(false);
+    setError('')
+  };
+
+  if (userProfile === null) {
+    return <p>Loading...</p>; // Better to use a loading indicator
+  }
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="md">
@@ -122,7 +156,7 @@ const EmployerProfile = ({ user }) => {
                 }}
               >
                 <Avatar sx={{ width: 150, height: 150, bgcolor: "secondary.main", fontSize: '3rem' }}>
-                  {user.companyName.charAt(0)}
+                  {userProfile.companyName.charAt(0)}
                 </Avatar>
               </Box>
               <Typography component="h1" variant="h4" align="center" gutterBottom>
@@ -187,7 +221,7 @@ const EmployerProfile = ({ user }) => {
                         color="secondary"
                         startIcon={<CancelIcon />}
                         sx={{ mb: 3 }}
-                        onClick={() => setIsEditing(false)}
+                        onClick={handleCancel}
                       >
                         Cancel
                       </Button>
@@ -197,10 +231,10 @@ const EmployerProfile = ({ user }) => {
               ) : (
                 <Box className="profile-details" sx={{ mt: 2 }}>
                   <Typography variant="h5" gutterBottom align="center" fontWeight="bold">
-                    {user.companyName}
+                    {userProfile.companyName}
                   </Typography>
                   <Typography variant="h6" gutterBottom align="center" color="textSecondary">
-                    <strong>Email:</strong> {user.email}
+                    <strong>Email:</strong> {userProfile.email}
                   </Typography>
                   <Box
                     sx={{
@@ -226,29 +260,27 @@ const EmployerProfile = ({ user }) => {
                       color="textPrimary"
                       sx={{ mt: 1, fontSize: '1rem' }}
                     >
-                      {user.aboutCompany}
+                      {userProfile.aboutCompany}
                     </Typography>
                   </Box>
-                  {user.phone && (
+                  {userProfile.phone && (
                     <Typography variant="body1" gutterBottom align="center" color="textSecondary">
-                      <strong>Company Phone:</strong> {user.phone}
+                      <strong>Company Phone:</strong> {userProfile.phone}
                     </Typography>
                   )}
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                      marginTop: 3,
-                    }}
-                  >
-                    <Button
-                      variant="contained"
-                      startIcon={<EditIcon />}
-                      onClick={() => setIsEditing(true)}
-                    >
-                      Edit Profile
-                    </Button>
-                  </Box>
+                    {isOwner && (
+                    <Grid container spacing={3} justifyContent="center" sx={{ mt: 3 }}>
+                      <Grid item>
+                        <Button
+                          variant="contained"
+                          startIcon={<EditIcon />}
+                          onClick={() => setIsEditing(true)}
+                        >
+                          Edit Profile
+                        </Button>
+                      </Grid>
+                    </Grid>
+                  )}
                 </Box>
               )}
             </CardContent>
