@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, } from "react";
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
@@ -6,47 +6,50 @@ import Home from "./Home";
 import LoginForm from "./components/LogIn";
 import Register from "./components/Register";
 import Cookies from "js-cookie";
-import getTokenType from "./auth/auth";
+import getTokenData from "./auth/auth";
 import RegisterEmployee from "./components/RegisterEmployee";
 import EmployerProfile from './components/EmployerProfile';
 import EmployeeProfile from './components/EmployeeProfile';
+import Header from "./shared/Header";
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(!!Cookies.get('token'));
-
-  const [user, setUser] = useState(() => {
-    const storedUser = Cookies.get('userData');
+  const [Datatoken, setDatatoken] = useState(() => {
+    const storedUser = Cookies.get('Datatoken');
       return storedUser ? JSON.parse(storedUser) : null;
   });
- 
+  
   const onLogin = (token) => {
     Cookies.set('token', token);
-    const tokenData = getTokenType();
+    const tokenData = getTokenData();
     setLoggedIn(true);
-    setUser(tokenData);
-    Cookies.set('userData', JSON.stringify(tokenData));
+    setDatatoken(tokenData);
+    Cookies.set('Datatoken', JSON.stringify(tokenData));
   };
 
   const handleLogout = () => {
     Cookies.remove('token');
+    Cookies.remove('Datatoken');
     setLoggedIn(false);
-    setUser(null);
-    Cookies.remove('userData');
+    setDatatoken(null);
   };
+
+ 
 
   return (
     <BrowserRouter>
       <div className="App">
-        {loggedIn && <button onClick={handleLogout}>Logout</button>}
+        {<Header handleLogout={handleLogout} loggedIn={loggedIn} />}
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/login" element={loggedIn ? (user?.userType === 'employee' ? <Navigate to="/employee" /> : <Navigate to="/employer" />) : <LoginForm onLogin={onLogin} />} />
-
+          <Route path="/login" element={loggedIn ? <Navigate to={Datatoken?.userType === 'employee' ? `/employee/${Datatoken.id}` : `/employer/${Datatoken.id}`} /> : <LoginForm onLogin={onLogin} />} />
 
           <Route path="/registerEmployer" element={<Register />} />
           <Route path="/registerEmployee" element={<RegisterEmployee />} />
-          <Route path="/employee" element={user?.userType === 'employee' ? <EmployeeProfile user={user} /> : <Navigate to="/login" />} />
-          <Route path="/employer" element={user?.userType === 'employer' ? <EmployerProfile user={user} /> : <Navigate to="/login" />} />
+          <Route path="/employee/:id" element={ <EmployeeProfile tokenId={Datatoken?.id}/> }
+          />
+          <Route path="/employer/:id" element={ <EmployerProfile tokenId={Datatoken?.id} /> }/>
+        
         </Routes>
       </div>
     </BrowserRouter>

@@ -19,6 +19,7 @@ router.post("/register/employee", usercontroller.SignUp);
 router.put("/register/employee/:id", usercontroller.UpdateEmployee);
 
 router.post("/login/", usercontroller.loginUser);
+router.post("/dataUser", usercontroller.sendUserdata);
 router.post(
   "/register/employer",
   upload.single("avatar"),
