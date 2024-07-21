@@ -104,6 +104,7 @@ const EmployerProfile = ({ tokenId }) => {
     const token = Cookies.get('token');
 
     try {
+      console.log(formData,'ok')
       const response = await axios.put('/updateEmployerProfile', formData, {
         headers: {
           Authorization: token,
@@ -112,7 +113,9 @@ const EmployerProfile = ({ tokenId }) => {
 
       if (response.data.success) {
         alert('Profile updated successfully!');
-        setIsEditing(false);
+        //setIsEditing(false);
+        window.location.reload();  // Reload the page to show updated data
+        //setIsEditing(false);
       } else {
         alert('Failed to update profile.');
       }
