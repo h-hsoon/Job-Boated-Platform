@@ -1,0 +1,30 @@
+.file-uploader {
+  margin-top: 10px;
+  height: 3.5em;
+  border: 1px solid #ced4da;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.file-div {
+  display: flex;
+  width: 85%;
+}
+
+.file-div > button {
+  justify-content: left;
+}
+
+/* .disabled {
+    background-color: #e9ecef;
+  } */
+
+.file-name {
+  margin-left: 0.5rem;
+}
+
+.attachment-icon {
+  width: 100%;
+}
