@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 
 const registerEmployer = (req, res) => {
   const { companyName, email, aboutCompany, password, phone } = req.body;
+  const avatar = req.file ? req.file.path : null;
   const hashedPassword = bcrypt.hashSync(password, 10);
   if (!hashedPassword) {
     res.status(400).send({ error: "Password is not valid" });
@@ -15,6 +16,7 @@ const registerEmployer = (req, res) => {
       password: hashedPassword,
       aboutCompany,
       phone,
+      avatar,
     });
     employer.save().then(() => {
       res.send({ massge: "now you can log in" });
