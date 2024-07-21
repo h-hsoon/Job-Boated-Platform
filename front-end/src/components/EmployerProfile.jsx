@@ -23,15 +23,17 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 const theme = createTheme();
 
 const EmployerProfile = ({ tokenId }) => {
-  const { id } = useParams()
+  const { id } = useParams();
   const [userProfile, setUserProfile] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
   const [formData, setFormData] = useState({
     companyName: '',
-    aboutCompany:'',
+    aboutCompany: '',
     phone: '',
+    avatar: '',
   });
+  const [avatarPreview, setAvatarPreview] = useState('');
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -48,7 +50,11 @@ const EmployerProfile = ({ tokenId }) => {
           aboutCompany: response.data.aboutCompany,
           email: response.data.email,
           phone: response.data.phone || '',
+          avatar: response.data.avatar ? `http://localhost:5000/${response.data.avatar}` : '',
         });
+
+        setAvatarPreview(response.data.avatar ? `http://localhost:5000/${response.data.avatar}` : '');
+
         setIsOwner(response.data._id === currentUser);
       } catch (error) {
         console.error('Error fetching user profile:', error);
@@ -57,6 +63,7 @@ const EmployerProfile = ({ tokenId }) => {
 
     fetchProfile();
   }, [id, tokenId]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -72,13 +79,33 @@ const EmployerProfile = ({ tokenId }) => {
     });
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (!file.type.startsWith('image/')) {
+        setError('Please select a valid image file.');
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) { // Example: 5MB
+        setError('Image size should be less than 5MB.');
+        return;
+      }
+      setFormData({
+        ...formData,
+        avatar: file,
+      });
+      setAvatarPreview(URL.createObjectURL(file));
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (
       formData.companyName === userProfile.companyName &&
       formData.aboutCompany === userProfile.aboutCompany &&
-      formData.phone ===  (userProfile.phone || '')
+      formData.phone === (userProfile.phone || '') &&
+      !formData.avatar
     ) {
       setError('No changes detected.');
       return;
@@ -103,19 +130,32 @@ const EmployerProfile = ({ tokenId }) => {
 
     const token = Cookies.get('token');
 
+    const formDataToSend = new FormData();
+    formDataToSend.append('companyName', formData.companyName);
+    formDataToSend.append('aboutCompany', formData.aboutCompany);
+    formDataToSend.append('phone', formData.phone);
+    if (formData.avatar) {
+      formDataToSend.append('avatar', formData.avatar);
+    }
+
     try {
-      console.log(formData,'ok')
-      const response = await axios.put('/updateEmployerProfile', formData, {
+      const response = await axios.put('/updateEmployerProfile', formDataToSend, {
         headers: {
+          'Content-Type': 'multipart/form-data',
           Authorization: token,
         },
       });
 
       if (response.data.success) {
+        setUserProfile({
+          ...userProfile,
+          companyName: formData.companyName,
+          aboutCompany: formData.aboutCompany,
+          phone: formData.phone,
+          avatar: formData.avatar ? URL.createObjectURL(formData.avatar) : userProfile.avatar,
+        });
         alert('Profile updated successfully!');
-        //setIsEditing(false);
-        window.location.reload();  // Reload the page to show updated data
-        //setIsEditing(false);
+        setIsEditing(false);
       } else {
         alert('Failed to update profile.');
       }
@@ -129,17 +169,20 @@ const EmployerProfile = ({ tokenId }) => {
     setFormData({
       companyName: userProfile.companyName,
       aboutCompany: userProfile.aboutCompany,
-      phone: userProfile.phone || "" ,
+      phone: userProfile.phone || "",
+      avatar: '',
     });
+    setAvatarPreview(userProfile.avatar ? `http://localhost:5000/${userProfile.avatar}` : '');
     setIsEditing(false);
-    setError('')
+    setError('');
   };
 
   if (userProfile === null) {
     return (
-     <LoadingSpinner/>
+      <LoadingSpinner />
     );
   }
+
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="md">
@@ -161,7 +204,10 @@ const EmployerProfile = ({ tokenId }) => {
                   marginBottom: 4,
                 }}
               >
-                <Avatar sx={{ width: 150, height: 150, bgcolor: "secondary.main", fontSize: '3rem' }}>
+                <Avatar
+                  src={avatarPreview}
+                  sx={{ width: 150, height: 150, bgcolor: "secondary.main", fontSize: '3rem' }}
+                >
                   {userProfile.companyName.charAt(0)}
                 </Avatar>
               </Box>
@@ -205,6 +251,19 @@ const EmployerProfile = ({ tokenId }) => {
                     onChange={handleChange}
                     sx={{ mb: 3 }}
                   />
+                  <Button
+                    variant="contained"
+                    component="label"
+                    sx={{ mb: 3 }}
+                  >
+                    Upload Avatar
+                    <input
+                      type="file"
+                      hidden
+                      accept="image/*"
+                      onChange={handleFileChange}
+                    />
+                  </Button>
                   {error && (
                     <Typography color="error" align="center" sx={{ mb: 3 }}>
                       {error}
@@ -274,7 +333,7 @@ const EmployerProfile = ({ tokenId }) => {
                       <strong>Company Phone:</strong> {userProfile.phone}
                     </Typography>
                   )}
-                    {isOwner && (
+                  {isOwner && (
                     <Grid container spacing={3} justifyContent="center" sx={{ mt: 3 }}>
                       <Grid item>
                         <Button
