@@ -1,6 +1,7 @@
 const employer = require("../models/employerModel");
 const employerValidator = async (req, res, next) => {
-  const { companyName, email, password, aboutCompany } = req.body;
+  const { companyName, email, password, confirmPassword, aboutCompany } =
+    req.body;
   if (
     companyName === "" &&
     email === "" &&
@@ -30,6 +31,9 @@ const employerValidator = async (req, res, next) => {
         .status(400)
         .json({ error: "password must be at least 8 characters long" });
     } else {
+      if (password !== confirmPassword) {
+        return res.status(400).json({ error: "passwords do not match" });
+      }
       const eicesstUser = await employer.findOne({ email: email });
       if (eicesstUser) {
         return res.status(401).send({ error: "Email already exists." });
