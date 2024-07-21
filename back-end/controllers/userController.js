@@ -217,7 +217,8 @@ const sendUserdata= async (req, res) =>{
 const updateUserProfaile = async (req, res) => {
   const token = req.headers.authorization;
   var decoded = jwt.verify(token, "employer");
-  const { userType, email } = decoded.user;
+  const { userType } = decoded.user;
+  const { email } = req.body;
   console.log(userType);
   console.log(req.body);
   if (userType === "employee") {

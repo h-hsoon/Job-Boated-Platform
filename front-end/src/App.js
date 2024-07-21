@@ -34,8 +34,6 @@ function App() {
     setDatatoken(null);
   };
 
- 
-
   return (
     <BrowserRouter>
       <div className="App">
