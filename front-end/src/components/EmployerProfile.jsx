@@ -50,7 +50,7 @@ const EmployerProfile = ({ tokenId }) => {
           aboutCompany: response.data.aboutCompany,
           email: response.data.email,
           phone: response.data.phone || '',
-          avatar: response.data.avatar ? `http://localhost:5000/${response.data.avatar}` : '',
+          avatar: ''
         });
 
         setAvatarPreview(response.data.avatar ? `http://localhost:5000/${response.data.avatar}` : '');
@@ -89,7 +89,10 @@ const EmployerProfile = ({ tokenId }) => {
       if (file.size > 5 * 1024 * 1024) { // Example: 5MB
         setError('Image size should be less than 5MB.');
         return;
+      }else {
+        setError('');
       }
+  
       setFormData({
         ...formData,
         avatar: file,
@@ -104,8 +107,9 @@ const EmployerProfile = ({ tokenId }) => {
     if (
       formData.companyName === userProfile.companyName &&
       formData.aboutCompany === userProfile.aboutCompany &&
-      formData.phone === (userProfile.phone || '') &&
-      !formData.avatar
+      formData.phone === (userProfile.phone || '') 
+      &&
+       !formData.avatar
     ) {
       setError('No changes detected.');
       return;
