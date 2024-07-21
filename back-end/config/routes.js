@@ -15,7 +15,11 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-router.post("/register/employee", usercontroller.SignUp);
+router.post(
+  "/register/employee",
+  upload.single("avatar"),
+  usercontroller.SignUp
+);
 router.put("/register/employee/:id", usercontroller.UpdateEmployee);
 
 router.post("/login/", usercontroller.loginUser);

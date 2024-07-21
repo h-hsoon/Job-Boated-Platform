@@ -5,89 +5,88 @@ const jwt = require("jsonwebtoken");
 
 const registerEmployer = (req, res) => {
   const { companyName, email, aboutCompany, password, phone } = req.body;
-  const avatar = req.file ? req.file.path : null;
+  const avatar = req.file ? req.file.path : "";
   const hashedPassword = bcrypt.hashSync(password, 10);
   if (!hashedPassword) {
-    res.status(400).send({ error: "Password is not valid" });
-  } else {
-    const employer = new employerModel({
-      companyName,
-      email,
-      password: hashedPassword,
-      aboutCompany,
-      phone,
-      avatar,
-    });
-    employer.save().then(() => {
-      res.send({ massge: "now you can log in" });
-    });
+    return res.status(400).send({ error: "Password is not valid" });
   }
+  const employer = new employerModel({
+    companyName,
+    email,
+    password: hashedPassword,
+    aboutCompany,
+    phone,
+    avatar,
+  });
+  employer
+    .save()
+    .then(() => {
+      res.status(200).send({ massge: "now you can log in" });
+    })
+    .catch((e) => {
+      res.status(400).send({ error: e.message });
+    });
 };
 
 const SignUp = async (req, res) => {
-  console.log("receive  call  of the api");
   console.log(req.body);
-
+  const { firstName, lastName, email, password, confirmPassword, phone } =
+    req.body;
+  const avatar = req.file ? req.file.path : "";
   if (
-    req.body.firstname === "" ||
-    req.body.lastname === "" ||
-    req.body.password === "" ||
-    req.body.email === "" ||
-    req.body.profile === "" ||
-    req.body.phone === ""
+    firstName === "" ||
+    lastName === "" ||
+    password === "" ||
+    confirmPassword === "" ||
+    email === ""
   ) {
-    console.log("Some fields are empty");
     return res.status(400).json({
       error: "The fields are empty!!",
     });
   } else {
-    if (req.body.password.length < 5) {
-      console.log("password is short");
+    if (password.length < 5) {
       return res.status(400).json({
         error: "The password is short!!",
       });
     }
 
-    if (req.body.password !== req.body.confirmPassword) {
+    if (password !== confirmPassword) {
       return res.status(400).json({
         error: "Password and confirmation password do not match!!",
       });
     }
 
-    let existuser = await jobSeekerModel.findOne({
-      email: req.body.email,
-    });
-    console.log(existuser);
+    const existuser = await jobSeekerModel.findOne({ email });
 
     if (existuser) {
-      console.log("email already exist");
       return res.status(400).json({
         error: "Email already exist!!",
       });
     }
 
-    const hash = bcrypt.hashSync(req.body.password, 10);
-    //console to see hashing password
-    console.log(req.body.password);
-    console.log(hash);
+    const hashedPassword = bcrypt.hashSync(password, 10);
+    if (!hashedPassword) {
+      return res.status(400).send({ error: "Password is not valid" });
+    }
 
-    let userobj = {
-      ...req.body,
-      password: hash,
-    };
-
-    let newuser = new jobSeekerModel(userobj);
+    const newuser = new jobSeekerModel({
+      firstName,
+      lastName,
+      email,
+      password: hashedPassword,
+      phone,
+      avatar,
+    });
     newuser
       .save()
       .then(() => {
-        console.log("user has been received");
         return res.status(201).json({
           succes: "user has been added you can log in now",
         });
       })
       .catch((error) => {
         console.log(error);
-        return res.status(201).json({
+        return res.status(400).json({
           error: "Something wrong with saving user!",
         });
       });
@@ -173,45 +172,45 @@ const loginUser = async (req, res) => {
     });
   }
   let userDataForToken;
-  
+
   userDataForToken = {
-   id: existUser._id,
-   userType: userType,
- }
+    id: existUser._id,
+    userType: userType,
+  };
 
- let token;
- if (userType === 'employer') {
-   token = jwt.sign({ user: userDataForToken }, "employer");
- } else {
-   token = jwt.sign({ user: userDataForToken }, "employee");
- }
+  let token;
+  if (userType === "employer") {
+    token = jwt.sign({ user: userDataForToken }, "employer");
+  } else {
+    token = jwt.sign({ user: userDataForToken }, "employee");
+  }
 
- return res.json({ success: true, token });
+  return res.json({ success: true, token });
 };
 
-const sendUserdata= async (req, res) =>{
+const sendUserdata = async (req, res) => {
   try {
-    const { userId,userType } = req.body;
+    const { userId, userType } = req.body;
     if (!userId) {
-      return res.status(400).json({ loginError: 'User ID is required' });
+      return res.status(400).json({ loginError: "User ID is required" });
     }
     let userData;
 
-    if (userType === 'employer') {
-      userData = await employerModel.findById(userId).select('-password');
+    if (userType === "employer") {
+      userData = await employerModel.findById(userId).select("-password");
     } else {
-      userData = await jobSeekerModel.findById(userId).select('-password');
+      userData = await jobSeekerModel.findById(userId).select("-password");
     }
     if (!userData) {
-      return res.status(404).json({ loginError: 'User not found' });
+      return res.status(404).json({ loginError: "User not found" });
     }
 
     res.status(200).json(userData);
   } catch (error) {
-    console.error('Error during login:', error);
-    res.status(500).json({ loginError: 'Internal Server Error' });
+    console.error("Error during login:", error);
+    res.status(500).json({ loginError: "Internal Server Error" });
   }
-}
+};
 
 // Update user
 const updateUserProfaile = async (req, res) => {

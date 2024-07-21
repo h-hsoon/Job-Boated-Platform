@@ -22,10 +22,12 @@ const employerSchama = new mongoose.Schema(
     phone: {
       type: String,
       required: false,
+      default: "",
     },
     avatar: {
       type: String,
       required: false,
+      default: "",
     },
   },
   {
