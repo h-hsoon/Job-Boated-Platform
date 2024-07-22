@@ -13,6 +13,7 @@ app.use(cookieParser());
 app.use(cors());
 app.use(express.json());
 app.use("/public/uploads", express.static("public/uploads"));
+app.use("/public/avatar", express.static("public/avatar"));
 app.use(routes);
 
 app.listen(port, () => console.log(`Server started on port : ${port}`));
