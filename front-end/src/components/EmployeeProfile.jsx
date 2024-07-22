@@ -35,7 +35,7 @@ const EmployeeProfile = ({ tokenId }) => {
     lastName: "",
     email: "",
     phone: "",
-    profilePicture: "",
+    avatar: "",
     resume: "",
   });
   const [avatarPreview, setAvatarPreview] = useState("");
@@ -57,7 +57,7 @@ const EmployeeProfile = ({ tokenId }) => {
           lastName: response.data.lastName,
           email: response.data.email,
           phone: response.data.phone || "",
-          profilePicture: response.data.avatar || "",
+          avatar: response.data.avatar || "",
           resume: response.data.resume || "",
         });
         setAvatarPreview(
@@ -99,7 +99,7 @@ const EmployeeProfile = ({ tokenId }) => {
     const { name, files } = e.target;
     const file = files[0];
 
-    if (name === "profilePicture") {
+    if (name === "avatar") {
       setAvatarPreview(URL.createObjectURL(file));
     } else if (name === "resume") {
       setResumePreview(URL.createObjectURL(file));
@@ -117,7 +117,7 @@ const EmployeeProfile = ({ tokenId }) => {
       ...formData,
       [field]: "",
     });
-    if (field === "profilePicture") {
+    if (field === "avatar") {
       setAvatarPreview("");
     } else if (field === "resume") {
       setResumePreview("");
@@ -144,9 +144,9 @@ const EmployeeProfile = ({ tokenId }) => {
       formData.firstName === userProfile.firstName &&
       formData.lastName === userProfile.lastName &&
       formData.phone === (userProfile.phone || "") &&
-      formData.profilePicture === userProfile.profilePic &&
-      (formData.profilePicture === userProfile.profilePic ||
-        !formData.profilePicture) &&
+      formData.avatar === userProfile.profilePic &&
+      (formData.avatar === userProfile.profilePic ||
+        !formData.avatar) &&
       (formData.resume === userProfile.resume || !formData.resume)
     ) {
       setError("No changes detected.");
@@ -164,8 +164,8 @@ const EmployeeProfile = ({ tokenId }) => {
     submitData.append("lastName", formData.lastName);
     submitData.append("email", formData.email);
     submitData.append("phone", formData.phone);
-    if (formData.profilePicture && formData.profilePicture instanceof File) {
-      submitData.append("avatar", formData.profilePicture);
+    if (formData.avatar && formData.avatar instanceof File) {
+      submitData.append("avatar", formData.avatar);
     }
     if (formData.resume && formData.resume instanceof File) {
       submitData.append("resume", formData.resume);
@@ -188,7 +188,7 @@ const EmployeeProfile = ({ tokenId }) => {
           firstName: formData.firstName,
           lastName: formData.lastName,
           phone: formData.phone,
-          avatarPreview: formData.profilePicture,
+          avatarPreview: formData.avatar,
           resumePreview: formData.resume,
         });
         setIsEditing(false);
@@ -207,7 +207,7 @@ const EmployeeProfile = ({ tokenId }) => {
       lastName: userProfile.lastName,
       email: userProfile.email,
       phone: userProfile.phone || "",
-      profilePicture: userProfile.profilePic || "",
+      avatar: userProfile.profilePic || "",
       resume: userProfile.resume || "",
     });
     setAvatarPreview(
@@ -265,14 +265,14 @@ const EmployeeProfile = ({ tokenId }) => {
                   }}
                   src={
                     avatarPreview ||
-                    (formData.profilePicture &&
-                    formData.profilePicture instanceof File
-                      ? URL.createObjectURL(formData.profilePicture)
+                    (formData.avatar &&
+                    formData.avatar instanceof File
+                      ? URL.createObjectURL(formData.avatar)
                       : "")
                   }
                 >
                   {!avatarPreview &&
-                    !formData.profilePicture &&
+                    !formData.avatar &&
                     `${formData.firstName.charAt(0)}${formData.lastName.charAt(
                       0
                     )}`}
@@ -351,7 +351,7 @@ const EmployeeProfile = ({ tokenId }) => {
                       <input
                         type="file"
                         hidden
-                        name="profilePicture"
+                        name="avatar"
                         accept="image/*"
                         onChange={handleFileChange}
                       />
@@ -359,7 +359,7 @@ const EmployeeProfile = ({ tokenId }) => {
                     {/* {avatarPreview && (
                       <IconButton
                         color="error"
-                        onClick={() => handleDeleteFile('profilePicture')}
+                        onClick={() => handleDeleteFile('avatar')}
                         aria-label="delete profile picture"
                       >
                         <DeleteIcon />
