@@ -57,13 +57,12 @@ const EmployeeProfile = ({ tokenId }) => {
           lastName: response.data.lastName,
           email: response.data.email,
           phone: response.data.phone || "",
-          profilePicture: response.data.profilePic || "",
+          profilePicture: response.data.avatar || "",
           resume: response.data.resume || "",
         });
-        //setAvatarPreview(`http://localhost:5000/public/uploads/1721585780332_logo512.png` );
         setAvatarPreview(
-          response.data.profilePic
-            ? `http://localhost:5000/${response.data.profilePic}`
+          response.data.avatar
+            ? `http://localhost:5000/${response.data.avatar}`
             : ""
         );
         setResumePreview(
@@ -182,8 +181,7 @@ const EmployeeProfile = ({ tokenId }) => {
           },
         }
       );
-
-      if (response.data.massage) {
+      if (response.data.success) {
         alert("Profile updated successfully!");
         setUserProfile({
           ...userProfile,

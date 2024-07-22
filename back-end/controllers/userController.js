@@ -102,7 +102,7 @@ const UpdateEmployee = async (req, res) => {
   const { firstName, lastName, email } = req.body;
 
   const avatar = req.files.avatar ? req.files.avatar[0].path : "";
-  const resume = req.files.avatar ? req.files.resume[0].path : "";
+  const resume = req.files.resume ? req.files.resume[0].path : "";
 
   // Check if required fields are empty
   if (firstName === "" || lastName === "" || email === "") {
@@ -121,9 +121,8 @@ const UpdateEmployee = async (req, res) => {
   const employee = await jobSeekerModel
     .findByIdAndUpdate(id, updatedEmployee)
     .then((employee) => {
-      return res.status(200).json({
-        message: "Employee has been updated",
-      });
+      return res.status(200).send({ success: true });
+      
     })
     .catch((error) => {
       console.log(error);
