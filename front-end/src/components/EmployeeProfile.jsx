@@ -24,7 +24,6 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import LoadingSpinner from '../shared/LoadingSpinner';
 
-
 const theme = createTheme();
 
 const EmployeeProfile = ({ tokenId }) => {
@@ -40,6 +39,8 @@ const EmployeeProfile = ({ tokenId }) => {
     profilePicture: '',
     resume: '',
   });
+  const [avatarPreview, setAvatarPreview] = useState('');
+  const [resumePreview, setResumePreview] = useState('');
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -50,6 +51,7 @@ const EmployeeProfile = ({ tokenId }) => {
           userType: "employee"
         });
         const currentUser = tokenId;
+        console.log(response.data)
         setUserProfile(response.data);
         setFormData({
           firstName: response.data.firstName,
@@ -59,6 +61,9 @@ const EmployeeProfile = ({ tokenId }) => {
           profilePicture: response.data.profilePic || '',
           resume: response.data.resume || '',
         });
+        setAvatarPreview(`http://localhost:5000/public/uploads/1721585780332_logo512.png` );
+        //setAvatarPreview(response.data.profilePic ? `http://localhost:5000/${response.data.profilePic}` : '');
+        setResumePreview(response.data.resume ? `http://localhost:5000/${response.data.resume}` : '');
         setIsOwner(response.data._id === currentUser);
       } catch (error) {
         console.error('Error fetching user profile:', error);
@@ -84,32 +89,36 @@ const EmployeeProfile = ({ tokenId }) => {
 
   const handleFileChange = (e) => {
     const { name, files } = e.target;
+    const file = files[0];
+    
+    if (name === 'profilePicture') {
+      setAvatarPreview(URL.createObjectURL(file));
+    } else if (name === 'resume') {
+      setResumePreview(URL.createObjectURL(file));
+    }
+      setError('');
+    
+    
     setFormData({
       ...formData,
-      [name]: files[0],
+      [name]: file,
     });
   };
 
-  const handleDeleteFile = async (fileType) => {
-    const token = Cookies.get('token');
-    try {
-      await axios.delete(`/delete${fileType}`, {
-        headers: {
-          Authorization: token,
-        },
-      });
-      setFormData({
-        ...formData,
-        [fileType.toLowerCase()]: '',
-      });
-      alert(`${fileType} deleted successfully.`);
-    } catch (error) {
-      console.error(`Error deleting ${fileType}:`, error);
-      alert(`An error occurred while deleting ${fileType}.`);
+  const handleDeleteFile = (field) => {
+    setFormData({
+      ...formData,
+      [field]: '',
+    });
+    if (field === 'profilePicture') {
+      setAvatarPreview('');
+    } else if (field === 'resume') {
+      setResumePreview('');
     }
   };
 
   const handleSubmit = async (e) => {
+    console.log(formData)
     e.preventDefault();
     if (!formData.firstName.trim() || !formData.lastName.trim()) {
       setError('First Name and Last Name cannot be empty.');
@@ -124,17 +133,17 @@ const EmployeeProfile = ({ tokenId }) => {
       return;
     }
 
-         // Check if there are any changes
-         if (
-          formData.firstName === userProfile.firstName &&
-          formData.lastName === userProfile.lastName &&
-          formData.phone === (userProfile.phone || '') &&
-          (formData.profilePicture === userProfile.profilePic || !formData.profilePicture) &&
-          (formData.resume === userProfile.resume || !formData.resume)
-        ) {
-          setError('No changes detected.');
-          return;
-        }
+    if (
+      formData.firstName === userProfile.firstName &&
+      formData.lastName === userProfile.lastName &&
+      formData.phone === (userProfile.phone || '') &&
+     formData.profilePicture === userProfile.profilePic &&
+      (formData.profilePicture === userProfile.profilePic || !formData.profilePicture) &&
+      (formData.resume === userProfile.resume || !formData.resume)
+    ) {
+      setError('No changes detected.');
+      return;
+    }
 
     if (error) {
       alert('Please fix the error before saving.');
@@ -153,6 +162,12 @@ const EmployeeProfile = ({ tokenId }) => {
     if (formData.resume && formData.resume instanceof File) {
       submitData.append('resume', formData.resume);
     }
+    // if (!formData.profilePicture) {
+    //   submitData.append('deleteProfilePicture', true);
+    // }
+    // if (!formData.resume) {
+    //   submitData.append('deleteResume', true);
+    // }
 
     try {
       const response = await axios.put('/updateEmployeeProfile', submitData, {
@@ -168,10 +183,10 @@ const EmployeeProfile = ({ tokenId }) => {
           firstName: formData.firstName,
           lastName: formData.lastName,
           phone: formData.phone,
-          profilePic: formData.profilePicture,
-          resume: formData.resume,
-        }); // update userProfile with new data
-        setIsEditing(false); // Exit edit mode on success
+          avatarPreview: formData.profilePicture,
+          resumePreview: formData.resume,
+        });
+        setIsEditing(false);
       } else {
         alert('Failed to update profile.');
       }
@@ -190,13 +205,14 @@ const EmployeeProfile = ({ tokenId }) => {
       profilePicture: userProfile.profilePic || '',
       resume: userProfile.resume || '',
     });
+    setAvatarPreview(userProfile.profilePic ? `http://localhost:5000/${userProfile.profilePic}` : '');
+    setResumePreview(userProfile.resume ? `http://localhost:5000/${userProfile.resume}` : '');
     setIsEditing(false);
     setError('');
   };
 
-  // Check if userProfile is still null
   if (userProfile === null) {
-    return <LoadingSpinner/>; 
+    return <LoadingSpinner />;
   }
 
   return (
@@ -223,9 +239,9 @@ const EmployeeProfile = ({ tokenId }) => {
               >
                 <Avatar
                   sx={{ width: 150, height: 150, bgcolor: "secondary.main", mb: 2 }}
-                  src={formData.profilePicture && formData.profilePicture instanceof File ? URL.createObjectURL(formData.profilePicture) : formData.profilePicture}
+                  src={avatarPreview || (formData.profilePicture && formData.profilePicture instanceof File ? URL.createObjectURL(formData.profilePicture) : '')}
                 >
-                  {!formData.profilePicture && `${formData.firstName.charAt(0)}${formData.lastName.charAt(0)}`}
+                  {!avatarPreview && !formData.profilePicture && `${formData.firstName.charAt(0)}${formData.lastName.charAt(0)}`}
                 </Avatar>
                 <Typography component="h1" variant="h4" align="center" gutterBottom>
                   Employee Profile
@@ -296,15 +312,15 @@ const EmployeeProfile = ({ tokenId }) => {
                         onChange={handleFileChange}
                       />
                     </Button>
-                    {formData.profilePicture && (
+                    {/* {avatarPreview && (
                       <IconButton
                         color="error"
-                        onClick={() => handleDeleteFile('ProfilePicture')}
+                        onClick={() => handleDeleteFile('profilePicture')}
                         aria-label="delete profile picture"
                       >
                         <DeleteIcon />
                       </IconButton>
-                    )}
+                    )} */}
                   </Box>
                   <Box sx={{ mb: 3 }}>
                     <Button
@@ -322,15 +338,15 @@ const EmployeeProfile = ({ tokenId }) => {
                         onChange={handleFileChange}
                       />
                     </Button>
-                    {formData.resume && (
+                    {/* {resumePreview && (
                       <IconButton
                         color="error"
-                        onClick={() => handleDeleteFile('Resume')}
+                        onClick={() => handleDeleteFile('resume')}
                         aria-label="delete resume"
                       >
                         <DeleteIcon />
                       </IconButton>
-                    )}
+                    )} */}
                   </Box>
                   {error && (
                     <Typography color="error" align="center" sx={{ mb: 3 }}>
@@ -367,39 +383,31 @@ const EmployeeProfile = ({ tokenId }) => {
                     {formData.firstName} {formData.lastName}
                   </Typography>
                   <Typography variant="h6" gutterBottom align="center" color="textSecondary">
-                    <strong>Email:</strong> {formData.email}
+                    {formData.email}
                   </Typography>
-                  {formData.phone && (
-                    <Typography variant="h6" gutterBottom align="center" color="textSecondary">
-                      <strong>Phone:</strong> {formData.phone}
-                    </Typography>
-                  )}
-                  {formData.resume && (
-                    <Box sx={{ textAlign: 'center', mt: 2 }}>
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        component="a"
-                        href={formData.resume}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        View Resume
-                      </Button>
+                  <Typography variant="body1" align="center">
+                    {formData.phone}
+                  </Typography>
+                 
+                  {resumePreview && (
+                    <Box sx={{ mt: 3, textAlign: 'center' }}>
+                      <Typography variant="subtitle1">Resume</Typography>
+                      <a href={resumePreview} target="_blank" rel="noopener noreferrer">
+                        <Button variant="contained">View Resume</Button>
+                      </a>
                     </Box>
                   )}
                   {isOwner && (
-                    <Grid container spacing={3} justifyContent="center" sx={{ mt: 3 }}>
-                      <Grid item>
-                        <Button
-                          variant="contained"
-                          startIcon={<EditIcon />}
-                          onClick={() => setIsEditing(true)}
-                        >
-                          Edit Profile
-                        </Button>
-                      </Grid>
-                    </Grid>
+                    <Box sx={{ mt: 3, textAlign: 'center' }}>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        startIcon={<EditIcon />}
+                        onClick={() => setIsEditing(true)}
+                      >
+                        Edit
+                      </Button>
+                    </Box>
                   )}
                 </Box>
               )}

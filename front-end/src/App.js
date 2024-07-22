@@ -8,7 +8,7 @@ import Register from "./components/Register";
 import Cookies from "js-cookie";
 import getTokenData from "./auth/auth";
 import RegisterEmployee from "./components/RegisterEmployee";
-import EmployerProfile from './components/EmployerProfile';
+import EmployerProfile from './components/employer/EmployerProfile';
 import EmployeeProfile from './components/EmployeeProfile';
 import Header from "./shared/Header";
 import Parent from "./shared/Parent";
