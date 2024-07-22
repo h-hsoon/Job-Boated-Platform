@@ -95,54 +95,44 @@ const SignUp = async (req, res) => {
 
 // update employee:
 const UpdateEmployee = async (req, res) => {
-  console.log("Received call to update employee API");
-  console.log(req.body);
+  // const token = req.headers.authorization;
+  // var decoded = jwt.verify(token, "employer");
+  // const { userType } = decoded.user;
+  const { id } = req.params;
+  const { firstName, lastName, email } = req.body;
+
+  const avatar = req.files.avatar ? req.files.avatar[0].path : "";
+  const resume = req.files.avatar ? req.files.resume[0].path : "";
 
   // Check if required fields are empty
-  if (
-    req.body.firstname === "" ||
-    req.body.lastname === "" ||
-    req.body.email === "" ||
-    req.body.profile === "" ||
-    req.body.phone === ""
-  ) {
+  if (firstName === "" || lastName === "" || email === "") {
     console.log("Some fields are empty");
     return res.status(400).json({
       error: "Some fields are empty!!",
     });
   }
 
-  try {
-    // Find the employee by ID
-    let employee = await jobSeekerModel.findById(req.params.id);
-
-    if (!employee) {
-      console.log("Employee not found");
-      return res.status(404).json({
-        error: "Employee not found",
+  const updatedEmployee = {
+    ...req.body,
+    avatar,
+    resume,
+  };
+  // Find the employee by ID
+  const employee = await jobSeekerModel
+    .findByIdAndUpdate(id, updatedEmployee)
+    .then((employee) => {
+      if (!employee) {
+        return res.status(404).json({
+          error: "Employee not found",
+        });
+      }
+      return res.status(200).json({
+        message: "Employee has been updated",
       });
-    }
-
-    // Update employee fields
-    employee.firstname = req.body.firstname;
-    employee.lastname = req.body.lastname;
-    employee.email = req.body.email;
-    employee.profile = req.body.profile;
-    employee.phone = req.body.phone;
-
-    // Save the updated employee
-    await employee.save();
-
-    console.log("Employee updated successfully");
-    return res.status(200).json({
-      success: "Employee updated successfully",
+    })
+    .catch((error) => {
+      console.log(error);
     });
-  } catch (error) {
-    console.error("Error updating employee:", error.message);
-    return res.status(500).json({
-      error: "Error updating employee",
-    });
-  }
 };
 
 //Log in :
@@ -212,12 +202,13 @@ const sendUserdata = async (req, res) => {
   }
 };
 
-// Update user
-const updateUserProfaile = async (req, res) => {
+// Update employer
+const updateEmployer = async (req, res) => {
   const token = req.headers.authorization;
   var decoded = jwt.verify(token, "employer");
   const { userType } = decoded.user;
   const { email } = req.body;
+  const avatar = req.file ? req.file.path : "";
   console.log(userType);
   console.log(req.body);
   if (userType === "employee") {
@@ -225,7 +216,7 @@ const updateUserProfaile = async (req, res) => {
     res.status(401).send({ error: "not unauthenticated" });
   } else {
     await employerModel
-      .findOneAndUpdate({ email }, { ...req.body })
+      .findOneAndUpdate({ email }, { ...req.body, avatar })
       .then((result) => {
         res.status(200).send({ success: true, result });
       })
@@ -241,5 +232,5 @@ module.exports = {
   sendUserdata,
   registerEmployer,
   UpdateEmployee,
-  updateUserProfaile,
+  updateEmployer,
 };
