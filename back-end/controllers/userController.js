@@ -121,11 +121,6 @@ const UpdateEmployee = async (req, res) => {
   const employee = await jobSeekerModel
     .findByIdAndUpdate(id, updatedEmployee)
     .then((employee) => {
-      if (!employee) {
-        return res.status(404).json({
-          error: "Employee not found",
-        });
-      }
       return res.status(200).json({
         message: "Employee has been updated",
       });
@@ -206,17 +201,21 @@ const sendUserdata = async (req, res) => {
 const updateEmployer = async (req, res) => {
   const token = req.headers.authorization;
   var decoded = jwt.verify(token, "employer");
-  const { userType } = decoded.user;
+  const { userType, id } = decoded.user;
   const { email } = req.body;
   const avatar = req.file ? req.file.path : "";
   console.log(userType);
-  console.log(req.body);
+  console.log(req.body, req.file.path);
   if (userType === "employee") {
     // await jobSeekerModel.findOneAndUpdate({ email }, { ...req.body });
     res.status(401).send({ error: "not unauthenticated" });
   } else {
+    const updateEmployer = {
+      ...req.body,
+      avatar,
+    };
     await employerModel
-      .findOneAndUpdate({ email }, { ...req.body, avatar })
+      .findByIdAndUpdate(id, updateEmployer)
       .then((result) => {
         res.status(200).send({ success: true, result });
       })
