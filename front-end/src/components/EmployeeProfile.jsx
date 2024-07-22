@@ -61,8 +61,8 @@ const EmployeeProfile = ({ tokenId }) => {
           profilePicture: response.data.profilePic || '',
           resume: response.data.resume || '',
         });
-        setAvatarPreview(`http://localhost:5000/public/uploads/1721585780332_logo512.png` );
-        //setAvatarPreview(response.data.profilePic ? `http://localhost:5000/${response.data.profilePic}` : '');
+        //setAvatarPreview(`http://localhost:5000/public/uploads/1721585780332_logo512.png` );
+        setAvatarPreview(response.data.profilePic ? `http://localhost:5000/${response.data.profilePic}` : '');
         setResumePreview(response.data.resume ? `http://localhost:5000/${response.data.resume}` : '');
         setIsOwner(response.data._id === currentUser);
       } catch (error) {
@@ -162,15 +162,10 @@ const EmployeeProfile = ({ tokenId }) => {
     if (formData.resume && formData.resume instanceof File) {
       submitData.append('resume', formData.resume);
     }
-    // if (!formData.profilePicture) {
-    //   submitData.append('deleteProfilePicture', true);
-    // }
-    // if (!formData.resume) {
-    //   submitData.append('deleteResume', true);
-    // }
+   
 
     try {
-      const response = await axios.put('/updateEmployeeProfile', submitData, {
+      const response = await axios.put(`/updateEmployeeProfile/${id}`, submitData, {
         headers: {
           Authorization: token,
         },
