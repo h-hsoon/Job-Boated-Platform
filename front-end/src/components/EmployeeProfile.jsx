@@ -1,8 +1,7 @@
-
-import React, { useState, useEffect } from 'react';
-import axios from '../axiosConfig';
-import { useParams } from 'react-router-dom';
-import Cookies from 'js-cookie';
+import React, { useState, useEffect } from "react";
+import axios from "../axiosConfig";
+import { useParams } from "react-router-dom";
+import Cookies from "js-cookie";
 import {
   Avatar,
   Button,
@@ -19,11 +18,10 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
-import PhotoCamera from '@mui/icons-material/PhotoCamera';
-import DeleteIcon from '@mui/icons-material/Delete';
+import PhotoCamera from "@mui/icons-material/PhotoCamera";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import LoadingSpinner from '../shared/LoadingSpinner';
-
+import LoadingSpinner from "../shared/LoadingSpinner";
 
 const theme = createTheme();
 
@@ -33,35 +31,48 @@ const EmployeeProfile = ({ tokenId }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    profilePicture: '',
-    resume: '',
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    avatar: "",
+    resume: "",
   });
-  const [error, setError] = useState('');
+  const [avatarPreview, setAvatarPreview] = useState("");
+  const [resumePreview, setResumePreview] = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await axios.post('/dataUser', {
+        const response = await axios.post("/dataUser", {
           userId: id,
-          userType: "employee"
+          userType: "employee",
         });
         const currentUser = tokenId;
+        console.log(response.data);
         setUserProfile(response.data);
         setFormData({
           firstName: response.data.firstName,
           lastName: response.data.lastName,
           email: response.data.email,
-          phone: response.data.phone || '',
-          profilePicture: response.data.profilePic || '',
-          resume: response.data.resume || '',
+          phone: response.data.phone || "",
+          avatar: response.data.avatar || "",
+          resume: response.data.resume || "",
         });
+        setAvatarPreview(
+          response.data.avatar
+            ? `http://localhost:5000/${response.data.avatar}`
+            : ""
+        );
+        setResumePreview(
+          response.data.resume
+            ? `http://localhost:5000/${response.data.resume}`
+            : ""
+        );
         setIsOwner(response.data._id === currentUser);
       } catch (error) {
-        console.error('Error fetching user profile:', error);
+        console.error("Error fetching user profile:", error);
       }
     };
 
@@ -70,11 +81,13 @@ const EmployeeProfile = ({ tokenId }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    
-    if (name === 'phone' && value.trim() !== '' && !/^\d{10,15}$/.test(value)) {
-      setError('Phone number must contain only digits and be 10 to 15 characters long.');
+
+    if (name === "phone" && value.trim() !== "" && !/^\d{10,15}$/.test(value)) {
+      setError(
+        "Phone number must contain only digits and be 10 to 15 characters long."
+      );
     } else {
-      setError('');
+      setError("");
     }
     setFormData({
       ...formData,
@@ -84,100 +97,107 @@ const EmployeeProfile = ({ tokenId }) => {
 
   const handleFileChange = (e) => {
     const { name, files } = e.target;
+    const file = files[0];
+
+    if (name === "avatar") {
+      setAvatarPreview(URL.createObjectURL(file));
+    } else if (name === "resume") {
+      setResumePreview(URL.createObjectURL(file));
+    }
+    setError("");
+
     setFormData({
       ...formData,
-      [name]: files[0],
+      [name]: file,
     });
   };
 
-  const handleDeleteFile = async (fileType) => {
-    const token = Cookies.get('token');
-    try {
-      await axios.delete(`/delete${fileType}`, {
-        headers: {
-          Authorization: token,
-        },
-      });
-      setFormData({
-        ...formData,
-        [fileType.toLowerCase()]: '',
-      });
-      alert(`${fileType} deleted successfully.`);
-    } catch (error) {
-      console.error(`Error deleting ${fileType}:`, error);
-      alert(`An error occurred while deleting ${fileType}.`);
+  const handleDeleteFile = (field) => {
+    setFormData({
+      ...formData,
+      [field]: "",
+    });
+    if (field === "avatar") {
+      setAvatarPreview("");
+    } else if (field === "resume") {
+      setResumePreview("");
     }
   };
 
   const handleSubmit = async (e) => {
+    console.log(formData);
     e.preventDefault();
     if (!formData.firstName.trim() || !formData.lastName.trim()) {
-      setError('First Name and Last Name cannot be empty.');
+      setError("First Name and Last Name cannot be empty.");
       return;
     }
     if (formData.firstName.trim().length > 20) {
-      setError('First Name is too long.');
+      setError("First Name is too long.");
       return;
     }
     if (formData.lastName.trim().length > 20) {
-      setError('Last Name is too long.');
+      setError("Last Name is too long.");
       return;
     }
 
-         // Check if there are any changes
-         if (
-          formData.firstName === userProfile.firstName &&
-          formData.lastName === userProfile.lastName &&
-          formData.phone === (userProfile.phone || '') &&
-          (formData.profilePicture === userProfile.profilePic || !formData.profilePicture) &&
-          (formData.resume === userProfile.resume || !formData.resume)
-        ) {
-          setError('No changes detected.');
-          return;
-        }
+    if (
+      formData.firstName === userProfile.firstName &&
+      formData.lastName === userProfile.lastName &&
+      formData.phone === (userProfile.phone || "") &&
+      formData.avatar === userProfile.profilePic &&
+      (formData.avatar === userProfile.profilePic ||
+        !formData.avatar) &&
+      (formData.resume === userProfile.resume || !formData.resume)
+    ) {
+      setError("No changes detected.");
+      return;
+    }
 
     if (error) {
-      alert('Please fix the error before saving.');
+      alert("Please fix the error before saving.");
       return;
     }
 
-    const token = Cookies.get('token');
+    const token = Cookies.get("token");
     const submitData = new FormData();
-    submitData.append('firstName', formData.firstName);
-    submitData.append('lastName', formData.lastName);
-    submitData.append('email', formData.email);
-    submitData.append('phone', formData.phone);
-    if (formData.profilePicture && formData.profilePicture instanceof File) {
-      submitData.append('profilePicture', formData.profilePicture);
+    submitData.append("firstName", formData.firstName);
+    submitData.append("lastName", formData.lastName);
+    submitData.append("email", formData.email);
+    submitData.append("phone", formData.phone);
+    if (formData.avatar && formData.avatar instanceof File) {
+      submitData.append("avatar", formData.avatar);
     }
     if (formData.resume && formData.resume instanceof File) {
-      submitData.append('resume', formData.resume);
+      submitData.append("resume", formData.resume);
     }
 
     try {
-      const response = await axios.put('/updateEmployeeProfile', submitData, {
-        headers: {
-          Authorization: token,
-        },
-      });
-
+      const response = await axios.put(
+        `/updateEmployeeProfile/${id}`,
+        submitData,
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      );
       if (response.data.success) {
-        alert('Profile updated successfully!');
+        alert("Profile updated successfully!");
         setUserProfile({
           ...userProfile,
           firstName: formData.firstName,
           lastName: formData.lastName,
           phone: formData.phone,
-          profilePic: formData.profilePicture,
-          resume: formData.resume,
-        }); // update userProfile with new data
-        setIsEditing(false); // Exit edit mode on success
+          avatarPreview: formData.avatar,
+          resumePreview: formData.resume,
+        });
+        setIsEditing(false);
       } else {
-        alert('Failed to update profile.');
+        alert("Failed to update profile.");
       }
     } catch (error) {
-      console.error('Error updating profile:', error);
-      alert('An error occurred. Please try again.');
+      console.error("Error updating profile:", error);
+      alert("An error occurred. Please try again.");
     }
   };
 
@@ -186,17 +206,24 @@ const EmployeeProfile = ({ tokenId }) => {
       firstName: userProfile.firstName,
       lastName: userProfile.lastName,
       email: userProfile.email,
-      phone: userProfile.phone || '',
-      profilePicture: userProfile.profilePic || '',
-      resume: userProfile.resume || '',
+      phone: userProfile.phone || "",
+      avatar: userProfile.profilePic || "",
+      resume: userProfile.resume || "",
     });
+    setAvatarPreview(
+      userProfile.profilePic
+        ? `http://localhost:5000/${userProfile.profilePic}`
+        : ""
+    );
+    setResumePreview(
+      userProfile.resume ? `http://localhost:5000/${userProfile.resume}` : ""
+    );
     setIsEditing(false);
-    setError('');
+    setError("");
   };
 
-  // Check if userProfile is still null
   if (userProfile === null) {
-    return <LoadingSpinner/>; 
+    return <LoadingSpinner />;
   }
 
   return (
@@ -211,7 +238,15 @@ const EmployeeProfile = ({ tokenId }) => {
             alignItems: "center",
           }}
         >
-          <Card sx={{ width: '100%', maxWidth: 800, padding: 4, borderRadius: 2, boxShadow: 3 }}>
+          <Card
+            sx={{
+              width: "100%",
+              maxWidth: 800,
+              padding: 4,
+              borderRadius: 2,
+              boxShadow: 3,
+            }}
+          >
             <CardContent>
               <Box
                 sx={{
@@ -222,17 +257,42 @@ const EmployeeProfile = ({ tokenId }) => {
                 }}
               >
                 <Avatar
-                  sx={{ width: 150, height: 150, bgcolor: "secondary.main", mb: 2 }}
-                  src={formData.profilePicture && formData.profilePicture instanceof File ? URL.createObjectURL(formData.profilePicture) : formData.profilePicture}
+                  sx={{
+                    width: 150,
+                    height: 150,
+                    bgcolor: "secondary.main",
+                    mb: 2,
+                  }}
+                  src={
+                    avatarPreview ||
+                    (formData.avatar &&
+                    formData.avatar instanceof File
+                      ? URL.createObjectURL(formData.avatar)
+                      : "")
+                  }
                 >
-                  {!formData.profilePicture && `${formData.firstName.charAt(0)}${formData.lastName.charAt(0)}`}
+                  {!avatarPreview &&
+                    !formData.avatar &&
+                    `${formData.firstName.charAt(0)}${formData.lastName.charAt(
+                      0
+                    )}`}
                 </Avatar>
-                <Typography component="h1" variant="h4" align="center" gutterBottom>
+                <Typography
+                  component="h1"
+                  variant="h4"
+                  align="center"
+                  gutterBottom
+                >
                   Employee Profile
                 </Typography>
               </Box>
               {isEditing ? (
-                <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 2 }}>
+                <Box
+                  component="form"
+                  onSubmit={handleSubmit}
+                  noValidate
+                  sx={{ mt: 2 }}
+                >
                   <TextField
                     margin="normal"
                     required
@@ -291,20 +351,20 @@ const EmployeeProfile = ({ tokenId }) => {
                       <input
                         type="file"
                         hidden
-                        name="profilePicture"
+                        name="avatar"
                         accept="image/*"
                         onChange={handleFileChange}
                       />
                     </Button>
-                    {formData.profilePicture && (
+                    {/* {avatarPreview && (
                       <IconButton
                         color="error"
-                        onClick={() => handleDeleteFile('ProfilePicture')}
+                        onClick={() => handleDeleteFile('avatar')}
                         aria-label="delete profile picture"
                       >
                         <DeleteIcon />
                       </IconButton>
-                    )}
+                    )} */}
                   </Box>
                   <Box sx={{ mb: 3 }}>
                     <Button
@@ -322,15 +382,15 @@ const EmployeeProfile = ({ tokenId }) => {
                         onChange={handleFileChange}
                       />
                     </Button>
-                    {formData.resume && (
+                    {/* {resumePreview && (
                       <IconButton
                         color="error"
-                        onClick={() => handleDeleteFile('Resume')}
+                        onClick={() => handleDeleteFile('resume')}
                         aria-label="delete resume"
                       >
                         <DeleteIcon />
                       </IconButton>
-                    )}
+                    )} */}
                   </Box>
                   {error && (
                     <Typography color="error" align="center" sx={{ mb: 3 }}>
@@ -363,43 +423,49 @@ const EmployeeProfile = ({ tokenId }) => {
                 </Box>
               ) : (
                 <Box className="profile-details" sx={{ mt: 2 }}>
-                  <Typography variant="h5" gutterBottom align="center" fontWeight="bold">
+                  <Typography
+                    variant="h5"
+                    gutterBottom
+                    align="center"
+                    fontWeight="bold"
+                  >
                     {formData.firstName} {formData.lastName}
                   </Typography>
-                  <Typography variant="h6" gutterBottom align="center" color="textSecondary">
-                    <strong>Email:</strong> {formData.email}
+                  <Typography
+                    variant="h6"
+                    gutterBottom
+                    align="center"
+                    color="textSecondary"
+                  >
+                    {formData.email}
                   </Typography>
-                  {formData.phone && (
-                    <Typography variant="h6" gutterBottom align="center" color="textSecondary">
-                      <strong>Phone:</strong> {formData.phone}
-                    </Typography>
-                  )}
-                  {formData.resume && (
-                    <Box sx={{ textAlign: 'center', mt: 2 }}>
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        component="a"
-                        href={formData.resume}
+                  <Typography variant="body1" align="center">
+                    {formData.phone}
+                  </Typography>
+
+                  {resumePreview && (
+                    <Box sx={{ mt: 3, textAlign: "center" }}>
+                      <Typography variant="subtitle1">Resume</Typography>
+                      <a
+                        href={resumePreview}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        View Resume
-                      </Button>
+                        <Button variant="contained">View Resume</Button>
+                      </a>
                     </Box>
                   )}
                   {isOwner && (
-                    <Grid container spacing={3} justifyContent="center" sx={{ mt: 3 }}>
-                      <Grid item>
-                        <Button
-                          variant="contained"
-                          startIcon={<EditIcon />}
-                          onClick={() => setIsEditing(true)}
-                        >
-                          Edit Profile
-                        </Button>
-                      </Grid>
-                    </Grid>
+                    <Box sx={{ mt: 3, textAlign: "center" }}>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        startIcon={<EditIcon />}
+                        onClick={() => setIsEditing(true)}
+                      >
+                        Edit
+                      </Button>
+                    </Box>
                   )}
                 </Box>
               )}

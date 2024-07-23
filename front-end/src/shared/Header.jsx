@@ -7,7 +7,14 @@ import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import { Link } from "react-router-dom";
 
-export default function Header({ handleLogout, loggedIn }) {
+export default function Header({ handleLogout, loggedIn, Datatoken }) {
+  let url ;
+  if (loggedIn && Datatoken) {
+    url = Datatoken.userType === 'employee' 
+      ? `/employee/${Datatoken.id}` 
+      : `/employer/${Datatoken.id}`;
+  }
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
@@ -21,10 +28,16 @@ export default function Header({ handleLogout, loggedIn }) {
           >
             <MenuIcon />
           </IconButton>
+          <Button color="inherit" component={Link} to="/">
+                Home
+              </Button>
           {loggedIn ? (
             <>
               <Button color="inherit" onClick={handleLogout} component={Link} to="/">
                 Logout
+              </Button>
+              <Button color="inherit" component={Link} to={url}>
+                Profile
               </Button>
             </>
           ) : (
