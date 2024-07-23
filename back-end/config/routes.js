@@ -2,6 +2,7 @@ const express = require("express");
 const multer = require("multer");
 const router = express.Router();
 const usercontroller = require("../controllers/userController");
+const jobPostController = require("../controllers/jobPostController");
 const employerValidator = require("../middleware/employerValidator");
 
 const storage = multer.diskStorage({
@@ -51,6 +52,7 @@ router.put(
   upload1.single("avatar"),
   usercontroller.updateEmployer
 );
+router.post("/test", upload1.single("avatar"), jobPostController.newJobPost);
 //
 router.get('/posts',usercontroller.posts)
 router.get('/posts/:id',usercontroller.post)
