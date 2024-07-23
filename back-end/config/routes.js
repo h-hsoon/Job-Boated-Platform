@@ -53,5 +53,8 @@ router.put(
   usercontroller.updateEmployer
 );
 router.post("/test", upload1.single("avatar"), jobPostController.newJobPost);
-
+//
+router.get('/posts',usercontroller.posts)
+router.get('/employers',usercontroller.employers)
+router.get('/posts/:id',usercontroller.post)
 module.exports = router;

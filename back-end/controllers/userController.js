@@ -224,6 +224,34 @@ const updateEmployer = async (req, res) => {
   }
 };
 
+const posts = (req, res)=>{
+  jobPostModel.find().sort({ createdAt: -1 }).then(posts => {
+    console.log(posts)
+    res.json(posts);
+  }).catch(err => console.log(err));
+}
+const employers = (req, res)=>{
+  employerModel.find().select("-password").then(employers => {
+    console.log(employers)
+    res.json(employers);
+  }).catch(err => console.log(err));
+}
+const post=async (req, res) => {
+  try {
+  const { id } = req.params;
+ postData = await jobPostModel.findById(id);
+  if (!postData) {
+    console.log("postData not found")
+    return res.status(404).json({ Error: "postData not found" });
+  }
+  res.status(200).json(postData);
+  }
+  catch (error) {
+    console.error("Error during get post:", error);
+  }
+
+}
+
 module.exports = {
   SignUp,
   loginUser,
@@ -231,4 +259,7 @@ module.exports = {
   registerEmployer,
   UpdateEmployee,
   updateEmployer,
+  posts,
+  post,
+  employers
 };
