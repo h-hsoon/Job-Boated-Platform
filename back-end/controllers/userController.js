@@ -225,14 +225,15 @@ const updateEmployer = async (req, res) => {
 };
 
 const posts = (req, res)=>{
-  Post.find().sort({ createdAt: -1 }).then(posts => {
+  jobPostModel.find().sort({ createdAt: -1 }).then(posts => {
+    console.log(posts)
     res.json(posts);// edit
   }).catch(err => console.log(err));
 }
 const post=async (req, res) => {
   try {
   const { id } = req.params;
- postData = await Post.findById(id);
+ postData = await jobPostModel.findById(id);
   if (!postData) {
     console.log("postData not found")
     return res.status(404).json({ Error: "postData not found" });

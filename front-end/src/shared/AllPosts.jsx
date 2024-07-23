@@ -1,7 +1,25 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
-const AllPosts = ({ posts }) => {
+const Posts = ({ posts }) => {
+  const [favorites, setFavorites] = useState([]);
+
+  useEffect(() => {
+    const savedFavorites = JSON.parse(localStorage.getItem("favorites")) || [];
+    setFavorites(savedFavorites);
+  }, []);
+
+  const toggleFavorite = (postId) => {
+    let updatedFavorites;
+    if (favorites.includes(postId)) {
+      updatedFavorites = favorites.filter((id) => id !== postId);
+    } else {
+      updatedFavorites = [...favorites, postId];
+    }
+    setFavorites(updatedFavorites);
+    localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
+  };
+
   return (
     <div>
       {posts.length > 0 ? (
@@ -15,6 +33,9 @@ const AllPosts = ({ posts }) => {
             <p><strong>Experience:</strong> {post.experience} years</p>
             <p><strong>Category:</strong> {post.jobCategory}</p>
             <Link to={`/post/${post._id}`}>Read more</Link>
+            <button onClick={() => toggleFavorite(post._id)}>
+              {favorites.includes(post._id) ? "Remove from Favorites" : "Add to Favorites"}
+            </button>
           </div>
         ))
       ) : (
@@ -24,4 +45,4 @@ const AllPosts = ({ posts }) => {
   );
 };
 
-export default AllPosts;
+export default Posts;

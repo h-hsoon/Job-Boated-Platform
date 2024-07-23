@@ -3,7 +3,6 @@ import axios from './axiosConfig'
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import Home from "./Home";
 import LoginForm from "./components/LogIn";
 import Register from "./components/Register";
 import Cookies from "js-cookie";
@@ -16,7 +15,7 @@ import Parent from "./shared/Parent";
 import PostDetails from "./shared/PostDetails";
 import Posts from "./shared/Posts";
 import AllPosts from "./shared/AllPosts";
-
+import Favorites from "./shared/Favorites";
 function App() {
   const [loggedIn, setLoggedIn] = useState(!!Cookies.get('token'));
   const [Datatoken, setDatatoken] = useState(() => {
@@ -30,6 +29,7 @@ function App() {
             try {
               const response = await axios.get('/posts'); 
               setPosts(response.data);
+              console.log(response.data)
             } catch (error) {
               console.error('Error fetching posts:', error);
             }
@@ -69,6 +69,7 @@ function App() {
           <Route path="/posts/:searchValue" element={<Posts posts={posts}/>} />
           <Route path="/Categoriesposts/:categoryName" element={<Posts posts={posts} />} />
           <Route path="/post/:id" element={<PostDetails/>} />
+          <Route path="/favorites" element={<Favorites posts={posts} />} />
         </Routes>
       </div>
     </BrowserRouter>

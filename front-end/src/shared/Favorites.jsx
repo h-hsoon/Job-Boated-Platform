@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 
-const Posts = ({ posts }) => {
-  const { searchValue, categoryName } = useParams();
+const Favorites = ({ posts }) => {
   const [favorites, setFavorites] = useState([]);
 
   useEffect(() => {
@@ -21,19 +20,13 @@ const Posts = ({ posts }) => {
     localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
   };
 
-  const filteredPosts = posts.filter(post => {
-    if (searchValue) {
-      return post.jobTitle.toLowerCase().includes(searchValue.toLowerCase());
-    } else if (categoryName) {
-      return post.jobCategory.toLowerCase() === categoryName.toLowerCase();
-    }
-    return false;
-  });
+  const favoritePosts = posts.filter((post) => favorites.includes(post._id));
 
   return (
     <div>
-      {filteredPosts.length > 0 ? (
-        filteredPosts.map((post) => (
+      <h1>Favorites</h1>
+      {favoritePosts.length > 0 ? (
+        favoritePosts.map((post) => (
           <div key={post._id} style={{ border: "1px solid #ccc", margin: "10px", padding: "10px" }}>
             {post.avatar && <img src={`http://localhost:5000/${post.avatar}`} alt="avatar" style={{ width: "50px", height: "50px" }} />}
             <h2>{post.jobTitle}</h2>
@@ -44,15 +37,15 @@ const Posts = ({ posts }) => {
             <p><strong>Category:</strong> {post.jobCategory}</p>
             <Link to={`/post/${post._id}`}>Read more</Link>
             <button onClick={() => toggleFavorite(post._id)}>
-              {favorites.includes(post._id) ? "Remove from Favorites" : "Add to Favorites"}
+              Remove from Favorites
             </button>
           </div>
         ))
       ) : (
-        <p>No posts found matching the search criteria.</p>
+        <p>No favorite posts found.</p>
       )}
     </div>
   );
 };
 
-export default Posts;
+export default Favorites;
