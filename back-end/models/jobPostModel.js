@@ -60,6 +60,8 @@ const jobPostsSchama = new mongoose.Schema(
       required: false,
       default: "",
     },
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Employer",
   },
   {
     timestamps: true,
