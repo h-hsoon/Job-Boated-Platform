@@ -13,7 +13,7 @@ import EmployeeProfile from './components/EmployeeProfile';
 import Header from "./shared/Header";
 import Parent from "./shared/Parent";
 import PostDetails from "./shared/PostDetails";
-import Posts from "./shared/Posts";
+import Posts from "./shared/Post";
 import AllPosts from "./shared/AllPosts";
 import Favorites from "./shared/Favorites";
 function App() {
@@ -68,6 +68,7 @@ function App() {
         {<Header handleLogout={handleLogout} loggedIn={loggedIn} Datatoken={Datatoken} />}
         <Routes>
           <Route path="/" element ={<Parent/>} />
+          <Route path="/post" element={<Posts/>}/>
       
           <Route path="/login" element={loggedIn ? <Navigate to={Datatoken?.userType === 'employee' ? `/employee/${Datatoken.id}` : `/employer/${Datatoken.id}`} /> : <LoginForm onLogin={onLogin} />} />
 

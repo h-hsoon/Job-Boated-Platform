@@ -6,7 +6,9 @@ import Separator from "./Separator";
 function Parent() {
     return (
         <div>
+             
             <Search />
+            <Separator/>
             <Separator/>
             <Jobcategories />
             <Separator/>
