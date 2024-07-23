@@ -1,5 +1,6 @@
 const jobSeekerModel = require("../models/jobSeekerModel");
 const employerModel = require("../models/employerModel");
+const jobPostModel = require("../models/jobPostModel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
@@ -122,7 +123,6 @@ const UpdateEmployee = async (req, res) => {
     .findByIdAndUpdate(id, updatedEmployee)
     .then((employee) => {
       return res.status(200).send({ success: true });
-      
     })
     .catch((error) => {
       console.log(error);
