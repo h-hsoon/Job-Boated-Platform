@@ -1,5 +1,6 @@
 const jobSeekerModel = require("../models/jobSeekerModel");
 const employerModel = require("../models/employerModel");
+const Post = require('../models/jobPostModel')
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
@@ -224,6 +225,27 @@ const updateEmployer = async (req, res) => {
   }
 };
 
+const posts = (req, res)=>{
+  Post.find().sort({ createdAt: -1 }).then(posts => {
+    res.json(posts);// edit
+  }).catch(err => console.log(err));
+}
+const post=async (req, res) => {
+  try {
+  const { id } = req.params;
+ postData = await Post.findById(id);
+  if (!postData) {
+    console.log("postData not found")
+    return res.status(404).json({ Error: "postData not found" });
+  }
+  res.status(200).json(postData);
+  }
+  catch (error) {
+    console.error("Error during get post:", error);
+  }
+
+}
+
 module.exports = {
   SignUp,
   loginUser,
@@ -231,4 +253,6 @@ module.exports = {
   registerEmployer,
   UpdateEmployee,
   updateEmployer,
+  posts,
+  post
 };

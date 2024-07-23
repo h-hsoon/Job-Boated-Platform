@@ -51,5 +51,7 @@ router.put(
   upload1.single("avatar"),
   usercontroller.updateEmployer
 );
-
+//
+router.get('/posts',usercontroller.posts)
+router.get('/posts/:id',usercontroller.post)
 module.exports = router;
