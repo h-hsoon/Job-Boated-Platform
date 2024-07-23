@@ -23,7 +23,7 @@ function App() {
       return storedUser ? JSON.parse(storedUser) : null;
   });
   const [posts, setPosts] = useState([]);
-
+  const [companies, setCompanies] = useState([]);
     useEffect(() => {
         const fetchPosts = async () => {
             try {
@@ -34,7 +34,17 @@ function App() {
               console.error('Error fetching posts:', error);
             }
           };
+          const fetchuEmployer = async () => {
+            try {
+              const response = await axios.get('/employers'); 
+              setCompanies(response.data);
+              console.log(response.data)
+            } catch (error) {
+              console.error('Error fetching posts:', error);
+            }
+          };
       fetchPosts();
+      fetchuEmployer();
     }, []);
   
   const onLogin = (token) => {
@@ -65,10 +75,10 @@ function App() {
           <Route path="/registerEmployee" element={<RegisterEmployee />} />
           <Route path="/employee/:id" element={ <EmployeeProfile tokenId={Datatoken?.id}/> } />
           <Route path="/employer/:id" element={ <EmployerProfile tokenId={Datatoken?.id} /> }/>
-          <Route path="/allposts" element={<AllPosts posts={posts} />} />
+          <Route path="/allposts" element={<AllPosts posts={posts} companies={companies} />} />
           <Route path="/posts/:searchValue" element={<Posts posts={posts}/>} />
           <Route path="/Categoriesposts/:categoryName" element={<Posts posts={posts} />} />
-          <Route path="/post/:id" element={<PostDetails/>} />
+          <Route path="/post/:id" element={<PostDetails  companies={companies}/>} />
           <Route path="/favorites" element={<Favorites posts={posts} />} />
         </Routes>
       </div>

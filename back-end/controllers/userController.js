@@ -227,7 +227,13 @@ const updateEmployer = async (req, res) => {
 const posts = (req, res)=>{
   jobPostModel.find().sort({ createdAt: -1 }).then(posts => {
     console.log(posts)
-    res.json(posts);// edit
+    res.json(posts);
+  }).catch(err => console.log(err));
+}
+const employers = (req, res)=>{
+  employerModel.find().select("-password").then(employers => {
+    console.log(employers)
+    res.json(employers);
   }).catch(err => console.log(err));
 }
 const post=async (req, res) => {
@@ -254,5 +260,6 @@ module.exports = {
   UpdateEmployee,
   updateEmployer,
   posts,
-  post
+  post,
+  employers
 };
