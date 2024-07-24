@@ -4,6 +4,7 @@ const router = express.Router();
 const usercontroller = require("../controllers/userController");
 const jobPostController = require("../controllers/jobPostController");
 const employerValidator = require("../middleware/employerValidator");
+const jobPostValidate = require("../middleware/jobpostValidator");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -52,9 +53,14 @@ router.put(
   upload1.single("avatar"),
   usercontroller.updateEmployer
 );
-router.post("/test", upload1.single("avatar"), jobPostController.newJobPost);
+router.post(
+  "/test",
+  upload1.single("avatar"),
+  jobPostValidate,
+  jobPostController.newJobPost
+);
 //
-router.get('/posts',usercontroller.posts)
-router.get('/employers',usercontroller.employers)
-router.get('/posts/:id',usercontroller.post)
+router.get("/posts", usercontroller.posts);
+router.get("/employers", usercontroller.employers);
+router.get("/posts/:id", usercontroller.post);
 module.exports = router;
