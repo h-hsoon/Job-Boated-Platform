@@ -13,9 +13,10 @@ import EmployeeProfile from './components/EmployeeProfile';
 import Header from "./shared/Header";
 import Parent from "./shared/Parent";
 import PostDetails from "./shared/PostDetails";
-import Posts from "./shared/Posts";
+import AddPost from "./shared/AddPost";
 import AllPosts from "./shared/AllPosts";
 import Favorites from "./shared/Favorites";
+import Posts from "./shared/AllPosts";
 function App() {
   const [loggedIn, setLoggedIn] = useState(!!Cookies.get('token'));
   const [Datatoken, setDatatoken] = useState(() => {
@@ -68,6 +69,7 @@ function App() {
         {<Header handleLogout={handleLogout} loggedIn={loggedIn} Datatoken={Datatoken} />}
         <Routes>
           <Route path="/" element ={<Parent/>} />
+          <Route path="/post" element={<AddPost/>}/>
       
           <Route path="/login" element={loggedIn ? <Navigate to={Datatoken?.userType === 'employee' ? `/employee/${Datatoken.id}` : `/employer/${Datatoken.id}`} /> : <LoginForm onLogin={onLogin} />} />
 

@@ -59,6 +59,9 @@ export default function Header({ handleLogout, loggedIn, Datatoken }) {
               <Button color="inherit" component={Link} to="/favorites">
             Favorites
           </Button>
+          <Button color="inherit" component={Link} to="/post">
+            Add post
+          </Button>
         </Toolbar>
       </AppBar>
     </Box>
