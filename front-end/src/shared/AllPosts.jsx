@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Card, CardContent, Typography, Button, Avatar, IconButton } from "@mui/material";
+import Cookies from 'js-cookie';
+import axios from '../axiosConfig';
+import { PersonAddOutlined, PersonRemoveOutlined } from "@mui/icons-material";
+import { Card, CardContent, Typography, Button, Avatar, IconButton, Box } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
@@ -12,13 +15,24 @@ const StyledCard = styled(Card)(({ theme }) => ({
   alignItems: "center",
 }));
 
-const Posts = ({ posts, companies }) => {
+const CompanyInfo = styled(Box)(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  marginBottom: theme.spacing(1),
+}));
+
+const Posts = ({ posts, companies, Datatoken }) => {
   const [favorites, setFavorites] = useState([]);
+  const [friends, setFriends] = useState([]);
   const navigate = useNavigate();
+  const token = Cookies.get('token');
 
   useEffect(() => {
     const savedFavorites = JSON.parse(localStorage.getItem("favorites")) || [];
     setFavorites(savedFavorites);
+
+    const savedFriends = JSON.parse(localStorage.getItem("friends")) || [];
+    setFriends(savedFriends);
   }, []);
 
   const toggleFavorite = (postId) => {
@@ -30,6 +44,30 @@ const Posts = ({ posts, companies }) => {
     }
     setFavorites(updatedFavorites);
     localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
+  };
+
+  const toggleFriend = async (friendId) => {
+    let updatedFriends;
+    if (friends.includes(friendId)) {
+      updatedFriends = friends.filter((id) => id !== friendId);
+    } else {
+      updatedFriends = [...friends, friendId];
+    }
+    setFriends(updatedFriends);
+    localStorage.setItem("friends", JSON.stringify(updatedFriends));
+
+    try {
+      const response = await axios.patch(`/users/${Datatoken.id}/${friendId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await response.data;
+      console.log('Profile updated successfully:', data);
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      alert('An error occurred. Please try again.');
+    }
   };
 
   const getCompanyInfo = (employerId) => {
@@ -65,9 +103,9 @@ const Posts = ({ posts, companies }) => {
                   sx={{ width: 56, height: 56, marginRight: 2 }}
                 />
               )}
-              <CardContent>
+              <CardContent sx={{ flex: 1 }}>
                 <Typography variant="h5">{post.jobTitle}</Typography>
-                <div style={{ display: "flex", alignItems: "center" }}>
+                <CompanyInfo>
                   {companyAvatar && (
                     <Avatar
                       src={companyAvatar}
@@ -79,7 +117,15 @@ const Posts = ({ posts, companies }) => {
                   <Typography variant="subtitle1" onClick={() => handleClick(post.employer)} sx={{ cursor: "pointer" }}>
                     <strong>Company:</strong> {companyName}
                   </Typography>
-                </div>
+                  {Datatoken.userType === 'employee' && (
+                 <IconButton 
+                 onClick={() => toggleFriend(post.employer)} 
+                 sx={{ ml: 1, color: friends.includes(post.employer) ? 'red' : 'green' }}>
+                 {friends.includes(post.employer) ? <PersonRemoveOutlined /> : <PersonAddOutlined />}
+               </IconButton>
+              )}
+                
+                </CompanyInfo>
                 <Typography><strong>Location:</strong> {post.jobLocation}</Typography>
                 <Typography><strong>Salary:</strong> ${post.offerSalary} / Month</Typography>
                 <Typography><strong>Type:</strong> {post.jobType}</Typography>

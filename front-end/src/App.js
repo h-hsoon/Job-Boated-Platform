@@ -18,6 +18,7 @@ import AllPosts from "./shared/AllPosts";
 import Favorites from "./shared/Favorites";
 import Posts from "./shared/Posts";
 import CompanyPosts from "./components/CompanyPosts";
+import FollowingPage from "./components/FollwingPage";
 function App() {
   const [loggedIn, setLoggedIn] = useState(!!Cookies.get('token'));
   const [Datatoken, setDatatoken] = useState(() => {
@@ -78,12 +79,13 @@ function App() {
           <Route path="/registerEmployee" element={<RegisterEmployee />} />
           <Route path="/employee/:id" element={ <EmployeeProfile tokenId={Datatoken?.id}/> } />
           <Route path="/employer/:id" element={ <EmployerProfile tokenId={Datatoken?.id} /> }/>
-          <Route path="/allposts" element={<AllPosts posts={posts} companies={companies} />} />
-          <Route path="/posts/:searchValue" element={<Posts posts={posts} companies={companies}/>} />
-          <Route path="/Categoriesposts/:categoryName" element={<Posts posts={posts} />} />
+          <Route path="/allposts" element={<AllPosts posts={posts} companies={companies} Datatoken={Datatoken}/>} />
+          <Route path="/posts/:searchValue" element={<Posts posts={posts} companies={companies}  Datatoken={Datatoken}/>} />
+          <Route path="/Categoriesposts/:categoryName" element={<Posts posts={posts}  Datatoken={Datatoken}/>} />
           <Route path="/post/:id" element={<PostDetails  companies={companies}/>} />
-          <Route path="/favorites" element={<Favorites posts={posts} companies={companies} />} />
+          <Route path="/favorites" element={<Favorites posts={posts} companies={companies}  Datatoken={Datatoken} />} />
           <Route path="/CompanyPosts" element={<CompanyPosts posts={posts} companies={companies} tokenId={Datatoken?.id} />} />
+          <Route path="/follow" element={<FollowingPage tokenId={Datatoken?.id} />} />
         </Routes>
       </div>
     </BrowserRouter>

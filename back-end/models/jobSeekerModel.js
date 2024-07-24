@@ -31,6 +31,10 @@ const jobSeekerSchama = new mongoose.Schema(
       required: false,
       default: "",
     },
+    friends: {
+      type: Array,
+      default: [],
+    },
   },
   {
     timestamps: true,

@@ -4,6 +4,10 @@ import { Card, CardContent, Typography, Button, Avatar, IconButton, Box, CssBase
 import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
+import Cookies from 'js-cookie';
+import axios from '../axiosConfig';
 
 const theme = createTheme();
 
@@ -15,14 +19,23 @@ const StyledCard = styled(Card)(({ theme }) => ({
   borderRadius: theme.spacing(2),
   boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
 }));
+const CompanyInfo = styled(Box)(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  marginBottom: theme.spacing(1),
+}));
 
-const Favorites = ({ posts, companies }) => {
+const Favorites = ({ posts, companies, Datatoken }) => {
   const [favorites, setFavorites] = useState([]);
+  const [friends, setFriends] = useState([]);
   const navigate = useNavigate();
+  const token = Cookies.get('token');
 
   useEffect(() => {
     const savedFavorites = JSON.parse(localStorage.getItem("favorites")) || [];
     setFavorites(savedFavorites);
+    const savedFriends = JSON.parse(localStorage.getItem("friends")) || [];
+    setFriends(savedFriends);
   }, []);
 
   const toggleFavorite = (postId) => {
@@ -34,6 +47,27 @@ const Favorites = ({ posts, companies }) => {
     }
     setFavorites(updatedFavorites);
     localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
+  };
+
+  const toggleFriend = async (friendId) => {
+    let updatedFriends;
+    if (friends.includes(friendId)) {
+      updatedFriends = friends.filter((id) => id !== friendId);
+    } else {
+      updatedFriends = [...friends, friendId];
+    }
+    setFriends(updatedFriends);
+    localStorage.setItem("friends", JSON.stringify(updatedFriends));
+    try {
+      await axios.patch(`/users/${Datatoken.id}/${friendId}`, {}, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      alert('An error occurred. Please try again.');
+    }
   };
 
   const favoritePosts = posts.filter((post) => favorites.includes(post._id));
@@ -79,19 +113,27 @@ const Favorites = ({ posts, companies }) => {
                   )}
                   <CardContent>
                     <Typography variant="h5">{post.jobTitle}</Typography>
-                    <Box display="flex" alignItems="center" mb={2}>
-                      {companyAvatar && (
-                        <Avatar
-                          src={companyAvatar}
-                          alt="Company avatar"
-                          onClick={() => handleClick(post.employer)}
-                          sx={{ width: 40, height: 40, cursor: "pointer", marginRight: 1 }}
-                        />
-                      )}
-                      <Typography variant="subtitle1" onClick={() => handleClick(post.employer)} sx={{ cursor: "pointer" }}>
-                        <strong>Company:</strong> {companyName}
-                      </Typography>
-                    </Box>
+                     <CompanyInfo>
+                  {companyAvatar && (
+                    <Avatar
+                      src={companyAvatar}
+                      alt="Company avatar"
+                      onClick={() => handleClick(post.employer)}
+                      sx={{ width: 40, height: 40, cursor: "pointer", marginRight: 1 }}
+                    />
+                  )}
+                  <Typography variant="subtitle1" onClick={() => handleClick(post.employer)} sx={{ cursor: "pointer" }}>
+                    <strong>Company:</strong> {companyName}
+                  </Typography>
+                  {Datatoken.userType === 'employee' && (
+                  <IconButton 
+                  onClick={() => toggleFriend(post.employer)} 
+                  sx={{ ml: 1, color: friends.includes(post.employer) ? 'red' : 'green' }}>
+                  {friends.includes(post.employer) ? <PersonRemoveIcon color="primary" /> : <PersonAddIcon />}
+                </IconButton>
+              )}
+                  
+                </CompanyInfo>
                     <Typography variant="body1"><strong>Location:</strong> {post.jobLocation}</Typography>
                     <Typography variant="body1"><strong>Salary:</strong> ${post.offerSalary} / Month</Typography>
                     <Typography variant="body1"><strong>Type:</strong> {post.jobType}</Typography>
@@ -100,9 +142,9 @@ const Favorites = ({ posts, companies }) => {
                     <Button component={Link} to={`/post/${post._id}`} variant="contained" color="primary" sx={{ mt: 2 }}>
                       Read more
                     </Button>
-                    <IconButton onClick={() => toggleFavorite(post._id)} sx={{ mt: 2 }}>
-                      {favorites.includes(post._id) ? <FavoriteIcon color="error" /> : <FavoriteBorderIcon />}
-                    </IconButton>
+                    <IconButton onClick={() => toggleFavorite(post._id)} sx={{ marginTop: 2 }}>
+                  {favorites.includes(post._id) ? <FavoriteIcon color="error" /> : <FavoriteBorderIcon />}
+                </IconButton>
                   </CardContent>
                 </StyledCard>
               );

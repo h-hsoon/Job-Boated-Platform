@@ -251,7 +251,40 @@ const post=async (req, res) => {
   }
 
 }
+const addRemoveFriend = async (req, res) => {
+  try {
+    const { id, friendId } = req.params;
+    const user = await jobSeekerModel.findById(id);
+    if (user.friends.includes(friendId)) {
+      user.friends = user.friends.filter((id) => id !== friendId);
+    } else {
+      user.friends.push(friendId);
+    }
+    await user.save();
+   
+    res.status(200).send({ success: true });
+  } catch (err) {
+    res.status(404).json({ message: err.message });
+  }
+};
 
+const getfreinds = async (req, res) => {
+  console.log("ok")
+  try {
+    const { id } = req.params;
+    const user = await jobSeekerModel.findById(id);
+    const friends = await Promise.all(
+      user.friends.map((id) => employerModel.findById(id))
+    );
+    const formattedFriends = friends.map(
+      ({ _id, companyName, email, avatar, phone }) => {
+        return { _id,  companyName, email, avatar,phone };
+      }
+    );  res.status(200).json(formattedFriends);
+  } catch (err) {
+    res.status(404).json({ message: err.message });
+  }
+};
 module.exports = {
   SignUp,
   loginUser,
@@ -261,5 +294,7 @@ module.exports = {
   updateEmployer,
   posts,
   post,
-  employers
+  employers,
+  addRemoveFriend,
+  getfreinds
 };

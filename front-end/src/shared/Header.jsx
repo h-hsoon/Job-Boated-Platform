@@ -45,6 +45,11 @@ export default function Header({ handleLogout, loggedIn, Datatoken }) {
                   Company's Posts
                 </Button>
               )}
+                 {Datatoken.userType === 'employee' && (
+                <Button color="inherit" component={Link} to={'/follow' }>
+                  following 
+                </Button>
+              )}
             </>
           ) : (
             <>
