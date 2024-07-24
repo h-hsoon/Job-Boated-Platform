@@ -77,8 +77,8 @@ function App() {
           <Route path="/employee/:id" element={ <EmployeeProfile tokenId={Datatoken?.id}/> } />
           <Route path="/employer/:id" element={ <EmployerProfile tokenId={Datatoken?.id} /> }/>
           <Route path="/allposts" element={<AllPosts posts={posts} companies={companies} />} />
-          {/* <Route path="/posts/:searchValue" element={<Posts posts={posts}/>} /> */}
-          {/* <Route path="/Categoriesposts/:categoryName" element={<Posts posts={posts} />} /> */}
+          <Route path="/posts/:searchValue" element={<Posts posts={posts}/>} />
+          <Route path="/Categoriesposts/:categoryName" element={<Posts posts={posts} />} />
           <Route path="/post/:id" element={<PostDetails  companies={companies}/>} />
           <Route path="/favorites" element={<Favorites posts={posts} />} />
         </Routes>
