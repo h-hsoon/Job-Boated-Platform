@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom';
 import logo1 from '../images/it.png';
-import logo1 from '../images/it.png';
 import logo2 from '../images/hr.png';
 import logo3 from '../images/telecommunications.png';
 import logo4 from '../images/briefcase.png';

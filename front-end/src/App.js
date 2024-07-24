@@ -13,7 +13,7 @@ import EmployeeProfile from './components/EmployeeProfile';
 import Header from "./shared/Header";
 import Parent from "./shared/Parent";
 import PostDetails from "./shared/PostDetails";
-import Posts from "./shared/Post";
+import AddPost from "./shared/AddPost";
 import AllPosts from "./shared/AllPosts";
 import Favorites from "./shared/Favorites";
 function App() {
@@ -68,7 +68,7 @@ function App() {
         {<Header handleLogout={handleLogout} loggedIn={loggedIn} Datatoken={Datatoken} />}
         <Routes>
           <Route path="/" element ={<Parent/>} />
-          <Route path="/post" element={<Posts/>}/>
+          <Route path="/post" element={<AddPost/>}/>
       
           <Route path="/login" element={loggedIn ? <Navigate to={Datatoken?.userType === 'employee' ? `/employee/${Datatoken.id}` : `/employer/${Datatoken.id}`} /> : <LoginForm onLogin={onLogin} />} />
 
@@ -77,8 +77,8 @@ function App() {
           <Route path="/employee/:id" element={ <EmployeeProfile tokenId={Datatoken?.id}/> } />
           <Route path="/employer/:id" element={ <EmployerProfile tokenId={Datatoken?.id} /> }/>
           <Route path="/allposts" element={<AllPosts posts={posts} companies={companies} />} />
-          <Route path="/posts/:searchValue" element={<Posts posts={posts}/>} />
-          <Route path="/Categoriesposts/:categoryName" element={<Posts posts={posts} />} />
+          {/* <Route path="/posts/:searchValue" element={<Posts posts={posts}/>} /> */}
+          {/* <Route path="/Categoriesposts/:categoryName" element={<Posts posts={posts} />} /> */}
           <Route path="/post/:id" element={<PostDetails  companies={companies}/>} />
           <Route path="/favorites" element={<Favorites posts={posts} />} />
         </Routes>
