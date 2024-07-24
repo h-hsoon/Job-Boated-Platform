@@ -33,7 +33,7 @@ const newJobPost = async (req, res) => {
       jobDescription,
       jobResponsibitirs,
       jobRequirements,
-      skills,
+      skills: skills.split(","),
       jobLocation,
       offerSalary,
       jobType,
@@ -52,9 +52,10 @@ const newJobPost = async (req, res) => {
     .catch((err) => {
       res.status(400).json({ message: "job post not created", err: err });
     });
-  //   console.log(req.body, req.headers.authorization);
 
-  //   res.status(200).json({ massge: "test is good" });
+  //   console.log(typeof skills.split(","));
+
+  res.status(200).json({ massge: "test is good" });
 };
 
 module.exports = {
