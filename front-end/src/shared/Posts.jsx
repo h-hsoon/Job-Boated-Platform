@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate,useParams } from "react-router-dom";
 import { Card, CardContent, Typography, Button, Avatar, IconButton, Box, CssBaseline, Container } from "@mui/material";
 import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-
 const theme = createTheme();
 
 const StyledCard = styled(Card)(({ theme }) => ({
@@ -17,6 +16,7 @@ const StyledCard = styled(Card)(({ theme }) => ({
 }));
 
 const Posts = ({ posts, companies }) => {
+  const { searchValue, categoryName } = useParams();
   const [favorites, setFavorites] = useState([]);
   const navigate = useNavigate();
 
@@ -24,6 +24,15 @@ const Posts = ({ posts, companies }) => {
     const savedFavorites = JSON.parse(localStorage.getItem("favorites")) || [];
     setFavorites(savedFavorites);
   }, []);
+
+  const filteredPosts = posts.filter(post => {
+    if (searchValue) {
+      return post.jobTitle.toLowerCase().includes(searchValue.toLowerCase());
+    } else if (categoryName) {
+      return post.jobCategory.toLowerCase() === categoryName.toLowerCase();
+    }
+    return false;
+  });
 
   const toggleFavorite = (postId) => {
     let updatedFavorites;
@@ -59,7 +68,7 @@ const Posts = ({ posts, companies }) => {
       <CssBaseline />
       <Container component="main" maxWidth="md">
         <Box sx={{ mt: 4 }}>
-          {posts.length > 0 ? (
+          {filteredPosts.length > 0 ? (
             posts.map((post) => {
               const { name: companyName, avatar: companyAvatar } = getCompanyInfo(post.employer);
 
