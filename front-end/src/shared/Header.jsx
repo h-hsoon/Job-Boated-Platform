@@ -8,7 +8,8 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { Link } from "react-router-dom";
 
 export default function Header({ handleLogout, loggedIn, Datatoken }) {
-  let url ;
+  let url;
+
   if (loggedIn && Datatoken) {
     url = Datatoken.userType === 'employee' 
       ? `/employee/${Datatoken.id}` 
@@ -29,8 +30,8 @@ export default function Header({ handleLogout, loggedIn, Datatoken }) {
             <MenuIcon />
           </IconButton>
           <Button color="inherit" component={Link} to="/">
-                Home
-              </Button>
+            Home
+          </Button>
           {loggedIn ? (
             <>
               <Button color="inherit" onClick={handleLogout} component={Link} to="/">
@@ -39,6 +40,11 @@ export default function Header({ handleLogout, loggedIn, Datatoken }) {
               <Button color="inherit" component={Link} to={url}>
                 Profile
               </Button>
+              {Datatoken.userType === 'employer' && (
+                <Button color="inherit" component={Link} to={'/companyposts' }>
+                  Company's Posts
+                </Button>
+              )}
             </>
           ) : (
             <>
@@ -53,10 +59,10 @@ export default function Header({ handleLogout, loggedIn, Datatoken }) {
               </Button>
             </>
           )}
-           <Button color="inherit" component={Link} to="/allposts">
-                All Posts
-              </Button>
-              <Button color="inherit" component={Link} to="/favorites">
+          <Button color="inherit" component={Link} to="/allposts">
+            All Posts
+          </Button>
+          <Button color="inherit" component={Link} to="/favorites">
             Favorites
           </Button>
           <Button color="inherit" component={Link} to="/post">

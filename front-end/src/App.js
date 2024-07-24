@@ -17,6 +17,7 @@ import AddPost from "./shared/AddPost";
 import AllPosts from "./shared/AllPosts";
 import Favorites from "./shared/Favorites";
 import Posts from "./shared/Posts";
+import CompanyPosts from "./components/CompanyPosts";
 function App() {
   const [loggedIn, setLoggedIn] = useState(!!Cookies.get('token'));
   const [Datatoken, setDatatoken] = useState(() => {
@@ -82,6 +83,7 @@ function App() {
           <Route path="/Categoriesposts/:categoryName" element={<Posts posts={posts} />} />
           <Route path="/post/:id" element={<PostDetails  companies={companies}/>} />
           <Route path="/favorites" element={<Favorites posts={posts} companies={companies} />} />
+          <Route path="/CompanyPosts" element={<CompanyPosts posts={posts} companies={companies} tokenId={Datatoken?.id} />} />
         </Routes>
       </div>
     </BrowserRouter>
