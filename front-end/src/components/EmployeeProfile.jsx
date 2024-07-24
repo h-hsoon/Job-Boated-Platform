@@ -144,8 +144,8 @@ const EmployeeProfile = ({ tokenId }) => {
       formData.firstName === userProfile.firstName &&
       formData.lastName === userProfile.lastName &&
       formData.phone === (userProfile.phone || "") &&
-      formData.avatar === userProfile.profilePic &&
-      (formData.avatar === userProfile.profilePic ||
+      formData.avatar === userProfile.avatar &&
+      (formData.avatar === userProfile.avatar ||
         !formData.avatar) &&
       (formData.resume === userProfile.resume || !formData.resume)
     ) {
@@ -207,12 +207,12 @@ const EmployeeProfile = ({ tokenId }) => {
       lastName: userProfile.lastName,
       email: userProfile.email,
       phone: userProfile.phone || "",
-      avatar: userProfile.profilePic || "",
+      avatar: userProfile.avatar || "",
       resume: userProfile.resume || "",
     });
     setAvatarPreview(
-      userProfile.profilePic
-        ? `http://localhost:5000/${userProfile.profilePic}`
+      userProfile.avatar
+        ? `http://localhost:5000/${userProfile.avatar}`
         : ""
     );
     setResumePreview(
