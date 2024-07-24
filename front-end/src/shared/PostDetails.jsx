@@ -1,14 +1,39 @@
+
 import React, { useEffect, useState } from "react";
 import axios from '../axiosConfig';
-import {  useNavigate } from "react-router-dom";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import { Card, CardContent, Typography, Button, Avatar, IconButton, Box, CssBaseline, Container } from "@mui/material";
+import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import LoadingSpinner from "../shared/LoadingSpinner";
+
+
+const theme = createTheme();
+
+const StyledCard = styled(Card)(({ theme }) => ({
+  margin: theme.spacing(4),
+  padding: theme.spacing(2),
+  borderRadius: theme.spacing(2),
+  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+}));
+
+const StyledAvatar = styled(Avatar)(({ theme }) => ({
+  width: theme.spacing(12),
+  height: theme.spacing(12),
+  marginBottom: theme.spacing(2),
+}));
+
+const StyledButton = styled(Button)(({ theme }) => ({
+  marginTop: theme.spacing(2),
+}));
 
 const PostDetails = ({ companies }) => {
   const { id } = useParams();
   const [post, setPost] = useState(null);
   const [favorites, setFavorites] = useState([]);
   const navigate = useNavigate();
- 
+
   useEffect(() => {
     const fetchPost = async () => {
       try {
@@ -21,6 +46,7 @@ const PostDetails = ({ companies }) => {
 
     fetchPost();
   }, [id]);
+
   useEffect(() => {
     const savedFavorites = JSON.parse(localStorage.getItem("favorites")) || [];
     setFavorites(savedFavorites);
@@ -50,36 +76,65 @@ const PostDetails = ({ companies }) => {
       avatar: null,
     };
   };
-  const handleClick=(id)=>{
-    navigate(`/employer/${id}`)
-}
+
+  const handleClick = (id) => {
+    navigate(`/employer/${id}`);
+  };
 
   if (!post) {
-    return <p>Loading...</p>;
+    return <LoadingSpinner />;
   }
 
   const { name: companyName, avatar: companyAvatar } = getCompanyInfo(post.employer);
 
   return (
-    <div>
-      {post.avatar && <img src={`http://localhost:5000/${post.avatar}`} alt="Post avatar" style={{ width: "100px", height: "100px" }} />}
-      <h1>{post.jobTitle}</h1>
-      {companyAvatar && <img src={companyAvatar} alt="Company avatar" onClick={() => handleClick(post.employer)} style={{ width: "50px", height: "50px", borderRadius: "50%" }} />}
-      <p onClick={() => handleClick(post.employer)}><strong>Company:</strong> {companyName}</p>
-      <p><strong>Description:</strong> {post.jobDescription}</p>
-      <p><strong>Responsibilities:</strong> {post.jobResponsibitirs}</p>
-      <p><strong>Requirements:</strong> {post.jobRequirements}</p>
-      <p><strong>Skills:</strong> {post.skills.join(", ")}</p>
-      <p><strong>Location:</strong> {post.jobLocation}</p>
-      <p><strong>Salary:</strong> ${post.offerSalary} / Month</p>
-      <p><strong>Type:</strong> {post.jobType}</p>
-      <p><strong>Category:</strong> {post.jobCategory}</p>
-      <p><strong>Experience:</strong> {post.experience} years</p>
-      <p><strong>Position:</strong> {post.jobPosition}</p>
-      <button onClick={() => toggleFavorite(post._id)}>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Container component="main" maxWidth="md">
+        <StyledCard>
+          <CardContent>
+            {post.avatar && (
+              <StyledAvatar
+                src={`http://localhost:5000/${post.avatar}`}
+                alt="Post avatar"
+              />
+            )}
+            <Typography variant="h4" gutterBottom>{post.jobTitle}</Typography>
+            <Box display="flex" alignItems="center" mb={2}>
+              {companyAvatar && (
+                <Avatar
+                  src={companyAvatar}
+                  alt="Company avatar"
+                  onClick={() => handleClick(post.employer)}
+                  sx={{ width: 56, height: 56, cursor: "pointer", marginRight: 2 }}
+                />
+              )}
+              <Typography variant="h6" onClick={() => handleClick(post.employer)} sx={{ cursor: "pointer", marginBottom: 2 }}>
+                <strong>Company:</strong> {companyName}
+              </Typography>
+            </Box>
+            <Typography variant="body1" paragraph><strong>Description:</strong> {post.jobDescription}</Typography>
+            <Typography variant="body1" paragraph><strong>Responsibilities:</strong> {post.jobResponsibitirs}</Typography>
+            <Typography variant="body1" paragraph><strong>Requirements:</strong> {post.jobRequirements}</Typography>
+            <Typography variant="body1" paragraph><strong>Skills:</strong> {post.skills.join(", ")}</Typography>
+            <Typography variant="body1" paragraph><strong>Location:</strong> {post.jobLocation}</Typography>
+            <Typography variant="body1" paragraph><strong>Salary:</strong> ${post.offerSalary} / Month</Typography>
+            <Typography variant="body1" paragraph><strong>Type:</strong> {post.jobType}</Typography>
+            <Typography variant="body1" paragraph><strong>Category:</strong> {post.jobCategory}</Typography>
+            <Typography variant="body1" paragraph><strong>Experience:</strong> {post.experience} years</Typography>
+            <Typography variant="body1" paragraph><strong>Position:</strong> {post.jobPosition}</Typography>
+            <Box display="flex" alignItems="center">
+              <StyledButton variant="contained" color="primary" onClick={() => toggleFavorite(post._id)}>
                 {favorites.includes(post._id) ? "Remove from Favorites" : "Add to Favorites"}
-              </button>
-    </div>
+              </StyledButton>
+              <IconButton onClick={() => toggleFavorite(post._id)} sx={{ marginLeft: 1 }}>
+                {favorites.includes(post._id) ? <FavoriteIcon color="error" /> : <FavoriteBorderIcon />}
+              </IconButton>
+            </Box>
+          </CardContent>
+        </StyledCard>
+      </Container>
+    </ThemeProvider>
   );
 };
 
