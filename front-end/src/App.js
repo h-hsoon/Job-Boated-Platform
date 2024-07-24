@@ -16,7 +16,7 @@ import PostDetails from "./shared/PostDetails";
 import AddPost from "./shared/AddPost";
 import AllPosts from "./shared/AllPosts";
 import Favorites from "./shared/Favorites";
-import Posts from "./shared/AllPosts";
+import Posts from "./shared/Posts";
 function App() {
   const [loggedIn, setLoggedIn] = useState(!!Cookies.get('token'));
   const [Datatoken, setDatatoken] = useState(() => {
