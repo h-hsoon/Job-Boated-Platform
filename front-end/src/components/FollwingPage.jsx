@@ -11,7 +11,7 @@ const StyledCard = styled(Card)(({ theme }) => ({
   alignItems: "center",
 }));
 
-const FollowingPage = ({ companies ,tokenId}) => {
+const FollowingPage = ({ tokenId}) => {
   const [friends, setFriends] = useState([]);
   const navigate = useNavigate();
   useEffect(() => {
@@ -31,9 +31,6 @@ const FollowingPage = ({ companies ,tokenId}) => {
   const handleClick = (id) => {
     navigate(`/employer/${id}`);
   };
-  if (friends === null) {
-    return <p>ok</p>;
-  }
   return (
     <div>
       {friends.length > 0 ? (
