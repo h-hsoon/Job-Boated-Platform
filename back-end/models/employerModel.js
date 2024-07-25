@@ -28,6 +28,9 @@ const employerSchama = new mongoose.Schema(
       type: String,
       required: false,
       default: "",
+    }, followers: {
+      type: Array,
+      default: [],
     },
   },
   {

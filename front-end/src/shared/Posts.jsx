@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate,useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { Card, CardContent, Typography, Button, Avatar, IconButton, Box, CssBaseline, Container } from "@mui/material";
 import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
+import Cookies from 'js-cookie';
+import axios from '../axiosConfig';
+
 const theme = createTheme();
 
 const StyledCard = styled(Card)(({ theme }) => ({
@@ -15,15 +20,35 @@ const StyledCard = styled(Card)(({ theme }) => ({
   boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
 }));
 
-const Posts = ({ posts, companies }) => {
+const Posts = ({ posts, Datatoken }) => {
   const { searchValue, categoryName } = useParams();
   const [favorites, setFavorites] = useState([]);
+  const [companies, setCompanies] = useState([]);
   const navigate = useNavigate();
+  const token = Cookies.get('token');
 
   useEffect(() => {
     const savedFavorites = JSON.parse(localStorage.getItem("favorites")) || [];
     setFavorites(savedFavorites);
-  }, []);
+
+    const fetchEmployers = async () => {
+      try {
+        const response = await axios.get('/employers');
+        const initialCompanies = response.data.map(company => ({
+          _id: company._id,
+          companyName: company.companyName,
+          avatar: company.avatar ? `http://localhost:5000/${company.avatar}` : null,
+          followers: company.followers.length,
+          isFollowing: Datatoken && company.followers.includes(Datatoken.id),
+        }));
+        setCompanies(initialCompanies);
+      } catch (error) {
+        console.error('Error fetching employers:', error);
+      }
+    };
+
+    fetchEmployers();
+  }, [Datatoken]);
 
   const filteredPosts = posts.filter(post => {
     if (searchValue) {
@@ -35,14 +60,36 @@ const Posts = ({ posts, companies }) => {
   });
 
   const toggleFavorite = (postId) => {
-    let updatedFavorites;
-    if (favorites.includes(postId)) {
-      updatedFavorites = favorites.filter((id) => id !== postId);
-    } else {
-      updatedFavorites = [...favorites, postId];
-    }
+    const updatedFavorites = favorites.includes(postId)
+      ? favorites.filter((id) => id !== postId)
+      : [...favorites, postId];
     setFavorites(updatedFavorites);
     localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
+  };
+
+  const toggleFriend = async (companyId) => {
+    try {
+      await axios.patch(`/users/${Datatoken.id}/${companyId}`, {}, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setCompanies(prevState =>
+        prevState.map(company =>
+          company._id === companyId
+            ? {
+                ...company,
+                followers: company.isFollowing ? company.followers - 1 : company.followers + 1,
+                isFollowing: !company.isFollowing,
+              }
+            : company
+        )
+      );
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      alert('An error occurred. Please try again.');
+    }
   };
 
   const getCompanyInfo = (employerId) => {
@@ -50,12 +97,16 @@ const Posts = ({ posts, companies }) => {
     if (company) {
       return {
         name: company.companyName,
-        avatar: company.avatar ? `http://localhost:5000/${company.avatar}` : null,
+        avatar: company.avatar,
+        followers: company.followers,
+        isFollowing: company.isFollowing,
       };
     }
     return {
       name: "Unknown Company",
       avatar: null,
+      followers: 0,
+      isFollowing: false,
     };
   };
 
@@ -69,8 +120,8 @@ const Posts = ({ posts, companies }) => {
       <Container component="main" maxWidth="md">
         <Box sx={{ mt: 4 }}>
           {filteredPosts.length > 0 ? (
-            posts.map((post) => {
-              const { name: companyName, avatar: companyAvatar } = getCompanyInfo(post.employer);
+            filteredPosts.map((post) => {
+              const { name: companyName, avatar: companyAvatar, followers, isFollowing } = getCompanyInfo(post.employer);
 
               return (
                 <StyledCard key={post._id}>
@@ -93,8 +144,16 @@ const Posts = ({ posts, companies }) => {
                         />
                       )}
                       <Typography variant="subtitle1" onClick={() => handleClick(post.employer)} sx={{ cursor: "pointer" }}>
-                        <strong>Company:</strong> {companyName}
+                        <strong>Company:</strong> {companyName} ({followers} followers)
                       </Typography>
+                      {Datatoken && Datatoken.userType === 'employee' && (
+                        <IconButton
+                          onClick={() => toggleFriend(post.employer)}
+                          sx={{ ml: 2, color: isFollowing ? 'red' : 'green' }}
+                        >
+                          {isFollowing ? <PersonRemoveIcon color="primary" /> : <PersonAddIcon color="primary" />}
+                        </IconButton>
+                      )}
                     </Box>
                     <Typography variant="body1"><strong>Location:</strong> {post.jobLocation}</Typography>
                     <Typography variant="body1"><strong>Salary:</strong> ${post.offerSalary} / Month</Typography>
