@@ -289,6 +289,23 @@ const getfreinds = async (req, res) => {
     res.status(404).json({ message: err.message });
   }
 };
+const getFollowers = async (req, res) => {
+  console.log("ok")
+  try {
+    const { id } = req.params;
+    const company = await employerModel.findById(id);
+    const followers = await Promise.all(
+      company.followers.map((id) => jobSeekerModel.findById(id))
+    );
+    const formattedFollowers = followers.map(
+      ({ _id, firstName, lastName, avatar, email }) => {
+        return { _id,firstName, lastName, avatar, email};
+      }
+    );  res.status(200).json(formattedFollowers);
+  } catch (err) {
+    res.status(404).json({ message: err.message });
+  }
+};
 module.exports = {
   SignUp,
   loginUser,
@@ -300,5 +317,6 @@ module.exports = {
   post,
   employers,
   addRemoveFriend,
-  getfreinds
+  getfreinds,
+  getFollowers
 };
