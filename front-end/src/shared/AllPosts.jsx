@@ -23,7 +23,7 @@ const CompanyInfo = styled(Box)(({ theme }) => ({
 
 const Posts = ({ posts, companies, Datatoken }) => {
   const [favorites, setFavorites] = useState([]);
-  const [friends, setFriends] = useState([]);
+  const [companiesState, setCompaniesState] = useState([]);
   const navigate = useNavigate();
   const token = Cookies.get('token');
 
@@ -31,9 +31,14 @@ const Posts = ({ posts, companies, Datatoken }) => {
     const savedFavorites = JSON.parse(localStorage.getItem("favorites")) || [];
     setFavorites(savedFavorites);
 
-    const savedFriends = JSON.parse(localStorage.getItem("friends")) || [];
-    setFriends(savedFriends);
-  }, []);
+    // Initialize companies state
+    const initialCompaniesState = companies.map(company => ({
+      _id: company._id,
+      followers: company.followers.length,
+      isFollowing: company.followers.includes(Datatoken.id),
+    }));
+    setCompaniesState(initialCompaniesState);
+  }, [companies, Datatoken.id]);
 
   const toggleFavorite = (postId) => {
     let updatedFavorites;
@@ -46,24 +51,27 @@ const Posts = ({ posts, companies, Datatoken }) => {
     localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
   };
 
-  const toggleFriend = async (friendId) => {
-    let updatedFriends;
-    if (friends.includes(friendId)) {
-      updatedFriends = friends.filter((id) => id !== friendId);
-    } else {
-      updatedFriends = [...friends, friendId];
-    }
-    setFriends(updatedFriends);
-    localStorage.setItem("friends", JSON.stringify(updatedFriends));
-
+  const toggleFriend = async (companyId) => {
     try {
-      const response = await axios.patch(`/users/${Datatoken.id}/${friendId}`, {
+      const response = await axios.patch(`/users/${Datatoken.id}/${companyId}`, {}, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      const data = await response.data;
+      const data = response.data;
       console.log('Profile updated successfully:', data);
+
+      setCompaniesState(prevState =>
+        prevState.map(company =>
+          company._id === companyId
+            ? {
+                ...company,
+                followers: company.isFollowing ? company.followers - 1 : company.followers + 1,
+                isFollowing: !company.isFollowing,
+              }
+            : company
+        )
+      );
     } catch (error) {
       console.error('Error updating profile:', error);
       alert('An error occurred. Please try again.');
@@ -72,14 +80,19 @@ const Posts = ({ posts, companies, Datatoken }) => {
 
   const getCompanyInfo = (employerId) => {
     const company = companies.find((company) => company._id === employerId);
-    if (company) {
+    const companyState = companiesState.find((company) => company._id === employerId);
+    if (company && companyState) {
       return {
         name: company.companyName,
+        followers: companyState.followers,
+        isFollowing: companyState.isFollowing,
         avatar: company.avatar ? `http://localhost:5000/${company.avatar}` : null,
       };
     }
     return {
       name: "Unknown Company",
+      followers: 0,
+      isFollowing: false,
       avatar: null,
     };
   };
@@ -92,7 +105,7 @@ const Posts = ({ posts, companies, Datatoken }) => {
     <div>
       {posts.length > 0 ? (
         posts.map((post) => {
-          const { name: companyName, avatar: companyAvatar } = getCompanyInfo(post.employer);
+          const { name: companyName, followers: companyFollowers, isFollowing, avatar: companyAvatar } = getCompanyInfo(post.employer);
 
           return (
             <StyledCard key={post._id}>
@@ -115,16 +128,16 @@ const Posts = ({ posts, companies, Datatoken }) => {
                     />
                   )}
                   <Typography variant="subtitle1" onClick={() => handleClick(post.employer)} sx={{ cursor: "pointer" }}>
-                    <strong>Company:</strong> {companyName}
+                    <strong>Company:</strong> {companyName} ({companyFollowers} followers)
                   </Typography>
-                  {Datatoken&&Datatoken.userType === 'employee' && (
-                 <IconButton 
-                 onClick={() => toggleFriend(post.employer)} 
-                 sx={{ ml: 1, color: friends.includes(post.employer) ? 'red' : 'green' }}>
-                 {friends.includes(post.employer) ? <PersonRemoveOutlined /> : <PersonAddOutlined />}
-               </IconButton>
-              )}
-                
+                  {Datatoken && Datatoken.userType === 'employee' && (
+                    <IconButton
+                      onClick={() => toggleFriend(post.employer)}
+                      sx={{ ml: 1, color: isFollowing ? 'red' : 'green' }}
+                    >
+                      {isFollowing ? <PersonRemoveOutlined /> : <PersonAddOutlined />}
+                    </IconButton>
+                  )}
                 </CompanyInfo>
                 <Typography><strong>Location:</strong> {post.jobLocation}</Typography>
                 <Typography><strong>Salary:</strong> ${post.offerSalary} / Month</Typography>

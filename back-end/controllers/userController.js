@@ -255,12 +255,16 @@ const addRemoveFriend = async (req, res) => {
   try {
     const { id, friendId } = req.params;
     const user = await jobSeekerModel.findById(id);
+    const company = await employerModel.findById(friendId);
     if (user.friends.includes(friendId)) {
       user.friends = user.friends.filter((id) => id !== friendId);
+      company.followers = company.followers.filter((id) => id !== id);
     } else {
       user.friends.push(friendId);
+      company.followers.push(id);
     }
     await user.save();
+    await company.save();
    
     res.status(200).send({ success: true });
   } catch (err) {
