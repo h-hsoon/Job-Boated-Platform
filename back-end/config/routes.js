@@ -54,9 +54,9 @@ router.put(
   usercontroller.updateEmployer
 );
 router.post(
-  "/test",
+  "/newJob",
   upload1.single("avatar"),
-  jobPostValidate,
+  // jobPostValidate,
   jobPostController.newJobPost
 );
 //
