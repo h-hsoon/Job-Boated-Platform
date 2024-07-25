@@ -26,9 +26,11 @@ const CompanyInfo = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(1),
 }));
 
-const Favorites = ({ posts, companies, Datatoken }) => {
+const Favorites = ({ posts, Datatoken }) => {
   const [favorites, setFavorites] = useState([]);
   const [companiesState, setCompaniesState] = useState([]);
+  const [companies, setCompanies] = useState([]);
+
   const navigate = useNavigate();
   const token = Cookies.get('token');
 
@@ -36,13 +38,25 @@ const Favorites = ({ posts, companies, Datatoken }) => {
     const savedFavorites = JSON.parse(localStorage.getItem("favorites")) || [];
     setFavorites(savedFavorites);
 
-    const initialCompaniesState = companies.map(company => ({
-      _id: company._id,
-      followers: company.followers.length,
-      isFollowing: company.followers.includes(Datatoken.id),
-    }));
-    setCompaniesState(initialCompaniesState);
-  }, [companies, Datatoken.id]);
+    const fetchEmployers = async () => {
+      try {
+        const response = await axios.get('/employers');
+        setCompanies(response.data);
+
+        // Initialize companies state
+        const initialCompaniesState = response.data.map(company => ({
+          _id: company._id,
+          followers: company.followers.length,
+          isFollowing: company.followers.includes(Datatoken.id),
+        }));
+        setCompaniesState(initialCompaniesState);
+      } catch (error) {
+        console.error('Error fetching employers:', error);
+      }
+    };
+
+    fetchEmployers();
+  }, [Datatoken.id]);
 
   const toggleFavorite = (postId) => {
     let updatedFavorites;

@@ -20,10 +20,11 @@ const StyledCard = styled(Card)(({ theme }) => ({
   boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
 }));
 
-const Posts = ({ posts, companies, Datatoken }) => {
+const Posts = ({ posts, Datatoken }) => {
   const { searchValue, categoryName } = useParams();
   const [favorites, setFavorites] = useState([]);
   const [companiesState, setCompaniesState] = useState([]);
+  const [companies, setCompanies] = useState([]);
   const navigate = useNavigate();
   const token = Cookies.get('token');
 
@@ -31,13 +32,25 @@ const Posts = ({ posts, companies, Datatoken }) => {
     const savedFavorites = JSON.parse(localStorage.getItem("favorites")) || [];
     setFavorites(savedFavorites);
 
-    const initialCompaniesState = companies.map(company => ({
-      _id: company._id,
-      followers: company.followers.length,
-      isFollowing: company.followers.includes(Datatoken.id),
-    }));
-    setCompaniesState(initialCompaniesState);
-  }, [companies, Datatoken.id]);
+    const fetchEmployers = async () => {
+      try {
+        const response = await axios.get('/employers');
+        setCompanies(response.data);
+
+        // Initialize companies state
+        const initialCompaniesState = response.data.map(company => ({
+          _id: company._id,
+          followers: company.followers.length,
+          isFollowing: company.followers.includes(Datatoken.id),
+        }));
+        setCompaniesState(initialCompaniesState);
+      } catch (error) {
+        console.error('Error fetching employers:', error);
+      }
+    };
+
+    fetchEmployers();
+  }, [Datatoken.id]);
 
   const filteredPosts = posts.filter(post => {
     if (searchValue) {

@@ -21,24 +21,36 @@ const CompanyInfo = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(1),
 }));
 
-const Posts = ({ posts, companies, Datatoken }) => {
+const Posts = ({ posts, Datatoken }) => {
   const [favorites, setFavorites] = useState([]);
   const [companiesState, setCompaniesState] = useState([]);
   const navigate = useNavigate();
   const token = Cookies.get('token');
+  const [companies, setCompanies] = useState([]);
 
   useEffect(() => {
     const savedFavorites = JSON.parse(localStorage.getItem("favorites")) || [];
     setFavorites(savedFavorites);
 
-    // Initialize companies state
-    const initialCompaniesState = companies.map(company => ({
-      _id: company._id,
-      followers: company.followers.length,
-      isFollowing: company.followers.includes(Datatoken.id),
-    }));
-    setCompaniesState(initialCompaniesState);
-  }, [companies, Datatoken.id]);
+    const fetchEmployers = async () => {
+      try {
+        const response = await axios.get('/employers');
+        setCompanies(response.data);
+
+        // Initialize companies state
+        const initialCompaniesState = response.data.map(company => ({
+          _id: company._id,
+          followers: company.followers.length,
+          isFollowing: company.followers.includes(Datatoken.id),
+        }));
+        setCompaniesState(initialCompaniesState);
+      } catch (error) {
+        console.error('Error fetching employers:', error);
+      }
+    };
+
+    fetchEmployers();
+  }, [Datatoken.id]);
 
   const toggleFavorite = (postId) => {
     let updatedFavorites;
@@ -53,14 +65,11 @@ const Posts = ({ posts, companies, Datatoken }) => {
 
   const toggleFriend = async (companyId) => {
     try {
-      const response = await axios.patch(`/users/${Datatoken.id}/${companyId}`, {}, {
+      await axios.patch(`/users/${Datatoken.id}/${companyId}`, {}, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      const data = response.data;
-      console.log('Profile updated successfully:', data);
-
       setCompaniesState(prevState =>
         prevState.map(company =>
           company._id === companyId
@@ -162,3 +171,4 @@ const Posts = ({ posts, companies, Datatoken }) => {
 };
 
 export default Posts;
+
