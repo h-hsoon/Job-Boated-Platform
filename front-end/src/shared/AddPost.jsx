@@ -2,7 +2,6 @@ import {
   Avatar,
   Button,
   TextField,
-  Grid,
   Box,
   Typography,
   Container,
@@ -12,27 +11,26 @@ import {
 import PostAddIcon from "@mui/icons-material/PostAdd";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import FileUploader from "../FileUploader/FileUploader";
 import axios from "axios";
 import Cookies from "js-cookie";
-import validator from "validator";
 
 function AddPost({ Datatoken }) {
-  const [jobs, setJobs] = useState([]);
   const [jobTitle, setJobTitle] = useState("");
   const [jobDescription, setJobDescription] = useState("");
   const [jobResponsibitirs, setJobResponsibitirs] = useState("");
   const [jobRequirements, setJobRequirements] = useState("");
   const [skills, setSkills] = useState("");
   const [jobLocation, setJobLocation] = useState("");
-  const [offerSalary, setOfferSalary] = useState("");
+  const [offerSalary, setOfferSalary] = useState();
   const [jobType, setJobType] = useState("");
   const [jobCategory, setJobCategory] = useState("");
-  const [experience, setExperience] = useState("");
+  const [experience, setExperience] = useState();
   const [jobPosition, setJobPosition] = useState("");
   const [avatar, setAvatar] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const theme = createTheme();
 
@@ -66,7 +64,10 @@ function AddPost({ Datatoken }) {
       return setError("Job Location is required");
     } else if (offerSalary === "") {
       return setError("Offer Salary is required");
-    } else if (typeof offerSalary !== "number") {
+    } else if (
+      typeof Number(offerSalary) !== "number" &&
+      Number(offerSalary) > 0
+    ) {
       return setError("Offer Salary must be a number");
     } else if (jobType === "") {
       return setError("Job Type is required");
@@ -74,7 +75,10 @@ function AddPost({ Datatoken }) {
       return setError("Job Category is required");
     } else if (experience === "") {
       return setError("Experience is required");
-    } else if (typeof experience !== "number") {
+    } else if (
+      typeof Number(experience) !== "number" &&
+      Number(experience) > 0
+    ) {
       return setError("Offer Salary must be a number");
     } else if (jobPosition === "") {
       return setError("Job Position is required");
@@ -116,6 +120,8 @@ function AddPost({ Datatoken }) {
         setJobPosition("");
         setAvatar("");
         alert("Job Added successfully!");
+        setError("");
+        navigate("/allposts");
       })
       .catch((err) => {
         setError(err.response.data.error);
@@ -319,6 +325,7 @@ function AddPost({ Datatoken }) {
                     Design & Multimedia
                   </MenuItem>
                   <MenuItem value="Human Resource">Human Resource</MenuItem>
+                  <MenuItem value="Other">Other</MenuItem>
                 </TextField>
                 <TextField
                   margin="normal"

@@ -56,7 +56,7 @@ router.put(
 router.post(
   "/newJob",
   upload1.single("avatar"),
-  // jobPostValidate,
+  jobPostValidate,
   jobPostController.newJobPost
 );
 //

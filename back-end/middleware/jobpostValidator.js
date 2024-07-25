@@ -38,7 +38,7 @@ const jobPostValidate = (req, res, next) => {
     return res.status(400).json({ error: "Job Location is required" });
   } else if (offerSalary === "") {
     return res.status(400).json({ error: "Offer Salary is required" });
-  } else if (typeof offerSalary !== "number") {
+  } else if (typeof Number(offerSalary) !== "number") {
     return res.status(400).json({ error: "Offer Salary must be a number" });
   } else if (jobType === "") {
     return res.status(400).json({ error: "Job Type is required" });
@@ -46,7 +46,7 @@ const jobPostValidate = (req, res, next) => {
     return res.status(400).json({ error: "Job Category is required" });
   } else if (experience === "") {
     return res.status(400).json({ error: "Experience is required" });
-  } else if (typeof experience !== "number") {
+  } else if (typeof Number(experience) !== "number") {
     return res.status(400).json({ error: "Offer Salary must be a number" });
   } else if (jobPosition === "") {
     return res.status(400).json({ error: "Job Position is required" });
