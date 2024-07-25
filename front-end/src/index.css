@@ -80,3 +80,25 @@ button:hover {
 .job-list li p {
   margin: 5px 0;
 }
+.card {
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.card:active {
+  transform: translateY(-5px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.logo-small {
+  height: 100px; /* Adjust the height as needed */
+  object-fit: contain;
+}
+
+.card-body {
+  text-align: center;
+}

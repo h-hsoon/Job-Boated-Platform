@@ -45,7 +45,10 @@ function RandomJobs() {
     setDisplayJobs(fullTimeJobs);
   };
 
-  const getFeaturedJobs = (e) => { }
+  const getFeaturedJobs = (e) => {
+    const freelanceJobs = allJobs.filter((job) => job.jobCategory === 'Featured');
+    setDisplayJobs(freelanceJobs);
+  };
   const getFreelanceJobs = (e) => {
     const freelanceJobs = allJobs.filter((job) => job.jobType === 'Freelance');
     setDisplayJobs(freelanceJobs);
