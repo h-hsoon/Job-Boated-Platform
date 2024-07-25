@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import axios from '../axiosConfig';
-import firstLogo from '../images/firstLogoJob.png'
+import { Link } from "react-router-dom";
 
 
 function RandomJobs() {
@@ -105,16 +105,16 @@ function RandomJobs() {
             displayJobs.length > 0 ? (
               displayJobs.map((job) => {
                 return (
-                  <div class="p-4 border rounded">
+                  <div class="p-4 border rounded" >
                     <div class="row align-items-center">
                       <div class="col-md-2">
                         <div class="text-center mb-4 mb-md-0">
-                          <a href=""><img src={`http://localhost:5000/${job.avatar}`} alt="" class="img-fluid rounded-3" /></a>
+                          <a href={`/post/${job._id}`} ><img src={`http://localhost:5000/${job.avatar}`} alt="" class="img-fluid rounded-3" /></a>
                         </div>
                       </div>
                       <div class="col-md-3">
                         <div class="mb-2 mb-md-0">
-                          <h5 class="fs-18 mb-1"><a href="" class="text-dark">{job.jobTitle}</a></h5>
+                          <h5 class="fs-18 mb-1"><a href={`/post/${job._id}`}  class="text-dark">{job.jobTitle}</a></h5>
                           <p class="text-muted fs-14 mb-0">{getCompany(job.employer).companyName}</p>
                         </div>
                       </div>
