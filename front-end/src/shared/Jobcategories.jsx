@@ -11,8 +11,8 @@ function Jobcategories() {
     { name: "IT & Software", logo: logo1 },
     { name: "Technology", logo: logo2 },
     { name: "Government", logo: logo3 },
-    { name: "Accounting/Finance", logo: logo4 },
-    { name: "Construction/Facilities", logo: logo4 },
+    { name: "Accounting& Finance", logo: logo4 },
+    { name: "Construction& Facilities", logo: logo4 },
     { name: "Tele-communications", logo: logo3 },
     { name: "Design & Multimedia", logo: logo2 },
     { name: "Human Resource", logo: logo1 }

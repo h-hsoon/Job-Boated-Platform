@@ -281,8 +281,8 @@ const getfreinds = async (req, res) => {
       user.friends.map((id) => employerModel.findById(id))
     );
     const formattedFriends = friends.map(
-      ({ _id, companyName, email, avatar, phone }) => {
-        return { _id,  companyName, email, avatar,phone };
+      ({ _id, companyName, email, avatar, phone ,followers}) => {
+        return { _id,  companyName, email, avatar,phone ,followers };
       }
     );  res.status(200).json(formattedFriends);
   } catch (err) {
