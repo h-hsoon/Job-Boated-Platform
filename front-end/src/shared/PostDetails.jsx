@@ -68,7 +68,7 @@ const PostDetails = ({ companies }) => {
       <div className="row">
         <div className="col-md-7">
           <div className="card mb-4 p-3 shadow-sm">
-            <div className="card-body">
+            <div>
               {post.avatar && (
                 <div className="row mb-3">
                   <div className="col-auto">
@@ -115,7 +115,7 @@ const PostDetails = ({ companies }) => {
         </div>
         <div className="col-md-5">
           <div className="card mb-4 p-3 shadow-sm">
-            <div className="card-body">
+            <div>
               <p className="card-text"><strong><BsCardChecklist color="#2196f3" /> Skills:</strong> {post.skills.join(', ')}</p>
               <p className="card-text"><strong><BsGeoAlt color="#4caf50" /> Location:</strong> {post.jobLocation}</p>
               <p className="card-text"><strong><BsCurrencyDollar color="#f44336" /> Salary:</strong> ${post.offerSalary} / Month</p>

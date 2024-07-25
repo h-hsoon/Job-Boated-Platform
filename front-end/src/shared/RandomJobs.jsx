@@ -7,6 +7,8 @@ function RandomJobs() {
 
   const [allJobs, setAllJobs] = useState([]);
   const [displayJobs, setDisplayJobs] = useState([]);
+  const [companies, setCompanies] = useState([]);
+  const [activeTab, setActiveTab] = useState('recent-jobs');
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -19,7 +21,19 @@ function RandomJobs() {
       }
     };
 
+    const fetchCompanies = async () => {
+      try {
+        const response = await axios.get(`/employers`);
+        setCompanies(response.data);
+        console.log(response.data);
+      } catch (error) {
+        console.error("Error fetching companies details:", error);
+      }
+    };
+
     fetchJobs();
+
+    fetchCompanies();
   }, []);
 
 
@@ -33,27 +47,35 @@ function RandomJobs() {
     });
 
     setDisplayJobs(recentJobs);
+    setActiveTab('recent-jobs');
   };
 
   const getFullTimeJobs = (e) => {
     const fullTimeJobs = allJobs.filter((job) => job.jobType === 'Full Time');
     setDisplayJobs(fullTimeJobs);
+    setActiveTab('full-time');
   };
 
   const getPartTimeJobs = (e) => {
     const fullTimeJobs = allJobs.filter((job) => job.jobType === 'Part Time');
     setDisplayJobs(fullTimeJobs);
+    setActiveTab('part-time');
   };
 
   const getFeaturedJobs = (e) => {
     const freelanceJobs = allJobs.filter((job) => job.jobCategory === 'Featured');
     setDisplayJobs(freelanceJobs);
+    setActiveTab('featured');
   };
   const getFreelanceJobs = (e) => {
     const freelanceJobs = allJobs.filter((job) => job.jobType === 'Freelance');
     setDisplayJobs(freelanceJobs);
+    setActiveTab('freelance');
   };
 
+  function getCompany(companyId) {
+    return companies.find((comp) => comp._id === companyId);
+  }
   return (
 
     <div className="row justify-content-center">
@@ -63,19 +85,19 @@ function RandomJobs() {
         <p> Post a job to tell us about your project. We'll quickly match you with the right freelancers.</p>
         <ul className="job-list-menu nav nav-pills nav-justified flex-column flex-sm-row mb-4" role="tablist">
           <li className="nav-item" role="presentation">
-            <button className="nav-link" data-bs-toggle="pill" data-bs-target="#recent-jobs" type="button" role="tab" aria-controls="recent-jobs" aria-selected="false" onClick={getRecentJobs}>Recent Jobs</button>
+            <button className={`nav-link ${activeTab === 'recent-jobs' ? 'active' : ''}`} data-bs-toggle="pill" data-bs-target="#recent-jobs" type="button" role="tab" aria-controls="recent-jobs" aria-selected="false" onClick={getRecentJobs}>Recent Jobs</button>
           </li>
           <li className="nav-item" role="presentation">
-            <button className="nav-link" data-bs-toggle="pill" data-bs-target="#featured-jobs" type="button" role="tab" aria-controls="featured-jobs" aria-selected="false" onClick={getFeaturedJobs}>Featured Jobs</button>
+            <button className={`nav-link ${activeTab === 'featured' ? 'active' : ''}`} data-bs-toggle="pill" data-bs-target="#featured-jobs" type="button" role="tab" aria-controls="featured-jobs" aria-selected="false" onClick={getFeaturedJobs}>Featured Jobs</button>
           </li>
           <li className="nav-item" role="presentation">
-            <button className="nav-link" data-bs-toggle="pill" data-bs-target="#freelancer" type="button" role="tab" aria-controls="freelancer" aria-selected="false" onClick={getFreelanceJobs}>Freelancer</button>
+            <button className={`nav-link ${activeTab === 'freelance' ? 'active' : ''}`} data-bs-toggle="pill" data-bs-target="#freelancer" type="button" role="tab" aria-controls="freelancer" aria-selected="false" onClick={getFreelanceJobs}>Freelancer</button>
           </li>
           <li className="nav-item" role="presentation">
-            <button className="nav-link" data-bs-toggle="pill" data-bs-target="#part-time" type="button" role="tab" aria-controls="part-time" aria-selected="false" onClick={getPartTimeJobs}>Part Time</button>
+            <button className={`nav-link ${activeTab === 'part-time' ? 'active' : ''}`} data-bs-toggle="pill" data-bs-target="#part-time" type="button" role="tab" aria-controls="part-time" aria-selected="false" onClick={getPartTimeJobs}>Part Time</button>
           </li>
           <li className="nav-item" role="presentation">
-            <button className="nav-link active" data-bs-toggle="pill" data-bs-target="#full-time" type="button" role="tab" aria-controls="full-time" aria-selected="false" onClick={getFullTimeJobs} >Full Time</button>
+            <button className={`nav-link ${activeTab === 'full-time' ? 'active' : ''}`} data-bs-toggle="pill" data-bs-target="#full-time" type="button" role="tab" aria-controls="full-time" aria-selected="false" onClick={getFullTimeJobs} >Full Time</button>
           </li>
         </ul>
         <div className='JobsToApply'>
@@ -87,13 +109,13 @@ function RandomJobs() {
                     <div class="row align-items-center">
                       <div class="col-md-2">
                         <div class="text-center mb-4 mb-md-0">
-                          <a href=""><img src={job.avatar} alt="" class="img-fluid rounded-3" /></a>
+                          <a href=""><img src={`http://localhost:5000/${job.avatar}`} alt="" class="img-fluid rounded-3" /></a>
                         </div>
                       </div>
                       <div class="col-md-3">
                         <div class="mb-2 mb-md-0">
                           <h5 class="fs-18 mb-1"><a href="" class="text-dark">{job.jobTitle}</a></h5>
-                          <p class="text-muted fs-14 mb-0">{job.employer.companyName}</p>
+                          <p class="text-muted fs-14 mb-0">{getCompany(job.employer).companyName}</p>
                         </div>
                       </div>
                       <div class="col-md-3">
@@ -101,7 +123,7 @@ function RandomJobs() {
                           <div class="flex-shrink-0">
                             <i class="mdi mdi-map-marker text-primary me-1"></i>
                           </div>
-                          <p class="text-muted mb-0">{job.employer.phone}</p>
+                          <p class="text-muted mb-0">{getCompany(job.employer).phone}</p>
                         </div>
                       </div>
                       <div class="col-md-2">
