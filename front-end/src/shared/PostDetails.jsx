@@ -1,32 +1,8 @@
-
 import React, { useEffect, useState } from "react";
 import axios from '../axiosConfig';
 import { useParams, useNavigate } from "react-router-dom";
-import { Card, CardContent, Typography, Button, Avatar, IconButton, Box, CssBaseline, Container } from "@mui/material";
-import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
-import FavoriteIcon from "@mui/icons-material/Favorite";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import LoadingSpinner from "../shared/LoadingSpinner";
-
-
-const theme = createTheme();
-
-const StyledCard = styled(Card)(({ theme }) => ({
-  margin: theme.spacing(4),
-  padding: theme.spacing(2),
-  borderRadius: theme.spacing(2),
-  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-}));
-
-const StyledAvatar = styled(Avatar)(({ theme }) => ({
-  width: theme.spacing(12),
-  height: theme.spacing(12),
-  marginBottom: theme.spacing(2),
-}));
-
-const StyledButton = styled(Button)(({ theme }) => ({
-  marginTop: theme.spacing(2),
-}));
+import { BsHeart, BsHeartFill, BsBriefcase, BsBuilding, BsGeoAlt, BsCurrencyDollar, BsCardChecklist, BsClockHistory, BsPerson } from 'react-icons/bs';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const PostDetails = ({ companies }) => {
   const { id } = useParams();
@@ -82,59 +58,76 @@ const PostDetails = ({ companies }) => {
   };
 
   if (!post) {
-    return <LoadingSpinner />;
+    return <div className="spinner-border" role="status"><span className="visually-hidden">Loading...</span></div>;
   }
 
   const { name: companyName, avatar: companyAvatar } = getCompanyInfo(post.employer);
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Container component="main" maxWidth="md">
-        <StyledCard>
-          <CardContent>
-            {post.avatar && (
-              <StyledAvatar
-                src={`http://localhost:5000/${post.avatar}`}
-                alt="Post avatar"
-              />
-            )}
-            <Typography variant="h4" gutterBottom>{post.jobTitle}</Typography>
-            <Box display="flex" alignItems="center" mb={2}>
-              {companyAvatar && (
-                <Avatar
-                  src={companyAvatar}
-                  alt="Company avatar"
-                  onClick={() => handleClick(post.employer)}
-                  sx={{ width: 56, height: 56, cursor: "pointer", marginRight: 2 }}
-                />
+    <div className="container my-5">
+      <div className="row">
+        <div className="col-md-7">
+          <div className="card mb-4 p-3 shadow-sm">
+            <div className="card-body">
+              {post.avatar && (
+                <div className="row mb-3">
+                  <div className="col-auto">
+                    <img src={`http://localhost:5000/${post.avatar}`} className="rounded-circle" width="64" height="64" alt="Post avatar" />
+                  </div>
+                  <div className="col">
+                    <h4 className="card-title">{post.jobTitle}</h4>
+                  </div>
+                </div>
               )}
-              <Typography variant="h6" onClick={() => handleClick(post.employer)} sx={{ cursor: "pointer", marginBottom: 2 }}>
-                <strong>Company:</strong> {companyName}
-              </Typography>
-            </Box>
-            <Typography variant="body1" paragraph><strong>Description:</strong> {post.jobDescription}</Typography>
-            <Typography variant="body1" paragraph><strong>Responsibilities:</strong> {post.jobResponsibitirs}</Typography>
-            <Typography variant="body1" paragraph><strong>Requirements:</strong> {post.jobRequirements}</Typography>
-            <Typography variant="body1" paragraph><strong>Skills:</strong> {post.skills.join(", ")}</Typography>
-            <Typography variant="body1" paragraph><strong>Location:</strong> {post.jobLocation}</Typography>
-            <Typography variant="body1" paragraph><strong>Salary:</strong> ${post.offerSalary} / Month</Typography>
-            <Typography variant="body1" paragraph><strong>Type:</strong> {post.jobType}</Typography>
-            <Typography variant="body1" paragraph><strong>Category:</strong> {post.jobCategory}</Typography>
-            <Typography variant="body1" paragraph><strong>Experience:</strong> {post.experience} years</Typography>
-            <Typography variant="body1" paragraph><strong>Position:</strong> {post.jobPosition}</Typography>
-            <Box display="flex" alignItems="center">
-              <StyledButton variant="contained" color="primary" onClick={() => toggleFavorite(post._id)}>
-                {favorites.includes(post._id) ? "Remove from Favorites" : "Add to Favorites"}
-              </StyledButton>
-              <IconButton onClick={() => toggleFavorite(post._id)} sx={{ marginLeft: 1 }}>
-                {favorites.includes(post._id) ? <FavoriteIcon color="error" /> : <FavoriteBorderIcon />}
-              </IconButton>
-            </Box>
-          </CardContent>
-        </StyledCard>
-      </Container>
-    </ThemeProvider>
+              <div className="row mb-3">
+                {companyAvatar && (
+                  <div className="col-auto">
+                    <img
+                      src={companyAvatar}
+                      className="rounded-circle"
+                      width="64"
+                      height="64"
+                      alt="Company avatar"
+                      onClick={() => handleClick(post.employer)}
+                      style={{ cursor: 'pointer' }}
+                    />
+                  </div>
+                )}
+                <div className="col">
+                  <h6 className="card-subtitle mb-2 text-muted" onClick={() => handleClick(post.employer)} style={{ cursor: 'pointer' }}>
+                    <BsBuilding color="#ff9800" /> <strong>Company:</strong> {companyName}
+                  </h6>
+                </div>
+              </div>
+              <div className="d-flex align-items-center">
+                <button className="btn btn-primary" onClick={() => toggleFavorite(post._id)}>
+                  {favorites.includes(post._id) ? "Remove from Favorites" : "Add to Favorites"}
+                </button>
+                <button className="btn btn-link ms-2" onClick={() => toggleFavorite(post._id)}>
+                  {favorites.includes(post._id) ? <BsHeartFill color="red" /> : <BsHeart />}
+                </button>
+              </div>
+              <p className="card-text mt-3"><strong>Description:</strong> {post.jobDescription}</p>
+              <p className="card-text"><strong>Responsibilities:</strong> {post.jobResponsibilities}</p>
+              <p className="card-text"><strong>Requirements:</strong> {post.jobRequirements}</p>
+            </div>
+          </div>
+        </div>
+        <div className="col-md-5">
+          <div className="card mb-4 p-3 shadow-sm">
+            <div className="card-body">
+              <p className="card-text"><strong><BsCardChecklist color="#2196f3" /> Skills:</strong> {post.skills.join(', ')}</p>
+              <p className="card-text"><strong><BsGeoAlt color="#4caf50" /> Location:</strong> {post.jobLocation}</p>
+              <p className="card-text"><strong><BsCurrencyDollar color="#f44336" /> Salary:</strong> ${post.offerSalary} / Month</p>
+              <p className="card-text"><strong><BsBriefcase color="#9c27b0" /> Type:</strong> {post.jobType}</p>
+              <p className="card-text"><strong><BsCardChecklist color="#ffeb3b" /> Category:</strong> {post.jobCategory}</p>
+              <p className="card-text"><strong><BsClockHistory color="#00bcd4" /> Experience:</strong> {post.experience} years</p>
+              <p className="card-text"><strong><BsPerson color="#ff5722" /> Position:</strong> {post.jobPosition}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 
