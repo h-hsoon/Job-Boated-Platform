@@ -1,5 +1,3 @@
-var validator = require("validator");
-
 const jobPostValidate = (req, res, next) => {
   const {
     jobTitle,
@@ -14,56 +12,47 @@ const jobPostValidate = (req, res, next) => {
     experience,
     jobPosition,
   } = req.body;
-  if (validator.isEmpty(jobTitle)) {
+  if (jobTitle === "") {
     return res.status(400).json({ error: "Job Title is required" });
-  }
-  if (validator.isEmpty(jobDescription)) {
+  } else if (jobDescription === "") {
     return res.status(400).json({ error: "Job Description is required" });
-  } else if (validator.isLength(jobDescription, { min: 20 })) {
+  } else if (jobDescription.length < 25) {
     return res
       .status(400)
-      .json({ error: "Job Description must be at least 30 characters" });
-  }
-  if (validator.isEmpty(jobResponsibitirs)) {
+      .json({ error: "Job Description  must be at least 15 characters" });
+  } else if (jobResponsibitirs === "") {
     return res.status(400).json({ error: "Job Responsibitirs is required" });
-  } else if (validator.isLength(jobResponsibitirs, { min: 15 })) {
+  } else if (jobResponsibitirs.length < 15) {
     return res
       .status(400)
       .json({ error: "Job Responsibitirs must be at least 15 characters" });
-  }
-  if (validator.isEmpty(jobRequirements)) {
+  } else if (jobRequirements === "") {
     return res.status(400).json({ error: "Job Requirements is required" });
-  } else if (validator.isLength(jobRequirements, { min: 10 })) {
+  } else if (jobRequirements.length < 10) {
     return res
       .status(400)
       .json({ error: "Job Requirements must be at least 10 characters" });
-  }
-  if (validator.isEmpty(skills)) {
+  } else if (skills === "") {
     return res.status(400).json({ error: "Skills is required" });
-  }
-  if (validator.isEmpty(jobLocation)) {
+  } else if (jobLocation === "") {
     return res.status(400).json({ error: "Job Location is required" });
-  }
-  if (validator.isEmpty(offerSalary)) {
+  } else if (offerSalary === "") {
     return res.status(400).json({ error: "Offer Salary is required" });
-  } else if (validator.isNumeric(offerSalary)) {
+  } else if (typeof Number(offerSalary) !== "number") {
     return res.status(400).json({ error: "Offer Salary must be a number" });
-  }
-  if (validator.isEmpty(jobType)) {
+  } else if (jobType === "") {
     return res.status(400).json({ error: "Job Type is required" });
-  }
-  if (validator.isEmpty(jobCategory)) {
+  } else if (jobCategory === "") {
     return res.status(400).json({ error: "Job Category is required" });
-  }
-  if (validator.isEmpty(experience)) {
+  } else if (experience === "") {
     return res.status(400).json({ error: "Experience is required" });
-  } else if (validator.isNumeric(experience)) {
+  } else if (typeof Number(experience) !== "number") {
     return res.status(400).json({ error: "Offer Salary must be a number" });
-  }
-  if (validator.isEmpty(jobPosition)) {
+  } else if (jobPosition === "") {
     return res.status(400).json({ error: "Job Position is required" });
+  } else {
+    return next();
   }
-  next();
 };
 
 module.exports = jobPostValidate;

@@ -8,11 +8,12 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { Link } from "react-router-dom";
 
 export default function Header({ handleLogout, loggedIn, Datatoken }) {
-  let url ;
+  let url;
   if (loggedIn && Datatoken) {
-    url = Datatoken.userType === 'employee' 
-      ? `/employee/${Datatoken.id}` 
-      : `/employer/${Datatoken.id}`;
+    url =
+      Datatoken.userType === "employee"
+        ? `/employee/${Datatoken.id}`
+        : `/employer/${Datatoken.id}`;
   }
 
   return (
@@ -29,11 +30,16 @@ export default function Header({ handleLogout, loggedIn, Datatoken }) {
             <MenuIcon />
           </IconButton>
           <Button color="inherit" component={Link} to="/">
-                Home
-              </Button>
+            Home
+          </Button>
           {loggedIn ? (
             <>
-              <Button color="inherit" onClick={handleLogout} component={Link} to="/">
+              <Button
+                color="inherit"
+                onClick={handleLogout}
+                component={Link}
+                to="/"
+              >
                 Logout
               </Button>
               <Button color="inherit" component={Link} to={url}>
@@ -53,15 +59,17 @@ export default function Header({ handleLogout, loggedIn, Datatoken }) {
               </Button>
             </>
           )}
-           <Button color="inherit" component={Link} to="/allposts">
-                All Posts
-              </Button>
-              <Button color="inherit" component={Link} to="/favorites">
+          <Button color="inherit" component={Link} to="/allposts">
+            All Posts
+          </Button>
+          <Button color="inherit" component={Link} to="/favorites">
             Favorites
           </Button>
-          <Button color="inherit" component={Link} to="/post">
-            Add post
-          </Button>
+          {loggedIn && (
+            <Button color="inherit" component={Link} to="/post">
+              Add post
+            </Button>
+          )}
         </Toolbar>
       </AppBar>
     </Box>

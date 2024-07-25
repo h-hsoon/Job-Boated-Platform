@@ -4,10 +4,10 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const newJobPost = async (req, res) => {
-  // const token = req.headers.authorization;
-  // var decoded = jwt.verify(token, "employer");
-  // const { userType, id } = decoded.user;
-  const id = req.headers.authorization;
+  const token = req.headers.authorization;
+  var decoded = jwt.verify(token, "employer");
+  const { userType, id } = decoded.user;
+  // const id = req.headers.authorization;
   const {
     jobTitle,
     jobDescription,
@@ -21,28 +21,30 @@ const newJobPost = async (req, res) => {
     experience,
     jobPosition,
   } = req.body;
+  console.log(req.body);
   const avatar = req.file ? req.file.path : "";
   const employer = await employerModel.findById(id);
   if (!employer) {
     return res.status(400).json({ message: "employer not found" });
   }
 
-  const jobPost = await jobPostModel
-    .create({
-      jobTitle,
-      jobDescription,
-      jobResponsibitirs,
-      jobRequirements,
-      skills: skills.split(","),
-      jobLocation,
-      offerSalary,
-      jobType,
-      jobCategory,
-      experience,
-      jobPosition,
-      avatar,
-      employer: id,
-    })
+  const jobPost = new jobPostModel({
+    jobTitle,
+    jobDescription,
+    jobResponsibitirs,
+    jobRequirements,
+    skills: skills.split(","),
+    jobLocation,
+    offerSalary,
+    jobType,
+    jobCategory,
+    experience,
+    jobPosition,
+    avatar,
+    employer: employer._id,
+  });
+  jobPost
+    .save()
     .then((data) => {
       console.log(data);
       res
@@ -50,12 +52,12 @@ const newJobPost = async (req, res) => {
         .json({ message: "job post created successfully", data: data });
     })
     .catch((err) => {
-      res.status(400).json({ message: "job post not created", err: err });
+      res.status(400).json({ error: "job post not created", err: err });
     });
 
   //   console.log(typeof skills.split(","));
 
-  res.status(200).json({ massge: "test is good" });
+  // res.status(200).json({ massge: "test is good" });
 };
 
 module.exports = {
