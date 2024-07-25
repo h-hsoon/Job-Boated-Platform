@@ -28,9 +28,7 @@ const CompanyInfo = styled(Box)(({ theme }) => ({
 
 const Favorites = ({ posts, Datatoken }) => {
   const [favorites, setFavorites] = useState([]);
-  const [companiesState, setCompaniesState] = useState([]);
   const [companies, setCompanies] = useState([]);
-
   const navigate = useNavigate();
   const token = Cookies.get('token');
 
@@ -41,15 +39,14 @@ const Favorites = ({ posts, Datatoken }) => {
     const fetchEmployers = async () => {
       try {
         const response = await axios.get('/employers');
-        setCompanies(response.data);
-
-        // Initialize companies state
-        const initialCompaniesState = response.data.map(company => ({
+        const initialCompanies = response.data.map(company => ({
           _id: company._id,
+          companyName: company.companyName,
+          avatar: company.avatar ? `http://localhost:5000/${company.avatar}` : null,
           followers: company.followers.length,
-          isFollowing: Datatoken&&company.followers.includes(Datatoken.id),
+          isFollowing: Datatoken && company.followers.includes(Datatoken.id),
         }));
-        setCompaniesState(initialCompaniesState);
+        setCompanies(initialCompanies);
       } catch (error) {
         console.error('Error fetching employers:', error);
       }
@@ -59,12 +56,9 @@ const Favorites = ({ posts, Datatoken }) => {
   }, []);
 
   const toggleFavorite = (postId) => {
-    let updatedFavorites;
-    if (favorites.includes(postId)) {
-      updatedFavorites = favorites.filter((id) => id !== postId);
-    } else {
-      updatedFavorites = [...favorites, postId];
-    }
+    const updatedFavorites = favorites.includes(postId)
+      ? favorites.filter((id) => id !== postId)
+      : [...favorites, postId];
     setFavorites(updatedFavorites);
     localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
   };
@@ -77,7 +71,7 @@ const Favorites = ({ posts, Datatoken }) => {
         },
       });
 
-      setCompaniesState(prevState =>
+      setCompanies(prevState =>
         prevState.map(company =>
           company._id === companyId
             ? {
@@ -98,13 +92,12 @@ const Favorites = ({ posts, Datatoken }) => {
 
   const getCompanyInfo = (employerId) => {
     const company = companies.find((company) => company._id === employerId);
-    const companyState = companiesState.find((company) => company._id === employerId);
-    if (company && companyState) {
+    if (company) {
       return {
         name: company.companyName,
-        avatar: company.avatar ? `http://localhost:5000/${company.avatar}` : null,
-        followers: companyState.followers,
-        isFollowing: companyState.isFollowing,
+        avatar: company.avatar,
+        followers: company.followers,
+        isFollowing: company.isFollowing,
       };
     }
     return {

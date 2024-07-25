@@ -29,7 +29,7 @@ const FollowingPage = ({ tokenId}) => {
   }, []);
 
   const handleClick = (id) => {
-    navigate(`/employer/${id}`);
+    navigate(`/CompaniesPosts/${id}`);
   };
   return (
     <div>
