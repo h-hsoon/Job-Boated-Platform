@@ -125,7 +125,7 @@ const Posts = ({ posts, companies, Datatoken}) => {
                       <Typography variant="subtitle1" onClick={() => handleClick(post.employer)} sx={{ cursor: "pointer" }}>
                         <strong>Company:</strong> {companyName}
                       </Typography>
-                      {Datatoken.userType === 'employee' && (
+                      {Datatoken&&Datatoken.userType === 'employee' && (
                 <IconButton onClick={() => toggleFriend(post.employer)} sx={{ ml: 2 }}>
                 {friends.includes(post.employer) ? <PersonRemoveIcon color="primary" /> : <PersonAddIcon color="primary" />}
               </IconButton>
