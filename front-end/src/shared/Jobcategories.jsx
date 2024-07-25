@@ -34,10 +34,10 @@ function Jobcategories() {
           <div className="row">
             {categories.map((category, index) => (
               <div key={index} className="col-md-3 mb-4">
-                <div className="card">
+                <div className="card" onClick={() => handleClick(category.name)}>
                   <img src={category.logo} className="card-img-top logo-small" alt={category.name} />
                   <div className="card-body">
-                    <h5 className="card-title" onClick={() => handleClick(category.name)}>{category.name}</h5>
+                    <h5 className="card-title" >{category.name}</h5>
                   </div>
                 </div>
               </div>
