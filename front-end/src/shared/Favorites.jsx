@@ -47,7 +47,7 @@ const Favorites = ({ posts, Datatoken }) => {
         const initialCompaniesState = response.data.map(company => ({
           _id: company._id,
           followers: company.followers.length,
-          isFollowing: company.followers.includes(Datatoken.id),
+          isFollowing: Datatoken&&company.followers.includes(Datatoken.id),
         }));
         setCompaniesState(initialCompaniesState);
       } catch (error) {
@@ -56,7 +56,7 @@ const Favorites = ({ posts, Datatoken }) => {
     };
 
     fetchEmployers();
-  }, [Datatoken.id]);
+  }, []);
 
   const toggleFavorite = (postId) => {
     let updatedFavorites;
