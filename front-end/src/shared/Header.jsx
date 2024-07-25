@@ -9,11 +9,11 @@ import { Link } from "react-router-dom";
 
 export default function Header({ handleLogout, loggedIn, Datatoken }) {
   let url;
-
   if (loggedIn && Datatoken) {
-    url = Datatoken.userType === 'employee' 
-      ? `/employee/${Datatoken.id}` 
-      : `/employer/${Datatoken.id}`;
+    url =
+      Datatoken.userType === "employee"
+        ? `/employee/${Datatoken.id}`
+        : `/employer/${Datatoken.id}`;
   }
 
   return (
@@ -34,7 +34,12 @@ export default function Header({ handleLogout, loggedIn, Datatoken }) {
           </Button>
           {loggedIn ? (
             <>
-              <Button color="inherit" onClick={handleLogout} component={Link} to="/">
+              <Button
+                color="inherit"
+                onClick={handleLogout}
+                component={Link}
+                to="/"
+              >
                 Logout
               </Button>
               <Button color="inherit" component={Link} to={url}>
@@ -70,9 +75,11 @@ export default function Header({ handleLogout, loggedIn, Datatoken }) {
           <Button color="inherit" component={Link} to="/favorites">
             Favorites
           </Button>
-          <Button color="inherit" component={Link} to="/post">
-            Add post
-          </Button>
+          {loggedIn && (
+            <Button color="inherit" component={Link} to="/post">
+              Add post
+            </Button>
+          )}
         </Toolbar>
       </AppBar>
     </Box>
