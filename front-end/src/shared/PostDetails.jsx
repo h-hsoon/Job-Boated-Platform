@@ -1,14 +1,20 @@
 import React, { useEffect, useState } from "react";
 import axios from '../axiosConfig';
+import Cookies from 'js-cookie';
 import { useParams, useNavigate } from "react-router-dom";
 import { BsHeart, BsHeartFill, BsBriefcase, BsBuilding, BsGeoAlt, BsCurrencyDollar, BsCardChecklist, BsClockHistory, BsPerson } from 'react-icons/bs';
+import { IconButton} from "@mui/material";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const PostDetails = ({ companies }) => {
+const PostDetails = ({ Datatoken }) => {
   const { id } = useParams();
   const [post, setPost] = useState(null);
   const [favorites, setFavorites] = useState([]);
+  const [companies, setCompanies] = useState([]);
   const navigate = useNavigate();
+  const token = Cookies.get('token');
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -26,6 +32,24 @@ const PostDetails = ({ companies }) => {
   useEffect(() => {
     const savedFavorites = JSON.parse(localStorage.getItem("favorites")) || [];
     setFavorites(savedFavorites);
+
+    const fetchEmployers = async () => {
+      try {
+        const response = await axios.get('/employers');
+        const initialCompanies = response.data.map(company => ({
+          _id: company._id,
+          companyName: company.companyName,
+          avatar: company.avatar ? `http://localhost:5000/${company.avatar}` : null,
+          followers: company.followers.length,
+          isFollowing: Datatoken && company.followers.includes(Datatoken.id),
+        }));
+        setCompanies(initialCompanies);
+      } catch (error) {
+        console.error('Error fetching employers:', error);
+      }
+    };
+
+    fetchEmployers();
   }, []);
 
   const toggleFavorite = (postId) => {
@@ -39,17 +63,45 @@ const PostDetails = ({ companies }) => {
     localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
   };
 
+  const toggleFriend = async (companyId) => {
+    try {
+      await axios.patch(`/users/${Datatoken.id}/${companyId}`, {}, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setCompanies(prevState =>
+        prevState.map(company =>
+          company._id === companyId
+            ? {
+                ...company,
+                followers: company.isFollowing ? company.followers - 1 : company.followers + 1,
+                isFollowing: !company.isFollowing,
+              }
+            : company
+        )
+      );
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      alert('An error occurred. Please try again.');
+    }
+  };
   const getCompanyInfo = (employerId) => {
     const company = companies.find((company) => company._id === employerId);
     if (company) {
       return {
         name: company.companyName,
-        avatar: company.avatar ? `http://localhost:5000/${company.avatar}` : null,
+        avatar: company.avatar,
+        followers: company.followers,
+        isFollowing: company.isFollowing,
       };
     }
     return {
       name: "Unknown Company",
       avatar: null,
+      followers: 0,
+      isFollowing: false,
     };
   };
 
@@ -61,7 +113,7 @@ const PostDetails = ({ companies }) => {
     return <div className="spinner-border" role="status"><span className="visually-hidden">Loading...</span></div>;
   }
 
-  const { name: companyName, avatar: companyAvatar } = getCompanyInfo(post.employer);
+  const { name: companyName, avatar: companyAvatar, followers, isFollowing } = getCompanyInfo(post.employer);
 
   return (
     <div className="container my-5">
@@ -95,8 +147,16 @@ const PostDetails = ({ companies }) => {
                 )}
                 <div className="col">
                   <h6 className="card-subtitle mb-2 text-muted" onClick={() => handleClick(post.employer)} style={{ cursor: 'pointer' }}>
-                    <BsBuilding color="#ff9800" /> <strong>Company:</strong> {companyName}
+                    <BsBuilding color="#ff9800" /> <strong>Company:</strong> {companyName} ({followers} followers)
                   </h6>
+                  {Datatoken && Datatoken.userType === 'employee' && (
+                        <IconButton 
+                          onClick={() => toggleFriend(post.employer)}
+                          sx={{ ml: 1, color: isFollowing ? 'red' : 'green' }}
+                        >
+                          {isFollowing ? <PersonRemoveIcon color="primary" /> : <PersonAddIcon />}
+                        </IconButton>
+                      )}
                 </div>
               </div>
               <div className="d-flex align-items-center">
