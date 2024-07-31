@@ -13,13 +13,11 @@ import {
   Card,
   CardContent,
   Grid,
-  IconButton,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
-import DeleteIcon from "@mui/icons-material/Delete";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import LoadingSpinner from "../shared/LoadingSpinner";
 
@@ -112,17 +110,17 @@ const EmployeeProfile = ({ tokenId }) => {
     });
   };
 
-  const handleDeleteFile = (field) => {
-    setFormData({
-      ...formData,
-      [field]: "",
-    });
-    if (field === "avatar") {
-      setAvatarPreview("");
-    } else if (field === "resume") {
-      setResumePreview("");
-    }
-  };
+  // const handleDeleteFile = (field) => {
+  //   setFormData({
+  //     ...formData,
+  //     [field]: "",
+  //   });
+  //   if (field === "avatar") {
+  //     setAvatarPreview("");
+  //   } else if (field === "resume") {
+  //     setResumePreview("");
+  //   }
+  // };
 
   const handleSubmit = async (e) => {
     console.log(formData);

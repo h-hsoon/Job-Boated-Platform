@@ -49,7 +49,7 @@ const CompaniesPosts = ({ posts, Datatoken }) => {
     };
 
     fetchEmployers();
-  }, []);
+  }, [Datatoken]);
 
   const toggleFavorite = (postId) => {
     const updatedFavorites = favorites.includes(postId)

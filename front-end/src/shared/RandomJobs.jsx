@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import axios from "../axiosConfig";
-import firstLogo from "../images/firstLogoJob.png";
 
 function RandomJobs() {
   const [allJobs, setAllJobs] = useState([]);
   const [displayJobs, setDisplayJobs] = useState([]);
+  const [companies, setCompanies] = useState([]);
+  const [activeTab, setActiveTab] = useState("recent-jobs");
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -17,7 +18,19 @@ function RandomJobs() {
       }
     };
 
+    const fetchCompanies = async () => {
+      try {
+        const response = await axios.get(`/employers`);
+        setCompanies(response.data);
+        console.log(response.data);
+      } catch (error) {
+        console.error("Error fetching companies details:", error);
+      }
+    };
+
     fetchJobs();
+
+    fetchCompanies();
   }, []);
 
   const getRecentJobs = (e) => {
@@ -30,16 +43,19 @@ function RandomJobs() {
     });
 
     setDisplayJobs(recentJobs);
+    setActiveTab("recent-jobs");
   };
 
   const getFullTimeJobs = (e) => {
     const fullTimeJobs = allJobs.filter((job) => job.jobType === "Full Time");
     setDisplayJobs(fullTimeJobs);
+    setActiveTab("full-time");
   };
 
   const getPartTimeJobs = (e) => {
     const fullTimeJobs = allJobs.filter((job) => job.jobType === "Part Time");
     setDisplayJobs(fullTimeJobs);
+    setActiveTab("part-time");
   };
 
   const getFeaturedJobs = (e) => {
@@ -47,12 +63,17 @@ function RandomJobs() {
       (job) => job.jobCategory === "Featured"
     );
     setDisplayJobs(freelanceJobs);
+    setActiveTab("featured");
   };
   const getFreelanceJobs = (e) => {
     const freelanceJobs = allJobs.filter((job) => job.jobType === "Freelance");
     setDisplayJobs(freelanceJobs);
+    setActiveTab("freelance");
   };
 
+  function getCompany(companyId) {
+    return companies.find((comp) => comp._id === companyId);
+  }
   return (
     <div className="row justify-content-center">
       <div className="col-lg-8">
@@ -68,7 +89,9 @@ function RandomJobs() {
         >
           <li className="nav-item" role="presentation">
             <button
-              className="nav-link"
+              className={`nav-link ${
+                activeTab === "recent-jobs" ? "active" : ""
+              }`}
               data-bs-toggle="pill"
               data-bs-target="#recent-jobs"
               type="button"
@@ -82,7 +105,7 @@ function RandomJobs() {
           </li>
           <li className="nav-item" role="presentation">
             <button
-              className="nav-link"
+              className={`nav-link ${activeTab === "featured" ? "active" : ""}`}
               data-bs-toggle="pill"
               data-bs-target="#featured-jobs"
               type="button"
@@ -96,7 +119,9 @@ function RandomJobs() {
           </li>
           <li className="nav-item" role="presentation">
             <button
-              className="nav-link"
+              className={`nav-link ${
+                activeTab === "freelance" ? "active" : ""
+              }`}
               data-bs-toggle="pill"
               data-bs-target="#freelancer"
               type="button"
@@ -110,7 +135,9 @@ function RandomJobs() {
           </li>
           <li className="nav-item" role="presentation">
             <button
-              className="nav-link"
+              className={`nav-link ${
+                activeTab === "part-time" ? "active" : ""
+              }`}
               data-bs-toggle="pill"
               data-bs-target="#part-time"
               type="button"
@@ -124,7 +151,9 @@ function RandomJobs() {
           </li>
           <li className="nav-item" role="presentation">
             <button
-              className="nav-link active"
+              className={`nav-link ${
+                activeTab === "full-time" ? "active" : ""
+              }`}
               data-bs-toggle="pill"
               data-bs-target="#full-time"
               type="button"
@@ -145,7 +174,7 @@ function RandomJobs() {
                   <div class="row align-items-center">
                     <div class="col-md-2">
                       <div class="text-center mb-4 mb-md-0">
-                        <a href="">
+                        <a href={`/post/${job._id}`}>
                           <img
                             src={`http://localhost:5000/${job.avatar}`}
                             alt=""
@@ -157,12 +186,12 @@ function RandomJobs() {
                     <div class="col-md-3">
                       <div class="mb-2 mb-md-0">
                         <h5 class="fs-18 mb-1">
-                          <a href="" class="text-dark">
+                          <a href={`/post/${job._id}`} class="text-dark">
                             {job.jobTitle}
                           </a>
                         </h5>
                         <p class="text-muted fs-14 mb-0">
-                          {job.employer.companyName}
+                          {getCompany(job.employer).companyName}
                         </p>
                       </div>
                     </div>
@@ -171,7 +200,9 @@ function RandomJobs() {
                         <div class="flex-shrink-0">
                           <i class="mdi mdi-map-marker text-primary me-1"></i>
                         </div>
-                        <p class="text-muted mb-0">{job.employer.phone}</p>
+                        <p class="text-muted mb-0">
+                          {getCompany(job.employer).phone}
+                        </p>
                       </div>
                     </div>
                     <div class="col-md-2">
