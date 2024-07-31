@@ -312,10 +312,10 @@ function AddPost({ Datatoken }) {
                   <MenuItem value="IT & Software">IT & Software</MenuItem>
                   <MenuItem value="Technology">Technology</MenuItem>
                   <MenuItem value="Government">Government</MenuItem>
-                  <MenuItem value="Accounting& Finance">
+                  <MenuItem value="Accounting/Finance">
                     Accounting/Finance
                   </MenuItem>
-                  <MenuItem value="Construction& Facilities">
+                  <MenuItem value="Construction/Facilities">
                     Construction/Facilities
                   </MenuItem>
                   <MenuItem value="Tele-communications">

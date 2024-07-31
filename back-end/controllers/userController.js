@@ -224,33 +224,39 @@ const updateEmployer = async (req, res) => {
   }
 };
 
-const posts = (req, res)=>{
-  jobPostModel.find().sort({ createdAt: -1 }).then(posts => {
-    console.log(posts)
-    res.json(posts);
-  }).catch(err => console.log(err));
-}
-const employers = (req, res)=>{
-  employerModel.find().select("-password").then(employers => {
-    console.log(employers)
-    res.json(employers);
-  }).catch(err => console.log(err));
-}
-const post=async (req, res) => {
+const posts = (req, res) => {
+  jobPostModel
+    .find()
+    .sort({ createdAt: -1 })
+    .then((posts) => {
+      console.log(posts);
+      res.json(posts);
+    })
+    .catch((err) => console.log(err));
+};
+const employers = (req, res) => {
+  employerModel
+    .find()
+    .select("-password")
+    .then((employers) => {
+      console.log(employers);
+      res.json(employers);
+    })
+    .catch((err) => console.log(err));
+};
+const post = async (req, res) => {
   try {
-  const { id } = req.params;
- postData = await jobPostModel.findById(id);
-  if (!postData) {
-    console.log("postData not found")
-    return res.status(404).json({ Error: "postData not found" });
-  }
-  res.status(200).json(postData);
-  }
-  catch (error) {
+    const { id } = req.params;
+    postData = await jobPostModel.findById(id);
+    if (!postData) {
+      console.log("postData not found");
+      return res.status(404).json({ Error: "postData not found" });
+    }
+    res.status(200).json(postData);
+  } catch (error) {
     console.error("Error during get post:", error);
   }
-
-}
+};
 const addRemoveFriend = async (req, res) => {
   try {
     const { id, friendId } = req.params;
@@ -265,7 +271,7 @@ const addRemoveFriend = async (req, res) => {
     }
     await user.save();
     await company.save();
-   
+
     res.status(200).send({ success: true });
   } catch (err) {
     res.status(404).json({ message: err.message });
@@ -273,7 +279,7 @@ const addRemoveFriend = async (req, res) => {
 };
 
 const getfreinds = async (req, res) => {
-  console.log("ok")
+  console.log("ok");
   try {
     const { id } = req.params;
     const user = await jobSeekerModel.findById(id);
@@ -281,27 +287,11 @@ const getfreinds = async (req, res) => {
       user.friends.map((id) => employerModel.findById(id))
     );
     const formattedFriends = friends.map(
-      ({ _id, companyName, email, avatar, phone ,followers}) => {
-        return { _id,  companyName, email, avatar,phone ,followers };
+      ({ _id, companyName, email, avatar, phone }) => {
+        return { _id, companyName, email, avatar, phone };
       }
-    );  res.status(200).json(formattedFriends);
-  } catch (err) {
-    res.status(404).json({ message: err.message });
-  }
-};
-const getFollowers = async (req, res) => {
-  console.log("ok")
-  try {
-    const { id } = req.params;
-    const company = await employerModel.findById(id);
-    const followers = await Promise.all(
-      company.followers.map((id) => jobSeekerModel.findById(id))
     );
-    const formattedFollowers = followers.map(
-      ({ _id, firstName, lastName, avatar, email }) => {
-        return { _id,firstName, lastName, avatar, email};
-      }
-    );  res.status(200).json(formattedFollowers);
+    res.status(200).json(formattedFriends);
   } catch (err) {
     res.status(404).json({ message: err.message });
   }
@@ -318,5 +308,4 @@ module.exports = {
   employers,
   addRemoveFriend,
   getfreinds,
-  getFollowers
 };

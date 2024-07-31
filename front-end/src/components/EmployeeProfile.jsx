@@ -145,8 +145,7 @@ const EmployeeProfile = ({ tokenId }) => {
       formData.lastName === userProfile.lastName &&
       formData.phone === (userProfile.phone || "") &&
       formData.avatar === userProfile.avatar &&
-      (formData.avatar === userProfile.avatar ||
-        !formData.avatar) &&
+      (formData.avatar === userProfile.avatar || !formData.avatar) &&
       (formData.resume === userProfile.resume || !formData.resume)
     ) {
       setError("No changes detected.");
@@ -211,9 +210,7 @@ const EmployeeProfile = ({ tokenId }) => {
       resume: userProfile.resume || "",
     });
     setAvatarPreview(
-      userProfile.avatar
-        ? `http://localhost:5000/${userProfile.avatar}`
-        : ""
+      userProfile.avatar ? `http://localhost:5000/${userProfile.avatar}` : ""
     );
     setResumePreview(
       userProfile.resume ? `http://localhost:5000/${userProfile.resume}` : ""
@@ -265,8 +262,7 @@ const EmployeeProfile = ({ tokenId }) => {
                   }}
                   src={
                     avatarPreview ||
-                    (formData.avatar &&
-                    formData.avatar instanceof File
+                    (formData.avatar && formData.avatar instanceof File
                       ? URL.createObjectURL(formData.avatar)
                       : "")
                   }

@@ -1,16 +1,12 @@
+// src/components/EmployerProfileDetails.jsx
 import React from 'react';
-import { Typography, Box, Button, Grid, Avatar, Card, CardContent } from '@mui/material';
+import { Typography, Box, Button, Grid } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
-import { useNavigate } from "react-router-dom";
-const EmployerProfileDetails = ({ userProfile, avatarPreview, followers, isOwner, onEditClick }) => {
-  const navigate = useNavigate();
 
-  const handleClick = (id) => {
-    navigate(`/employee/${id}`);
-  };
+const EmployerProfileDetails = ({ userProfile,  avatarPreview, isOwner, onEditClick }) => {
   return (
     <Box className="profile-details" sx={{ mt: 2 }}>
-      <Box
+       <Box
         sx={{
           display: "flex",
           justifyContent: "center",
@@ -74,40 +70,6 @@ const EmployerProfileDetails = ({ userProfile, avatarPreview, followers, isOwner
           </Grid>
         </Grid>
       )}
-      <Box sx={{ mt: 4 }}>
-        <Typography variant="h6" gutterBottom align="center" fontWeight="bold">
-          Followers
-        </Typography>
-        <Grid container spacing={2} justifyContent="center">
-          {followers.length>0?
-             followers.map((follower) => (
-              <Grid item xs={12} sm={6} md={4} key={follower._id}>
-                <Card sx={{ display: 'flex', alignItems: 'center', padding: 2 }}>
-                  <Avatar
-                    src={`http://localhost:5000/${follower.avatar}`}
-                    alt={`${follower.firstName} ${follower.lastName}`}
-                    sx={{ width: 56, height: 56, marginRight: 2 }}
-                    onClick={() => handleClick(follower._id)}
-                  />
-                  <CardContent>
-                    <Typography variant="body1"  onClick={() => handleClick(follower._id)} fontWeight="bold">
-                      {follower.firstName} {follower.lastName}
-                    </Typography>
-                    <Typography variant="body2" color="textSecondary">
-                      {follower.email}
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
-            )):
-            <Card sx={{ display: 'flex', alignItems: 'center', padding: 2,marginTop:1 }}>
-               <Typography variant="body1" fontWeight="bold">
-               No Followers Yet
-             </Typography>
-             </Card>}
-             
-        </Grid>
-      </Box>
     </Box>
   );
 };

@@ -13,7 +13,6 @@ const theme = createTheme();
 
 const EmployerProfile = ({ tokenId }) => {
   const { id } = useParams();
-  const [followers, setFollowers] = useState([]);
   const [userProfile, setUserProfile] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
@@ -53,19 +52,7 @@ const EmployerProfile = ({ tokenId }) => {
 
     fetchProfile();
   }, [id, tokenId]);
-  useEffect(() => {
-    const fetchfreinds = async () => {
-        try {
-          const response = await axios.get(`/followers/${id}`);
-          setFollowers(response.data);
-        console.log(response.data)
-        } catch (error) {
-          console.error('Error fetching Followers:', error);
-        }
-      };
-  
-      fetchfreinds();
-  }, []);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -227,7 +214,6 @@ const EmployerProfile = ({ tokenId }) => {
                 <EmployerProfileDetails
                   userProfile={userProfile}
                   avatarPreview={avatarPreview}
-                  followers={followers}
                   isOwner={isOwner}
                   onEditClick={() => setIsEditing(true)}
                 />

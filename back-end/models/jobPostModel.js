@@ -64,6 +64,12 @@ const jobPostsSchama = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Employer",
     },
+    applers: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "JobSeeker",
+      },
+    ],
   },
   {
     timestamps: true,
