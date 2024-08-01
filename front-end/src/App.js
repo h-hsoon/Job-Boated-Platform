@@ -107,7 +107,9 @@ function App() {
           <Route path="/posts/:searchValue" element={<Posts posts={posts}   Datatoken={Datatoken}/>} />
           <Route path="/Categoriesposts/:categoryName" element={<Posts posts={posts}  Datatoken={Datatoken}/>} />
           <Route path="/post/:id" element={<PostDetails  Datatoken={Datatoken}/>} />
-          <Route path="/favorites" element={<Favorites posts={posts} Datatoken={Datatoken} />} />
+          {loggedIn && Datatoken?.userType === "employee" ? (
+            <Route path="/favorites" element={<Favorites posts={posts} Datatoken={Datatoken} />}  />
+          ) : null}
           <Route path="/CompanyPosts" element={<CompanyPosts posts={posts} companies={companies} tokenId={Datatoken?.id} />} />
           <Route path="/follow" element={<FollowingPage tokenId={Datatoken?.id} />} />
           <Route path="/CompaniesPosts/:companyId"  element={<CompaniesPosts posts={posts}  Datatoken={Datatoken} />} />

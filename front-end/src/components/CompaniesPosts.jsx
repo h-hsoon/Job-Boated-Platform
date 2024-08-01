@@ -16,13 +16,10 @@ const StyledCard = styled(Card)(({ theme }) => ({
 
 const CompaniesPosts = ({ posts, Datatoken}) => {
     const {companyId}= useParams()
-  const [favorites, setFavorites] = useState([]);
   const [companies, setCompanies] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const savedFavorites = JSON.parse(localStorage.getItem("favorites")) || [];
-    setFavorites(savedFavorites);
     const fetchEmployers = async () => {
       try {
         const response = await axios.get('/employers');
@@ -42,13 +39,6 @@ const CompaniesPosts = ({ posts, Datatoken}) => {
     fetchEmployers();
   }, []);
 
-  const toggleFavorite = (postId) => {
-    const updatedFavorites = favorites.includes(postId)
-      ? favorites.filter((id) => id !== postId)
-      : [...favorites, postId];
-    setFavorites(updatedFavorites);
-    localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
-  };
   const toggleFriend = async (companyId) => {
     try {
       await axios.patch(`/users/${Datatoken.id}/${companyId}`, {});
@@ -139,9 +129,6 @@ const CompaniesPosts = ({ posts, Datatoken}) => {
                 <Button component={Link} to={`/post/${post._id}`} variant="contained" color="primary" sx={{ marginTop: 2 }}>
                   Read more
                 </Button>
-                <IconButton onClick={() => toggleFavorite(post._id)} sx={{ marginTop: 2 }}>
-                  {favorites.includes(post._id) ? <FavoriteIcon color="error" /> : <FavoriteBorderIcon />}
-                </IconButton>
               </CardContent>
             </StyledCard>
           );

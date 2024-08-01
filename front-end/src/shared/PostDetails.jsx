@@ -150,16 +150,13 @@ const PostDetails = ({ Datatoken }) => {
                     <BsBuilding color="#ff9800" /> <strong>Company:</strong> {companyName} ({followers} followers)
                   </h6>
                   {Datatoken && Datatoken.userType === 'employee' && (
-                        <IconButton 
+                    <>
+                    <IconButton 
                           onClick={() => toggleFriend(post.employer)}
                           sx={{ ml: 1, color: isFollowing ? 'red' : 'green' }}
                         >
                           {isFollowing ? <PersonRemoveIcon color="primary" /> : <PersonAddIcon />}
-                        </IconButton>
-                      )}
-                </div>
-              </div>
-              <div className="d-flex align-items-center">
+                        </IconButton>  <div className="d-flex align-items-center">
                 <button className="btn btn-primary" onClick={() => toggleFavorite(post._id)}>
                   {favorites.includes(post._id) ? "Remove from Favorites" : "Add to Favorites"}
                 </button>
@@ -167,6 +164,19 @@ const PostDetails = ({ Datatoken }) => {
                   {favorites.includes(post._id) ? <BsHeartFill color="red" /> : <BsHeart />}
                 </button>
               </div>
+                    </>
+                        
+                      )}
+                </div>
+              </div>
+              {/* <div className="d-flex align-items-center">
+                <button className="btn btn-primary" onClick={() => toggleFavorite(post._id)}>
+                  {favorites.includes(post._id) ? "Remove from Favorites" : "Add to Favorites"}
+                </button>
+                <button className="btn btn-link ms-2" onClick={() => toggleFavorite(post._id)}>
+                  {favorites.includes(post._id) ? <BsHeartFill color="red" /> : <BsHeart />}
+                </button>
+              </div> */}
               <p className="card-text mt-3"><strong>Description:</strong> {post.jobDescription}</p>
               <p className="card-text"><strong>Responsibilities:</strong> {post.jobResponsibilities}</p>
               <p className="card-text"><strong>Requirements:</strong> {post.jobRequirements}</p>

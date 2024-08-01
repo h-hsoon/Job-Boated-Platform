@@ -1,24 +1,66 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Cookies from 'js-cookie';
-import axios from '../axiosConfig';
-import { PersonAddOutlined, PersonRemoveOutlined } from "@mui/icons-material";
-import { Card, CardContent, Typography, Button, Avatar, IconButton, Box } from "@mui/material";
-import { styled } from "@mui/material/styles";
+import { Card, CardContent, Typography, Button, Avatar, IconButton, Box, CssBaseline, Container } from "@mui/material";
+import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
+import Cookies from 'js-cookie';
+import axios from '../axiosConfig';
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#6200ea',
+    },
+    secondary: {
+      main: '#03dac6',
+    },
+  },
+  typography: {
+    fontFamily: 'Roboto, sans-serif',
+  },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: '20px',
+          textTransform: 'none',
+        },
+      },
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          borderRadius: '16px',
+          boxShadow: '0 6px 18px rgba(0,0,0,0.1)',
+        },
+      },
+    },
+  },
+});
 
 const StyledCard = styled(Card)(({ theme }) => ({
   margin: theme.spacing(2),
   padding: theme.spacing(2),
   display: "flex",
   alignItems: "center",
+  borderRadius: theme.spacing(2),
+  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+  transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
+  '&:hover': {
+    transform: "scale(1.05)",
+    boxShadow: "0 8px 16px rgba(0, 0, 0, 0.2)",
+  },
 }));
 
-const CompanyInfo = styled(Box)(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  marginBottom: theme.spacing(1),
+const StyledButton = styled(Button)(({ theme }) => ({
+  marginTop: theme.spacing(2),
+  transition: "background-color 0.3s ease",
+  '&:hover': {
+    backgroundColor: theme.palette.primary.dark,
+  },
 }));
 
 const Posts = ({ posts, Datatoken }) => {
@@ -39,7 +81,7 @@ const Posts = ({ posts, Datatoken }) => {
           companyName: company.companyName,
           avatar: company.avatar ? `http://localhost:5000/${company.avatar}` : null,
           followers: company.followers.length,
-          isFollowing: Datatoken&&company.followers.includes(Datatoken.id),
+          isFollowing: Datatoken && company.followers.includes(Datatoken.id),
         }));
         setCompanies(initialCompanies);
       } catch (error) {
@@ -48,15 +90,12 @@ const Posts = ({ posts, Datatoken }) => {
     };
 
     fetchEmployers();
-  }, []);
+  }, [Datatoken]);
 
   const toggleFavorite = (postId) => {
-    let updatedFavorites;
-    if (favorites.includes(postId)) {
-      updatedFavorites = favorites.filter((id) => id !== postId);
-    } else {
-      updatedFavorites = [...favorites, postId];
-    }
+    const updatedFavorites = favorites.includes(postId)
+      ? favorites.filter((id) => id !== postId)
+      : [...favorites, postId];
     setFavorites(updatedFavorites);
     localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
   };
@@ -91,16 +130,16 @@ const Posts = ({ posts, Datatoken }) => {
     if (company) {
       return {
         name: company.companyName,
+        avatar: company.avatar,
         followers: company.followers,
         isFollowing: company.isFollowing,
-        avatar: company.avatar,
       };
     }
     return {
       name: "Unknown Company",
+      avatar: null,
       followers: 0,
       isFollowing: false,
-      avatar: null,
     };
   };
 
@@ -109,62 +148,69 @@ const Posts = ({ posts, Datatoken }) => {
   };
 
   return (
-    <div>
-      {posts.length > 0 ? (
-        posts.map((post) => {
-          const { name: companyName, followers: companyFollowers, isFollowing, avatar: companyAvatar } = getCompanyInfo(post.employer);
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Container component="main" maxWidth="md">
+        <Box sx={{ mt: 4 }}>
+          {posts.length > 0 ? (
+            posts.map((post) => {
+              const { name: companyName, avatar: companyAvatar, followers, isFollowing } = getCompanyInfo(post.employer);
 
-          return (
-            <StyledCard key={post._id}>
-              {post.avatar && (
-                <Avatar
-                  src={`http://localhost:5000/${post.avatar}`}
-                  alt="Post avatar"
-                  sx={{ width: 56, height: 56, marginRight: 2 }}
-                />
-              )}
-              <CardContent sx={{ flex: 1 }}>
-                <Typography variant="h5">{post.jobTitle}</Typography>
-                <CompanyInfo>
-                  {companyAvatar && (
+              return (
+                <StyledCard key={post._id}>
+                  {post.avatar && (
                     <Avatar
-                      src={companyAvatar}
-                      alt="Company avatar"
-                      onClick={() => handleClick(post.employer)}
-                      sx={{ width: 40, height: 40, cursor: "pointer", marginRight: 1 }}
+                      src={`http://localhost:5000/${post.avatar}`}
+                      alt="Post avatar"
+                      sx={{ width: 56, height: 56, marginRight: 2 }}
                     />
                   )}
-                  <Typography variant="subtitle1" onClick={() => handleClick(post.employer)} sx={{ cursor: "pointer" }}>
-                    <strong>Company:</strong> {companyName} ({companyFollowers} followers)
-                  </Typography>
-                  {Datatoken && Datatoken.userType === 'employee' && (
-                    <IconButton
-                      onClick={() => toggleFriend(post.employer)}
-                      sx={{ ml: 1, color: isFollowing ? 'red' : 'green' }}
-                    >
-                      {isFollowing ? <PersonRemoveOutlined /> : <PersonAddOutlined />}
-                    </IconButton>
-                  )}
-                </CompanyInfo>
-                <Typography><strong>Location:</strong> {post.jobLocation}</Typography>
-                <Typography><strong>Salary:</strong> ${post.offerSalary} / Month</Typography>
-                <Typography><strong>Type:</strong> {post.jobType}</Typography>
-                <Typography><strong>Experience:</strong> {post.experience} years</Typography>
-                <Typography><strong>Category:</strong> {post.jobCategory}</Typography>
-                <Button component={Link} to={`/post/${post._id}`} variant="contained" color="primary" sx={{ marginTop: 2 }}>
-                  Read more
-                </Button>
-                <IconButton onClick={() => toggleFavorite(post._id)} sx={{ marginTop: 2 }}>
-                  {favorites.includes(post._id) ? <FavoriteIcon color="error" /> : <FavoriteBorderIcon />}
-                </IconButton>
-              </CardContent>
-            </StyledCard>
-          );
-        })
-      ) : (
-        <Typography>No posts found.</Typography>
-      )}
-    </div>
+                  <CardContent>
+                    <Typography variant="h5" color="primary">{post.jobTitle}</Typography>
+                    <Box display="flex" alignItems="center" mb={2}>
+                      {companyAvatar && (
+                        <Avatar
+                          src={companyAvatar}
+                          alt="Company avatar"
+                          onClick={() => handleClick(post.employer)}
+                          sx={{ width: 40, height: 40, cursor: "pointer", marginRight: 1 }}
+                        />
+                      )}
+                      <Typography variant="subtitle1" onClick={() => handleClick(post.employer)} sx={{ cursor: "pointer" }}>
+                        <strong>Company:</strong> {companyName} ({followers} followers)
+                      </Typography>
+                      {Datatoken && Datatoken.userType === 'employee' && (
+                        <IconButton
+                          onClick={() => toggleFriend(post.employer)}
+                          sx={{ ml: 2, color: isFollowing ? 'red' : 'green' }}
+                        >
+                          {isFollowing ? <PersonRemoveIcon color="primary" /> : <PersonAddIcon color="primary" />}
+                        </IconButton>
+                      )}
+                    </Box>
+                    <Typography variant="body1"><strong>Location:</strong> {post.jobLocation}</Typography>
+                    <Typography variant="body1"><strong>Salary:</strong> ${post.offerSalary} / Month</Typography>
+                    <Typography variant="body1"><strong>Type:</strong> {post.jobType}</Typography>
+                    <Typography variant="body1"><strong>Experience:</strong> {post.experience} years</Typography>
+                    <Typography variant="body1"><strong>Category:</strong> {post.jobCategory}</Typography>
+                    <StyledButton component={Link} to={`/post/${post._id}`} variant="contained" color="primary">
+                      Read more
+                    </StyledButton>
+                    {Datatoken && Datatoken.userType === 'employee' && (
+
+                    <IconButton onClick={() => toggleFavorite(post._id)} sx={{ mt: 2 }}>
+                      {favorites.includes(post._id) ? <FavoriteIcon color="error" /> : <FavoriteBorderIcon />}
+                    </IconButton>  )}
+                  </CardContent>
+                </StyledCard>
+              );
+            })
+          ) : (
+            <Typography variant="h6" align="center" sx={{ mt: 4 }}>No posts found.</Typography>
+          )}
+        </Box>
+      </Container>
+    </ThemeProvider>
   );
 };
 
