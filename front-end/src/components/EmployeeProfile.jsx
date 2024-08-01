@@ -13,13 +13,11 @@ import {
   Card,
   CardContent,
   Grid,
-  IconButton,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
-import DeleteIcon from "@mui/icons-material/Delete";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import LoadingSpinner from "../shared/LoadingSpinner";
 
@@ -112,17 +110,17 @@ const EmployeeProfile = ({ tokenId }) => {
     });
   };
 
-  const handleDeleteFile = (field) => {
-    setFormData({
-      ...formData,
-      [field]: "",
-    });
-    if (field === "avatar") {
-      setAvatarPreview("");
-    } else if (field === "resume") {
-      setResumePreview("");
-    }
-  };
+  // const handleDeleteFile = (field) => {
+  //   setFormData({
+  //     ...formData,
+  //     [field]: "",
+  //   });
+  //   if (field === "avatar") {
+  //     setAvatarPreview("");
+  //   } else if (field === "resume") {
+  //     setResumePreview("");
+  //   }
+  // };
 
   const handleSubmit = async (e) => {
     console.log(formData);
@@ -145,8 +143,7 @@ const EmployeeProfile = ({ tokenId }) => {
       formData.lastName === userProfile.lastName &&
       formData.phone === (userProfile.phone || "") &&
       formData.avatar === userProfile.avatar &&
-      (formData.avatar === userProfile.avatar ||
-        !formData.avatar) &&
+      (formData.avatar === userProfile.avatar || !formData.avatar) &&
       (formData.resume === userProfile.resume || !formData.resume)
     ) {
       setError("No changes detected.");
@@ -211,9 +208,7 @@ const EmployeeProfile = ({ tokenId }) => {
       resume: userProfile.resume || "",
     });
     setAvatarPreview(
-      userProfile.avatar
-        ? `http://localhost:5000/${userProfile.avatar}`
-        : ""
+      userProfile.avatar ? `http://localhost:5000/${userProfile.avatar}` : ""
     );
     setResumePreview(
       userProfile.resume ? `http://localhost:5000/${userProfile.resume}` : ""
@@ -265,8 +260,7 @@ const EmployeeProfile = ({ tokenId }) => {
                   }}
                   src={
                     avatarPreview ||
-                    (formData.avatar &&
-                    formData.avatar instanceof File
+                    (formData.avatar && formData.avatar instanceof File
                       ? URL.createObjectURL(formData.avatar)
                       : "")
                   }

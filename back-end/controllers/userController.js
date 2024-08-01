@@ -30,7 +30,6 @@ const registerEmployer = (req, res) => {
 };
 
 const SignUp = async (req, res) => {
-  console.log(req.body);
   const { firstName, lastName, email, password, confirmPassword, phone } =
     req.body;
   const avatar = req.file ? req.file.path : "";
@@ -86,7 +85,6 @@ const SignUp = async (req, res) => {
         });
       })
       .catch((error) => {
-        console.log(error);
         return res.status(400).json({
           error: "Something wrong with saving user!",
         });
@@ -121,11 +119,11 @@ const UpdateEmployee = async (req, res) => {
   // Find the employee by ID
   const employee = await jobSeekerModel
     .findByIdAndUpdate(id, updatedEmployee)
-    .then((employee) => {
+    .then(() => {
       return res.status(200).send({ success: true });
     })
     .catch((error) => {
-      console.log(error);
+      return res.status(400).send({ error: error.message });
     });
 };
 
@@ -201,12 +199,8 @@ const updateEmployer = async (req, res) => {
   const token = req.headers.authorization;
   var decoded = jwt.verify(token, "employer");
   const { userType, id } = decoded.user;
-  const { email } = req.body;
   const avatar = req.file ? req.file.path : "";
-  console.log(userType);
-  console.log(req.body, req.file.path);
   if (userType === "employee") {
-    // await jobSeekerModel.findOneAndUpdate({ email }, { ...req.body });
     res.status(401).send({ error: "not unauthenticated" });
   } else {
     const updateEmployer = {
@@ -224,33 +218,40 @@ const updateEmployer = async (req, res) => {
   }
 };
 
-const posts = (req, res)=>{
-  jobPostModel.find().sort({ createdAt: -1 }).then(posts => {
-    console.log(posts)
-    res.json(posts);
-  }).catch(err => console.log(err));
-}
-const employers = (req, res)=>{
-  employerModel.find().select("-password").then(employers => {
-    console.log(employers)
-    res.json(employers);
-  }).catch(err => console.log(err));
-}
-const post=async (req, res) => {
+const posts = (req, res) => {
+  jobPostModel
+    .find()
+    .sort({ createdAt: -1 })
+    .then((posts) => {
+      res.json(posts);
+    })
+    .catch((err) => {
+      return res.status(400).send({ error: err.message });
+    });
+};
+const employers = (req, res) => {
+  employerModel
+    .find()
+    .select("-password")
+    .then((employers) => {
+      res.json(employers);
+    })
+    .catch((error) => {
+      return res.status(400).send({ error: error.message });
+    });
+};
+const post = async (req, res) => {
   try {
-  const { id } = req.params;
- postData = await jobPostModel.findById(id);
-  if (!postData) {
-    console.log("postData not found")
-    return res.status(404).json({ Error: "postData not found" });
+    const { id } = req.params;
+    postData = await jobPostModel.findById(id);
+    if (!postData) {
+      return res.status(404).json({ Error: "postData not found" });
+    }
+    res.status(200).json(postData);
+  } catch (error) {
+    return res.status(400).send({ error: error.message });
   }
-  res.status(200).json(postData);
-  }
-  catch (error) {
-    console.error("Error during get post:", error);
-  }
-
-}
+};
 const addRemoveFriend = async (req, res) => {
   try {
     const { id, friendId } = req.params;
@@ -265,7 +266,7 @@ const addRemoveFriend = async (req, res) => {
     }
     await user.save();
     await company.save();
-   
+
     res.status(200).send({ success: true });
   } catch (err) {
     res.status(404).json({ message: err.message });
@@ -273,7 +274,7 @@ const addRemoveFriend = async (req, res) => {
 };
 
 const getfreinds = async (req, res) => {
-  console.log("ok")
+  console.log("ok");
   try {
     const { id } = req.params;
     const user = await jobSeekerModel.findById(id);
@@ -281,10 +282,11 @@ const getfreinds = async (req, res) => {
       user.friends.map((id) => employerModel.findById(id))
     );
     const formattedFriends = friends.map(
-      ({ _id, companyName, email, avatar, phone ,followers}) => {
-        return { _id,  companyName, email, avatar,phone ,followers };
+      ({ _id, companyName, email, avatar, phone, followers }) => {
+        return { _id, companyName, email, avatar, phone, followers };
       }
-    );  res.status(200).json(formattedFriends);
+    );
+    res.status(200).json(formattedFriends);
   } catch (err) {
     res.status(404).json({ message: err.message });
   }

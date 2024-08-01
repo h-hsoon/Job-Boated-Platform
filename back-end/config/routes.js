@@ -63,7 +63,11 @@ router.post(
 router.get("/posts", usercontroller.posts);
 router.get("/employers", usercontroller.employers);
 router.get("/posts/:id", usercontroller.post);
-router.patch("/users/:id/:friendId",usercontroller.addRemoveFriend);
-router.get("/friends/:id", usercontroller.getfreinds)
+router.patch("/users/:id/:friendId", usercontroller.addRemoveFriend);
+router.get("/friends/:id", usercontroller.getfreinds);
 router.get("/followers/:id", usercontroller.getFollowers)
+
+router.post("/apply", jobPostController.applyToJob);
+router.get("/applers/:id", jobPostController.getApplers);
+
 module.exports = router;

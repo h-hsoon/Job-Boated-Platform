@@ -2,8 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Card, CardContent, Typography, Button, Avatar, IconButton } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import FavoriteIcon from "@mui/icons-material/Favorite";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
 import axios from '../axiosConfig';
@@ -14,25 +12,27 @@ const StyledCard = styled(Card)(({ theme }) => ({
   alignItems: "center",
 }));
 
-const CompaniesPosts = ({ posts, Datatoken}) => {
-    const {companyId}= useParams()
+const CompaniesPosts = ({ posts, Datatoken }) => {
+  const { companyId } = useParams();
   const [companies, setCompanies] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchEmployers = async () => {
       try {
-        const response = await axios.get('/employers');
-        const initialCompanies = response.data.map(company => ({
+        const response = await axios.get("/employers");
+        const initialCompanies = response.data.map((company) => ({
           _id: company._id,
           companyName: company.companyName,
-          avatar: company.avatar ? `http://localhost:5000/${company.avatar}` : null,
+          avatar: company.avatar
+            ? `http://localhost:5000/${company.avatar}`
+            : null,
           followers: company.followers.length,
           isFollowing: Datatoken && company.followers.includes(Datatoken.id),
         }));
         setCompanies(initialCompanies);
       } catch (error) {
-        console.error('Error fetching employers:', error);
+        console.error("Error fetching employers:", error);
       }
     };
 
@@ -43,20 +43,22 @@ const CompaniesPosts = ({ posts, Datatoken}) => {
     try {
       await axios.patch(`/users/${Datatoken.id}/${companyId}`, {});
 
-      setCompanies(prevState =>
-        prevState.map(company =>
+      setCompanies((prevState) =>
+        prevState.map((company) =>
           company._id === companyId
             ? {
                 ...company,
-                followers: company.isFollowing ? company.followers - 1 : company.followers + 1,
+                followers: company.isFollowing
+                  ? company.followers - 1
+                  : company.followers + 1,
                 isFollowing: !company.isFollowing,
               }
             : company
         )
       );
     } catch (error) {
-      console.error('Error updating profile:', error);
-      alert('An error occurred. Please try again.');
+      console.error("Error updating profile:", error);
+      alert("An error occurred. Please try again.");
     }
   };
   const getCompanyInfo = (employerId) => {
