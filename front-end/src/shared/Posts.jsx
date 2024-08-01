@@ -163,9 +163,10 @@ const Posts = ({ posts, Datatoken }) => {
                     <Button component={Link} to={`/post/${post._id}`} variant="contained" color="primary" sx={{ mt: 2 }}>
                       Read more
                     </Button>
+                    {Datatoken && Datatoken.userType === 'employee' && (
                     <IconButton onClick={() => toggleFavorite(post._id)} sx={{ mt: 2 }}>
                       {favorites.includes(post._id) ? <FavoriteIcon color="error" /> : <FavoriteBorderIcon />}
-                    </IconButton>
+                    </IconButton> )}
                   </CardContent>
                 </StyledCard>
               );

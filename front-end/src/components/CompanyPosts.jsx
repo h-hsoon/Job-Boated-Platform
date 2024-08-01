@@ -1,4 +1,3 @@
-import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Card, CardContent, Typography, Button, Avatar, IconButton } from "@mui/material";
 import { styled } from "@mui/material/styles";
@@ -13,24 +12,7 @@ const StyledCard = styled(Card)(({ theme }) => ({
 }));
 
 const CompanyPosts = ({ posts, companies, tokenId }) => {
-  const [favorites, setFavorites] = useState([]);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const savedFavorites = JSON.parse(localStorage.getItem("favorites")) || [];
-    setFavorites(savedFavorites);
-  }, []);
-
-  const toggleFavorite = (postId) => {
-    let updatedFavorites;
-    if (favorites.includes(postId)) {
-      updatedFavorites = favorites.filter((id) => id !== postId);
-    } else {
-      updatedFavorites = [...favorites, postId];
-    }
-    setFavorites(updatedFavorites);
-    localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
-  };
 
   const getCompanyInfo = (employerId) => {
     const company = companies.find((company) => company._id === employerId);
@@ -90,9 +72,6 @@ const CompanyPosts = ({ posts, companies, tokenId }) => {
                 <Button component={Link} to={`/post/${post._id}`} variant="contained" color="primary" sx={{ marginTop: 2 }}>
                   Read more
                 </Button>
-                <IconButton onClick={() => toggleFavorite(post._id)} sx={{ marginTop: 2 }}>
-                  {favorites.includes(post._id) ? <FavoriteIcon color="error" /> : <FavoriteBorderIcon />}
-                </IconButton>
               </CardContent>
             </StyledCard>
           );

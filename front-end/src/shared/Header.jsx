@@ -46,14 +46,24 @@ export default function Header({ handleLogout, loggedIn, Datatoken }) {
                 Profile
               </Button>
               {Datatoken.userType === 'employer' && (
-                <Button color="inherit" component={Link} to={'/companyposts' }>
+                <>
+                  <Button color="inherit" component={Link} to={'/companyposts' }>
                   Company's Posts
                 </Button>
+                  <Button color="inherit" component={Link} to="/post">
+                  Add post
+                </Button>
+                </>
               )}
                  {Datatoken.userType === 'employee' && (
-                <Button color="inherit" component={Link} to={'/follow' }>
+                  <>
+                     <Button color="inherit" component={Link} to={'/follow' }>
                   following 
                 </Button>
+                   <Button color="inherit" component={Link} to="/favorites">
+                   Favorites
+                 </Button>
+                  </>
               )}
             </>
           ) : (
@@ -72,14 +82,6 @@ export default function Header({ handleLogout, loggedIn, Datatoken }) {
           <Button color="inherit" component={Link} to="/allposts">
             All Posts
           </Button>
-          <Button color="inherit" component={Link} to="/favorites">
-            Favorites
-          </Button>
-          {loggedIn && (
-            <Button color="inherit" component={Link} to="/post">
-              Add post
-            </Button>
-          )}
         </Toolbar>
       </AppBar>
     </Box>

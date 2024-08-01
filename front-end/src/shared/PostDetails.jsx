@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
-import Cookies from "js-cookie";
 import axios from "../axiosConfig";
 import { useParams, useNavigate } from "react-router-dom";
+import {  IconButton} from "@mui/material";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
 import ApplyNow from "../applyNow/ApplyNow";
 import {
   BsHeart,
@@ -16,24 +18,19 @@ import {
 } from "react-icons/bs";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-const PostDetails = ({ companies }) => {
+const PostDetails = ({ Datatoken }) => {
   const { id } = useParams();
   const [post, setPost] = useState(null);
+  const [companies, setCompanies] = useState([]);
   const [applers, setApplers] = useState([]);
   const [favorites, setFavorites] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const navigate = useNavigate();
-  const Datatoken = () => {
-    const storedUser = Cookies.get("Datatoken");
-    return storedUser ? JSON.parse(storedUser) : null;
-  };
-  const user = Datatoken();
 
   useEffect(() => {
     const fetchPost = async () => {
       try {
         const response = await axios.get(`/posts/${id}`);
-        console.log(response);
         setPost(response.data);
       } catch (error) {
         console.error("Error fetching post details:", error);
@@ -55,6 +52,24 @@ const PostDetails = ({ companies }) => {
   useEffect(() => {
     const savedFavorites = JSON.parse(localStorage.getItem("favorites")) || [];
     setFavorites(savedFavorites);
+
+    const fetchEmployers = async () => {
+      try {
+        const response = await axios.get('/employers');
+        const initialCompanies = response.data.map(company => ({
+          _id: company._id,
+          companyName: company.companyName,
+          avatar: company.avatar ? `http://localhost:5000/${company.avatar}` : null,
+          followers: company.followers.length,
+          isFollowing: Datatoken && company.followers.includes(Datatoken.id),
+        }));
+        setCompanies(initialCompanies);
+      } catch (error) {
+        console.error('Error fetching employers:', error);
+      }
+    };
+
+    fetchEmployers();
   }, []);
 
   const toggleFavorite = (postId) => {
@@ -68,19 +83,41 @@ const PostDetails = ({ companies }) => {
     localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
   };
 
+  const toggleFriend = async (companyId) => {
+    try {
+      await axios.patch(`/users/${Datatoken.id}/${companyId}`, {});
+
+      setCompanies(prevState =>
+        prevState.map(company =>
+          company._id === companyId
+            ? {
+                ...company,
+                followers: company.isFollowing ? company.followers - 1 : company.followers + 1,
+                isFollowing: !company.isFollowing,
+              }
+            : company
+        )
+      );
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      alert('An error occurred. Please try again.');
+    }
+  };
   const getCompanyInfo = (employerId) => {
     const company = companies.find((company) => company._id === employerId);
     if (company) {
       return {
         name: company.companyName,
-        avatar: company.avatar
-          ? `http://localhost:5000/${company.avatar}`
-          : null,
+        avatar: company.avatar,
+        followers: company.followers,
+        isFollowing: company.isFollowing,
       };
     }
     return {
       name: "Unknown Company",
       avatar: null,
+      followers: 0,
+      isFollowing: false,
     };
   };
 
@@ -96,9 +133,7 @@ const PostDetails = ({ companies }) => {
     );
   }
 
-  const { name: companyName, avatar: companyAvatar } = getCompanyInfo(
-    post.employer
-  );
+  const { name: companyName, avatar: companyAvatar, followers, isFollowing } = getCompanyInfo(post.employer);
 
   return (
     <div className="container my-5">
@@ -109,22 +144,15 @@ const PostDetails = ({ companies }) => {
               {post.avatar && (
                 <div className="row mb-3">
                   <div className="col-auto">
-                    <img
-                      src={`http://localhost:5000/${post.avatar}`}
-                      className="rounded-circle"
-                      width="64"
-                      height="64"
-                      alt="Post avatar"
-                    />
+                    <img src={`http://localhost:5000/${post.avatar}`} className="rounded-circle" width="64" height="64" alt="Post avatar" />
                   </div>
                   <div className="col">
                     <h4 className="card-title">{post.jobTitle}</h4>
                   </div>
                 </div>
               )}
-
               <div className="row mb-3">
-                {user && user.userType === "employee"
+                {Datatoken && Datatoken.userType === "employee"
                   ? modalOpen && (
                       <ApplyNow setOpenModal={setModalOpen} jobId={id} />
                     )
@@ -150,30 +178,34 @@ const PostDetails = ({ companies }) => {
                     style={{ cursor: "pointer" }}
                   >
                     <BsBuilding color="#ff9800" /> <strong>Company:</strong>{" "}
-                    {companyName}
+                    {companyName} ({followers} followers)
                   </h6>
+                  {Datatoken && Datatoken.userType === 'employee' && (
+                    <IconButton 
+                          onClick={() => toggleFriend(post.employer)}
+                          sx={{ ml: 1, color: isFollowing ? 'red' : 'green' }}
+                        >
+                          {isFollowing ? <PersonRemoveIcon color="primary" /> : <PersonAddIcon />}
+                        </IconButton> 
+                      )}
                 </div>
               </div>
+              <p className="card-text mt-3"><strong>Description:</strong> {post.jobDescription}</p>
+              <p className="card-text"><strong>Responsibilities:</strong> {post.jobResponsibitirs}</p>
+              <p className="card-text"><strong>Requirements:</strong> {post.jobRequirements}</p>
               <div className="d-flex align-items-center justify-content-between">
                 <div>
-                  <button
-                    className="btn btn-primary"
-                    onClick={() => toggleFavorite(post._id)}
-                  >
-                    {favorites.includes(post._id)
-                      ? "Remove from Favorites"
-                      : "Add to Favorites"}
-                  </button>
-                  <button
-                    className="btn btn-link ms-2"
-                    onClick={() => toggleFavorite(post._id)}
-                  >
-                    {favorites.includes(post._id) ? (
-                      <BsHeartFill color="red" />
-                    ) : (
-                      <BsHeart />
-                    )}
-                  </button>
+                {Datatoken && Datatoken.userType === 'employee' && (
+                    <>
+                <button className="btn btn-primary" onClick={() => toggleFavorite(post._id)}>
+                  {favorites.includes(post._id) ? "Remove from Favorites" : "Add to Favorites"}
+                </button>
+                <button className="btn btn-link ms-2" onClick={() => toggleFavorite(post._id)}>
+                  {favorites.includes(post._id) ? <BsHeartFill color="red" /> : <BsHeart />}
+                </button>
+                    </>
+                        
+                      )}
                 </div>
                 <div>
                   <button
@@ -186,15 +218,6 @@ const PostDetails = ({ companies }) => {
                   </button>
                 </div>
               </div>
-              <p className="card-text mt-3">
-                <strong>Description:</strong> {post.jobDescription}
-              </p>
-              <p className="card-text">
-                <strong>Responsibilities:</strong> {post.jobResponsibilities}
-              </p>
-              <p className="card-text">
-                <strong>Requirements:</strong> {post.jobRequirements}
-              </p>
             </div>
           </div>
         </div>
@@ -262,7 +285,7 @@ const PostDetails = ({ companies }) => {
                                 Name: {appler.firstName} {appler.lastName}
                               </h4>
                             </div>
-                            {user && user.userType === "employer"
+                            {Datatoken && Datatoken.userType === "employer"
                               ? appler.resume && (
                                   <a
                                     class="btn btn-primary"
