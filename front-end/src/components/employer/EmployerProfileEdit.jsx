@@ -1,9 +1,7 @@
-
-import React from 'react';
-import { Button, TextField, Box, Typography, Grid } from '@mui/material';
-import SaveIcon from '@mui/icons-material/Save';
-import CancelIcon from '@mui/icons-material/Cancel';
-import DeleteIcon from '@mui/icons-material/Delete';
+import React from "react";
+import { Button, TextField, Box, Typography, Grid } from "@mui/material";
+import SaveIcon from "@mui/icons-material/Save";
+import CancelIcon from "@mui/icons-material/Cancel";
 
 const EmployerProfileEdit = ({
   formData,
@@ -13,7 +11,7 @@ const EmployerProfileEdit = ({
   handleFileChange,
   handleSubmit,
   handleCancel,
-  handleDeleteAvatar
+  handleDeleteAvatar,
 }) => {
   return (
     <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 2 }}>
@@ -25,9 +23,14 @@ const EmployerProfileEdit = ({
         }}
       >
         <img
-          src={avatarPreview || '/path/to/default/avatar.png'} // Optional: Add a default image if none is available
+          src={avatarPreview || "/path/to/default/avatar.png"} // Optional: Add a default image if none is available
           alt="Avatar"
-          style={{ width: '150px', height: '150px', borderRadius: '50%', border: '1px solid #ddd' }}
+          style={{
+            width: "150px",
+            height: "150px",
+            borderRadius: "50%",
+            border: "1px solid #ddd",
+          }}
         />
       </Box>
       <TextField
@@ -65,11 +68,7 @@ const EmployerProfileEdit = ({
         onChange={handleChange}
         sx={{ mb: 3 }}
       />
-      <Button
-        variant="contained"
-        component="label"
-        sx={{ mb: 3 }}
-      >
+      <Button variant="contained" component="label" sx={{ mb: 3 }}>
         Upload Avatar
         <input
           type="file"

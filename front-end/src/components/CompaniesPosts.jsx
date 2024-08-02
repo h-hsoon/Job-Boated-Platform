@@ -1,10 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { Card, CardContent, Typography, Button, Avatar, IconButton } from "@mui/material";
+import {
+  Card,
+  CardContent,
+  Typography,
+  Button,
+  Avatar,
+  IconButton,
+} from "@mui/material";
 import { styled } from "@mui/material/styles";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
-import axios from '../axiosConfig';
+import axios from "../axiosConfig";
 const StyledCard = styled(Card)(({ theme }) => ({
   margin: theme.spacing(2),
   padding: theme.spacing(2),
@@ -37,7 +44,7 @@ const CompaniesPosts = ({ posts, Datatoken }) => {
     };
 
     fetchEmployers();
-  }, []);
+  }, [Datatoken]);
 
   const toggleFriend = async (companyId) => {
     try {
@@ -89,7 +96,12 @@ const CompaniesPosts = ({ posts, Datatoken }) => {
     <div>
       {filteredPosts.length > 0 ? (
         filteredPosts.map((post) => {
-          const { name: companyName, avatar: companyAvatar, followers, isFollowing } = getCompanyInfo(post.employer);
+          const {
+            name: companyName,
+            avatar: companyAvatar,
+            followers,
+            isFollowing,
+          } = getCompanyInfo(post.employer);
 
           return (
             <StyledCard key={post._id}>
@@ -108,27 +120,57 @@ const CompaniesPosts = ({ posts, Datatoken }) => {
                       src={companyAvatar}
                       alt="Company avatar"
                       onClick={() => handleClick(post.employer)}
-                      sx={{ width: 40, height: 40, cursor: "pointer", marginRight: 1 }}
+                      sx={{
+                        width: 40,
+                        height: 40,
+                        cursor: "pointer",
+                        marginRight: 1,
+                      }}
                     />
                   )}
-                  <Typography variant="subtitle1" onClick={() => handleClick(post.employer)} sx={{ cursor: "pointer" }}>
-                  <strong>Company:</strong> {companyName} ({followers} followers)
+                  <Typography
+                    variant="subtitle1"
+                    onClick={() => handleClick(post.employer)}
+                    sx={{ cursor: "pointer" }}
+                  >
+                    <strong>Company:</strong> {companyName} ({followers}{" "}
+                    followers)
                   </Typography>
-                  {Datatoken && Datatoken.userType === 'employee' && (
-                        <IconButton
-                          onClick={() => toggleFriend(post.employer)}
-                          sx={{ ml: 1, color: isFollowing ? 'red' : 'green' }}
-                        >
-                          {isFollowing ? <PersonRemoveIcon color="primary" /> : <PersonAddIcon />}
-                        </IconButton>
+                  {Datatoken && Datatoken.userType === "employee" && (
+                    <IconButton
+                      onClick={() => toggleFriend(post.employer)}
+                      sx={{ ml: 1, color: isFollowing ? "red" : "green" }}
+                    >
+                      {isFollowing ? (
+                        <PersonRemoveIcon color="primary" />
+                      ) : (
+                        <PersonAddIcon />
                       )}
+                    </IconButton>
+                  )}
                 </div>
-                <Typography><strong>Location:</strong> {post.jobLocation}</Typography>
-                <Typography><strong>Salary:</strong> ${post.offerSalary} / Month</Typography>
-                <Typography><strong>Type:</strong> {post.jobType}</Typography>
-                <Typography><strong>Experience:</strong> {post.experience} years</Typography>
-                <Typography><strong>Category:</strong> {post.jobCategory}</Typography>
-                <Button component={Link} to={`/post/${post._id}`} variant="contained" color="primary" sx={{ marginTop: 2 }}>
+                <Typography>
+                  <strong>Location:</strong> {post.jobLocation}
+                </Typography>
+                <Typography>
+                  <strong>Salary:</strong> ${post.offerSalary} / Month
+                </Typography>
+                <Typography>
+                  <strong>Type:</strong> {post.jobType}
+                </Typography>
+                <Typography>
+                  <strong>Experience:</strong> {post.experience} years
+                </Typography>
+                <Typography>
+                  <strong>Category:</strong> {post.jobCategory}
+                </Typography>
+                <Button
+                  component={Link}
+                  to={`/post/${post._id}`}
+                  variant="contained"
+                  color="primary"
+                  sx={{ marginTop: 2 }}
+                >
                   Read more
                 </Button>
               </CardContent>

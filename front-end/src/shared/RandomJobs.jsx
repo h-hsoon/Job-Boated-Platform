@@ -12,7 +12,6 @@ function RandomJobs() {
       try {
         const response = await axios.get(`/posts`);
         setAllJobs(response.data);
-        console.log(response.data);
       } catch (error) {
         console.error("Error fetching post details:", error);
       }
@@ -22,7 +21,6 @@ function RandomJobs() {
       try {
         const response = await axios.get(`/employers`);
         setCompanies(response.data);
-        console.log(response.data);
       } catch (error) {
         console.error("Error fetching companies details:", error);
       }
@@ -170,45 +168,45 @@ function RandomJobs() {
           {displayJobs.length > 0 ? (
             displayJobs.map((job) => {
               return (
-                <div class="p-4 border rounded">
-                  <div class="row align-items-center">
-                    <div class="col-md-2">
-                      <div class="text-center mb-4 mb-md-0">
+                <div className="p-4 border rounded">
+                  <div className="row align-items-center">
+                    <div className="col-md-2">
+                      <div className="text-center mb-4 mb-md-0">
                         <a href={`/post/${job._id}`}>
                           <img
                             src={`http://localhost:5000/${job.avatar}`}
                             alt=""
-                            class="img-fluid rounded-3"
+                            className="img-fluid rounded-3"
                           />
                         </a>
                       </div>
                     </div>
-                    <div class="col-md-3">
-                      <div class="mb-2 mb-md-0">
-                        <h5 class="fs-18 mb-1">
-                          <a href={`/post/${job._id}`} class="text-dark">
+                    <div className="col-md-3">
+                      <div className="mb-2 mb-md-0">
+                        <h5 className="fs-18 mb-1">
+                          <a href={`/post/${job._id}`} className="text-dark">
                             {job.jobTitle}
                           </a>
                         </h5>
-                        <p class="text-muted fs-14 mb-0">
+                        <p className="text-muted fs-14 mb-0">
                           {getCompany(job.employer).companyName}
                         </p>
                       </div>
                     </div>
-                    <div class="col-md-3">
-                      <div class="d-flex mb-2">
-                        <div class="flex-shrink-0">
-                          <i class="mdi mdi-map-marker text-primary me-1"></i>
+                    <div className="col-md-3">
+                      <div className="d-flex mb-2">
+                        <div className="flex-shrink-0">
+                          <i className="mdi mdi-map-marker text-primary me-1"></i>
                         </div>
-                        <p class="text-muted mb-0">
+                        <p className="text-muted mb-0">
                           {getCompany(job.employer).phone}
                         </p>
                       </div>
                     </div>
-                    <div class="col-md-2">
+                    <div className="col-md-2">
                       <div>
-                        <p class="text-muted mb-2">
-                          <span class="text-primary">$</span>
+                        <p className="text-muted mb-2">
+                          <span className="text-primary">$</span>
                           {job.offerSalary}/m{" "}
                         </p>
                       </div>
@@ -218,7 +216,7 @@ function RandomJobs() {
               );
             })
           ) : (
-            <div class="p-4 border rounded">
+            <div className="p-4 border rounded">
               {" "}
               <p>No corresponding jobs</p>
             </div>

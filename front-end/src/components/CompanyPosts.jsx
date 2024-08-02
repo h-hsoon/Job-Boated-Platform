@@ -1,8 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Card, CardContent, Typography, Button, Avatar, IconButton } from "@mui/material";
+import { Card, CardContent, Typography, Button, Avatar } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import FavoriteIcon from "@mui/icons-material/Favorite";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 
 const StyledCard = styled(Card)(({ theme }) => ({
   margin: theme.spacing(2),
@@ -19,7 +17,9 @@ const CompanyPosts = ({ posts, companies, tokenId }) => {
     if (company) {
       return {
         name: company.companyName,
-        avatar: company.avatar ? `http://localhost:5000/${company.avatar}` : null,
+        avatar: company.avatar
+          ? `http://localhost:5000/${company.avatar}`
+          : null,
       };
     }
     return {
@@ -38,7 +38,9 @@ const CompanyPosts = ({ posts, companies, tokenId }) => {
     <div>
       {filteredPosts.length > 0 ? (
         filteredPosts.map((post) => {
-          const { name: companyName, avatar: companyAvatar } = getCompanyInfo(post.employer);
+          const { name: companyName, avatar: companyAvatar } = getCompanyInfo(
+            post.employer
+          );
 
           return (
             <StyledCard key={post._id}>
@@ -57,19 +59,44 @@ const CompanyPosts = ({ posts, companies, tokenId }) => {
                       src={companyAvatar}
                       alt="Company avatar"
                       onClick={() => handleClick(post.employer)}
-                      sx={{ width: 40, height: 40, cursor: "pointer", marginRight: 1 }}
+                      sx={{
+                        width: 40,
+                        height: 40,
+                        cursor: "pointer",
+                        marginRight: 1,
+                      }}
                     />
                   )}
-                  <Typography variant="subtitle1" onClick={() => handleClick(post.employer)} sx={{ cursor: "pointer" }}>
+                  <Typography
+                    variant="subtitle1"
+                    onClick={() => handleClick(post.employer)}
+                    sx={{ cursor: "pointer" }}
+                  >
                     <strong>Company:</strong> {companyName}
                   </Typography>
                 </div>
-                <Typography><strong>Location:</strong> {post.jobLocation}</Typography>
-                <Typography><strong>Salary:</strong> ${post.offerSalary} / Month</Typography>
-                <Typography><strong>Type:</strong> {post.jobType}</Typography>
-                <Typography><strong>Experience:</strong> {post.experience} years</Typography>
-                <Typography><strong>Category:</strong> {post.jobCategory}</Typography>
-                <Button component={Link} to={`/post/${post._id}`} variant="contained" color="primary" sx={{ marginTop: 2 }}>
+                <Typography>
+                  <strong>Location:</strong> {post.jobLocation}
+                </Typography>
+                <Typography>
+                  <strong>Salary:</strong> ${post.offerSalary} / Month
+                </Typography>
+                <Typography>
+                  <strong>Type:</strong> {post.jobType}
+                </Typography>
+                <Typography>
+                  <strong>Experience:</strong> {post.experience} years
+                </Typography>
+                <Typography>
+                  <strong>Category:</strong> {post.jobCategory}
+                </Typography>
+                <Button
+                  component={Link}
+                  to={`/post/${post._id}`}
+                  variant="contained"
+                  color="primary"
+                  sx={{ marginTop: 2 }}
+                >
                   Read more
                 </Button>
               </CardContent>
