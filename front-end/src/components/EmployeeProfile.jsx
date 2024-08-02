@@ -48,7 +48,6 @@ const EmployeeProfile = ({ tokenId }) => {
           userType: "employee",
         });
         const currentUser = tokenId;
-        console.log(response.data);
         setUserProfile(response.data);
         setFormData({
           firstName: response.data.firstName,

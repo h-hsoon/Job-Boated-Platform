@@ -44,10 +44,9 @@ const PostDetails = ({ Datatoken }) => {
     const fetchApplers = async () => {
       const response = await axios.get(`/applers/${id}`);
       setApplers(response.data);
-      console.log(response.data);
     };
     fetchApplers();
-  }, [id]);
+  }, [id, applers]);
 
   useEffect(() => {
     const savedFavorites = JSON.parse(localStorage.getItem("favorites")) || [];
@@ -72,7 +71,7 @@ const PostDetails = ({ Datatoken }) => {
     };
 
     fetchEmployers();
-  }, [Datatoken]);
+  }, [Datatoken, applers]);
 
   const toggleFavorite = (postId) => {
     let updatedFavorites;
