@@ -165,62 +165,109 @@ function RandomJobs() {
           </li>
         </ul>
         <div className="JobsToApply">
-          {displayJobs.length > 0 ? (
-            displayJobs.map((job) => {
-              return (
-                <div className="p-4 border rounded">
-                  <div className="row align-items-center">
-                    <div className="col-md-2">
-                      <div className="text-center mb-4 mb-md-0">
-                        <a href={`/post/${job._id}`}>
-                          <img
-                            src={`http://localhost:5000/${job.avatar}`}
-                            alt=""
-                            className="img-fluid rounded-3"
-                          />
-                        </a>
-                      </div>
-                    </div>
-                    <div className="col-md-3">
-                      <div className="mb-2 mb-md-0">
-                        <h5 className="fs-18 mb-1">
-                          <a href={`/post/${job._id}`} className="text-dark">
-                            {job.jobTitle}
+          {displayJobs.length > 0
+            ? displayJobs.map((job) => {
+                return (
+                  <div className="p-4 border rounded">
+                    <div className="row align-items-center">
+                      <div className="col-md-2">
+                        <div className="text-center mb-4 mb-md-0">
+                          <a href={`/post/${job._id}`}>
+                            <img
+                              src={`http://localhost:5000/${job.avatar}`}
+                              alt=""
+                              className="img-fluid rounded-3"
+                            />
                           </a>
-                        </h5>
-                        <p className="text-muted fs-14 mb-0">
-                          {getCompany(job.employer).companyName}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="col-md-3">
-                      <div className="d-flex mb-2">
-                        <div className="flex-shrink-0">
-                          <i className="mdi mdi-map-marker text-primary me-1"></i>
                         </div>
-                        <p className="text-muted mb-0">
-                          {getCompany(job.employer).phone}
-                        </p>
                       </div>
-                    </div>
-                    <div className="col-md-2">
-                      <div>
-                        <p className="text-muted mb-2">
-                          <span className="text-primary">$</span>
-                          {job.offerSalary}/m{" "}
-                        </p>
+                      <div className="col-md-3">
+                        <div className="mb-2 mb-md-0">
+                          <h5 className="fs-18 mb-1">
+                            <a href={`/post/${job._id}`} className="text-dark">
+                              {job.jobTitle}
+                            </a>
+                          </h5>
+                          <p className="text-muted fs-14 mb-0">
+                            {getCompany(job.employer).companyName}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="col-md-3">
+                        <div className="d-flex mb-2">
+                          <div className="flex-shrink-0">
+                            <i className="mdi mdi-map-marker text-primary me-1"></i>
+                          </div>
+                          <p className="text-muted mb-0">
+                            {getCompany(job.employer).phone}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="col-md-2">
+                        <div>
+                          <p className="text-muted mb-2">
+                            <span className="text-primary">$</span>
+                            {job.offerSalary}/m{" "}
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              );
-            })
-          ) : (
-            <div className="p-4 border rounded">
-              {" "}
-              <p>No corresponding jobs</p>
-            </div>
-          )}
+                );
+              })
+            : // <div className="p-4 border rounded">
+              //   {" "}
+              //   <p>No corresponding jobs</p>
+              // </div>
+              allJobs.slice(0, 4).map((job) => {
+                return (
+                  <div className="p-4 border rounded">
+                    <div className="row align-items-center">
+                      <div className="col-md-2">
+                        <div className="text-center mb-4 mb-md-0">
+                          <a href={`/post/${job._id}`}>
+                            <img
+                              src={`http://localhost:5000/${job.avatar}`}
+                              alt=""
+                              className="img-fluid rounded-3"
+                            />
+                          </a>
+                        </div>
+                      </div>
+                      <div className="col-md-3">
+                        <div className="mb-2 mb-md-0">
+                          <h5 className="fs-18 mb-1">
+                            <a href={`/post/${job._id}`} className="text-dark">
+                              {job.jobTitle}
+                            </a>
+                          </h5>
+                          <p className="text-muted fs-14 mb-0">
+                            {getCompany(job.employer).companyName}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="col-md-3">
+                        <div className="d-flex mb-2">
+                          <div className="flex-shrink-0">
+                            <i className="mdi mdi-map-marker text-primary me-1"></i>
+                          </div>
+                          <p className="text-muted mb-0">
+                            {getCompany(job.employer).phone}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="col-md-2">
+                        <div>
+                          <p className="text-muted mb-2">
+                            <span className="text-primary">$</span>
+                            {job.offerSalary}/m{" "}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
         </div>
       </div>
     </div>
