@@ -23,7 +23,6 @@ const newJobPost = async (req, res) => {
     experience,
     jobPosition,
   } = req.body;
-  console.log(req.body);
   const avatar = req.file ? req.file.path : "";
   const employer = await employerModel.findById(id);
   if (!employer) {

@@ -105,7 +105,6 @@ const UpdateEmployee = async (req, res) => {
 
   // Check if required fields are empty
   if (firstName === "" || lastName === "" || email === "") {
-    console.log("Some fields are empty");
     return res.status(400).json({
       error: "Some fields are empty!!",
     });
@@ -189,7 +188,6 @@ const sendUserdata = async (req, res) => {
 
     res.status(200).json(userData);
   } catch (error) {
-    console.error("Error during login:", error);
     res.status(500).json({ loginError: "Internal Server Error" });
   }
 };
@@ -274,7 +272,6 @@ const addRemoveFriend = async (req, res) => {
 };
 
 const getfreinds = async (req, res) => {
-  console.log("ok");
   try {
     const { id } = req.params;
     const user = await jobSeekerModel.findById(id);
@@ -292,7 +289,6 @@ const getfreinds = async (req, res) => {
   }
 };
 const getFollowers = async (req, res) => {
-  console.log("ok")
   try {
     const { id } = req.params;
     const company = await employerModel.findById(id);
@@ -301,9 +297,10 @@ const getFollowers = async (req, res) => {
     );
     const formattedFollowers = followers.map(
       ({ _id, firstName, lastName, avatar, email }) => {
-        return { _id,firstName, lastName, avatar, email};
+        return { _id, firstName, lastName, avatar, email };
       }
-    );  res.status(200).json(formattedFollowers);
+    );
+    res.status(200).json(formattedFollowers);
   } catch (err) {
     res.status(404).json({ message: err.message });
   }
@@ -320,5 +317,5 @@ module.exports = {
   employers,
   addRemoveFriend,
   getfreinds,
-  getFollowers
+  getFollowers,
 };
