@@ -168,7 +168,7 @@ function RandomJobs() {
           {displayJobs.length > 0
             ? displayJobs.map((job) => {
                 return (
-                  <div className="p-4 border rounded">
+                  <div className="p-4 border rounded" key={job._id}>
                     <div className="row align-items-center">
                       <div className="col-md-2">
                         <div className="text-center mb-4 mb-md-0">
@@ -221,7 +221,7 @@ function RandomJobs() {
               // </div>
               allJobs.slice(0, 4).map((job) => {
                 return (
-                  <div className="p-4 border rounded">
+                  <div className="p-4 border rounded" key={job._id}>
                     <div className="row align-items-center">
                       <div className="col-md-2">
                         <div className="text-center mb-4 mb-md-0">

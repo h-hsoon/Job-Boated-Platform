@@ -47,7 +47,6 @@ const newJobPost = async (req, res) => {
   jobPost
     .save()
     .then((data) => {
-      console.log(data);
       res
         .status(200)
         .json({ message: "job post created successfully", data: data });
@@ -67,6 +66,14 @@ const applyToJob = async (req, res) => {
   const candidate = await jobSeekerModel.findById(candidateId);
   if (!job) {
     return res.status(400).json({ error: "job not found" });
+  }
+  const appled = job.applers.find((value) => {
+    return value.equals(candidate._id);
+  });
+  if (appled) {
+    return res
+      .status(400)
+      .json({ error: "you have already applied to this job" });
   }
   job.applers.push(candidate._id);
   job.save();
