@@ -33,7 +33,6 @@ function App() {
       try {
         const response = await axios.get("/posts");
         setPosts(response.data);
-        console.log(response.data);
       } catch (error) {
         console.error("Error fetching posts:", error);
       }
@@ -42,7 +41,6 @@ function App() {
       try {
         const response = await axios.get("/employers");
         setCompanies(response.data);
-        console.log(response.data);
       } catch (error) {
         console.error("Error fetching posts:", error);
       }
@@ -101,21 +99,55 @@ function App() {
 
           <Route path="/registerEmployer" element={<Register />} />
           <Route path="/registerEmployee" element={<RegisterEmployee />} />
-          <Route path="/employee/:id" element={ <EmployeeProfile tokenId={Datatoken?.id}/> } />
-          <Route path="/employer/:id" element={ <EmployerProfile tokenId={Datatoken?.id} /> }/>
-          <Route path="/allposts" element={<AllPosts posts={posts} Datatoken={Datatoken}/>} />
-          <Route path="/posts/:searchValue" element={<Posts posts={posts}   Datatoken={Datatoken}/>} />
-          <Route path="/Categoriesposts/:categoryName" element={<Posts posts={posts}  Datatoken={Datatoken}/>} />
-          <Route path="/post/:id" element={<PostDetails  Datatoken={Datatoken}/>} />
+          <Route
+            path="/employee/:id"
+            element={<EmployeeProfile tokenId={Datatoken?.id} />}
+          />
+          <Route
+            path="/employer/:id"
+            element={<EmployerProfile tokenId={Datatoken?.id} />}
+          />
+          <Route
+            path="/allposts"
+            element={<AllPosts posts={posts} Datatoken={Datatoken} />}
+          />
+          <Route
+            path="/posts/:searchValue"
+            element={<Posts posts={posts} Datatoken={Datatoken} />}
+          />
+          <Route
+            path="/Categoriesposts/:categoryName"
+            element={<Posts posts={posts} Datatoken={Datatoken} />}
+          />
+          <Route
+            path="/post/:id"
+            element={<PostDetails Datatoken={Datatoken} />}
+          />
           {loggedIn && Datatoken?.userType === "employee" ? (
-            <Route path="/favorites" element={<Favorites posts={posts} Datatoken={Datatoken} />}  />
+            <Route
+              path="/favorites"
+              element={<Favorites posts={posts} Datatoken={Datatoken} />}
+            />
           ) : null}
-          <Route path="/CompanyPosts" element={<CompanyPosts posts={posts} companies={companies} tokenId={Datatoken?.id} />} />
-          <Route path="/follow" element={<FollowingPage tokenId={Datatoken?.id} />} />
-          <Route path="/CompaniesPosts/:companyId"  element={<CompaniesPosts posts={posts}  Datatoken={Datatoken} />} />
-
+          <Route
+            path="/CompanyPosts"
+            element={
+              <CompanyPosts
+                posts={posts}
+                companies={companies}
+                tokenId={Datatoken?.id}
+              />
+            }
+          />
+          <Route
+            path="/follow"
+            element={<FollowingPage tokenId={Datatoken?.id} />}
+          />
+          <Route
+            path="/CompaniesPosts/:companyId"
+            element={<CompaniesPosts posts={posts} Datatoken={Datatoken} />}
+          />
         </Routes>
-
       </div>
     </BrowserRouter>
   );

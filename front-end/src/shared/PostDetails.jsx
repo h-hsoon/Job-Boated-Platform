@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "../axiosConfig";
 import { useParams, useNavigate } from "react-router-dom";
-import {  IconButton} from "@mui/material";
+import { IconButton } from "@mui/material";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
 import ApplyNow from "../applyNow/ApplyNow";
@@ -55,22 +55,24 @@ const PostDetails = ({ Datatoken }) => {
 
     const fetchEmployers = async () => {
       try {
-        const response = await axios.get('/employers');
-        const initialCompanies = response.data.map(company => ({
+        const response = await axios.get("/employers");
+        const initialCompanies = response.data.map((company) => ({
           _id: company._id,
           companyName: company.companyName,
-          avatar: company.avatar ? `http://localhost:5000/${company.avatar}` : null,
+          avatar: company.avatar
+            ? `http://localhost:5000/${company.avatar}`
+            : null,
           followers: company.followers.length,
           isFollowing: Datatoken && company.followers.includes(Datatoken.id),
         }));
         setCompanies(initialCompanies);
       } catch (error) {
-        console.error('Error fetching employers:', error);
+        console.error("Error fetching employers:", error);
       }
     };
 
     fetchEmployers();
-  }, []);
+  }, [Datatoken]);
 
   const toggleFavorite = (postId) => {
     let updatedFavorites;
@@ -87,20 +89,22 @@ const PostDetails = ({ Datatoken }) => {
     try {
       await axios.patch(`/users/${Datatoken.id}/${companyId}`, {});
 
-      setCompanies(prevState =>
-        prevState.map(company =>
+      setCompanies((prevState) =>
+        prevState.map((company) =>
           company._id === companyId
             ? {
                 ...company,
-                followers: company.isFollowing ? company.followers - 1 : company.followers + 1,
+                followers: company.isFollowing
+                  ? company.followers - 1
+                  : company.followers + 1,
                 isFollowing: !company.isFollowing,
               }
             : company
         )
       );
     } catch (error) {
-      console.error('Error updating profile:', error);
-      alert('An error occurred. Please try again.');
+      console.error("Error updating profile:", error);
+      alert("An error occurred. Please try again.");
     }
   };
   const getCompanyInfo = (employerId) => {
@@ -133,7 +137,12 @@ const PostDetails = ({ Datatoken }) => {
     );
   }
 
-  const { name: companyName, avatar: companyAvatar, followers, isFollowing } = getCompanyInfo(post.employer);
+  const {
+    name: companyName,
+    avatar: companyAvatar,
+    followers,
+    isFollowing,
+  } = getCompanyInfo(post.employer);
 
   return (
     <div className="container my-5">
@@ -144,7 +153,13 @@ const PostDetails = ({ Datatoken }) => {
               {post.avatar && (
                 <div className="row mb-3">
                   <div className="col-auto">
-                    <img src={`http://localhost:5000/${post.avatar}`} className="rounded-circle" width="64" height="64" alt="Post avatar" />
+                    <img
+                      src={`http://localhost:5000/${post.avatar}`}
+                      className="rounded-circle"
+                      width="64"
+                      height="64"
+                      alt="Post avatar"
+                    />
                   </div>
                   <div className="col">
                     <h4 className="card-title">{post.jobTitle}</h4>
@@ -180,32 +195,53 @@ const PostDetails = ({ Datatoken }) => {
                     <BsBuilding color="#ff9800" /> <strong>Company:</strong>{" "}
                     {companyName} ({followers} followers)
                   </h6>
-                  {Datatoken && Datatoken.userType === 'employee' && (
-                    <IconButton 
-                          onClick={() => toggleFriend(post.employer)}
-                          sx={{ ml: 1, color: isFollowing ? 'red' : 'green' }}
-                        >
-                          {isFollowing ? <PersonRemoveIcon color="primary" /> : <PersonAddIcon />}
-                        </IconButton> 
+                  {Datatoken && Datatoken.userType === "employee" && (
+                    <IconButton
+                      onClick={() => toggleFriend(post.employer)}
+                      sx={{ ml: 1, color: isFollowing ? "red" : "green" }}
+                    >
+                      {isFollowing ? (
+                        <PersonRemoveIcon color="primary" />
+                      ) : (
+                        <PersonAddIcon />
                       )}
+                    </IconButton>
+                  )}
                 </div>
               </div>
-              <p className="card-text mt-3"><strong>Description:</strong> {post.jobDescription}</p>
-              <p className="card-text"><strong>Responsibilities:</strong> {post.jobResponsibitirs}</p>
-              <p className="card-text"><strong>Requirements:</strong> {post.jobRequirements}</p>
+              <p className="card-text mt-3">
+                <strong>Description:</strong> {post.jobDescription}
+              </p>
+              <p className="card-text">
+                <strong>Responsibilities:</strong> {post.jobResponsibitirs}
+              </p>
+              <p className="card-text">
+                <strong>Requirements:</strong> {post.jobRequirements}
+              </p>
               <div className="d-flex align-items-center justify-content-between">
                 <div>
-                {Datatoken && Datatoken.userType === 'employee' && (
+                  {Datatoken && Datatoken.userType === "employee" && (
                     <>
-                <button className="btn btn-primary" onClick={() => toggleFavorite(post._id)}>
-                  {favorites.includes(post._id) ? "Remove from Favorites" : "Add to Favorites"}
-                </button>
-                <button className="btn btn-link ms-2" onClick={() => toggleFavorite(post._id)}>
-                  {favorites.includes(post._id) ? <BsHeartFill color="red" /> : <BsHeart />}
-                </button>
+                      <button
+                        className="btn btn-primary"
+                        onClick={() => toggleFavorite(post._id)}
+                      >
+                        {favorites.includes(post._id)
+                          ? "Remove from Favorites"
+                          : "Add to Favorites"}
+                      </button>
+                      <button
+                        className="btn btn-link ms-2"
+                        onClick={() => toggleFavorite(post._id)}
+                      >
+                        {favorites.includes(post._id) ? (
+                          <BsHeartFill color="red" />
+                        ) : (
+                          <BsHeart />
+                        )}
+                      </button>
                     </>
-                        
-                      )}
+                  )}
                 </div>
                 <div>
                   <button
